@@ -5,9 +5,12 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "start": "webpack serve --config webpack.config.js --open"
+    "start": "npm-run-all --parallel start-frontend start-backend start-LAATSim",
+    "start-frontend": "webpack serve --config webpack.config.js --open",
+    "start-backend": "node server.js",
+    "start-LAATSim": "python LAATSimMATLAB.py"
   },
-  "proxy": "http://localhost:1110",
+  "proxy": "http://localhost:1111",
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -24,7 +27,9 @@
     "cors": "^2.8.5",
     "css-loader": "^6.8.1",
     "express": "^4.18.2",
+    "express-subdomain": "^1.0.5",
     "html-webpack-plugin": "^5.5.3",
+    "npm-run-all": "^4.1.5",
     "path": "^0.12.7",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",

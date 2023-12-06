@@ -1,5 +1,6 @@
 // backend/server.js
 const express = require('express');
+const subdomain = require('express-subdomain');
 const path = require('path');
 const cors = require('cors');
 const { open } = require('sqlite');
@@ -10,6 +11,13 @@ const history = require('connect-history-api-fallback');
 const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 1110;
+
+// Middleware for handling subdomains
+// const subdomainMiddleware = subdomain('api'); // Replace 'subdomain' with your desired subdomain
+
+// Use the subdomain middleware
+// app.use(subdomainMiddleware);
+
 app.use(cors({ origin: 'http://localhost:1111', credentials: true }));  // Configure cors middleware
 app.use(express.json());
 app.use(logRequests); // Log incoming requests
@@ -65,12 +73,6 @@ app.post('/api/logout', (req, res) => {
     res.status(200).json({ message: 'Logout successful!' });
 });
 
-app.use(history());
-app.use(express.static(path.join(__dirname, 'public')));
-// Handle other routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname + '/src/index.html'));
-});
 app.listen(PORT, () => {
     console.log(`Server is running on port http://localhost:${PORT}/`);
 });
@@ -78,7 +80,7 @@ app.listen(PORT, () => {
 // =======================================================================================
 // MATLAB Call ===========================================================================
 // Running MATLAB on the py (must run the py code first)
-app.post('/run_matlab_code', async (req, res) => {
+app.post('/api/run_matlab_code', async (req, res) => {
     // Perform any necessary cleanup or session handling on the server side
     console.log(`Running MATLAB`);
     try {

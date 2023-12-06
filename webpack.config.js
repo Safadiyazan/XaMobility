@@ -21,6 +21,9 @@ module.exports = {
         static: path.resolve(__dirname, 'dist'),
         historyApiFallback: true,
         port: 1111,
+        proxy: {
+            '/api': 'http://localhost:1110', // Proxy requests with '/api' to your Express backend
+          }
     },
     resolve: {
         fallback: { "https": false, "zlib": false, "http": false, "url": false },

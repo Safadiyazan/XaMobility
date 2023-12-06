@@ -13,7 +13,7 @@ const Dashboard = () => {
 
     const runMatlabCode = async () => {
         try {
-            const response = await fetch('http://localhost:1110/run_matlab_code', {
+            const response = await fetch('/api/run_matlab_code', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
