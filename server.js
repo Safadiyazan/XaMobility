@@ -10,13 +10,11 @@ const history = require('connect-history-api-fallback');
 const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 1110;
-app.use(cors({ origin: 'http://localhost:8080', credentials: true }));  // Configure cors middleware
+app.use(cors({ origin: 'http://localhost:1111', credentials: true }));  // Configure cors middleware
 app.use(express.json());
 app.use(logRequests); // Log incoming requests
-
-
-// -----------------------------------------------------------
-// USER & LOGIN & LOGOUT
+// =======================================================================================
+// USER & LOGIN & LOGOUT =================================================================
 // Connect to SQLite database
 const dbPromise = open({
     filename: './Database.db',
@@ -69,17 +67,16 @@ app.post('/api/logout', (req, res) => {
 
 app.use(history());
 app.use(express.static(path.join(__dirname, 'public')));
-
 // Handle other routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname + '/index.html'));
+  res.sendFile(path.join(__dirname + '/src/index.html'));
 });
-
 app.listen(PORT, () => {
     console.log(`Server is running on port http://localhost:${PORT}/`);
 });
 
-// -----------------------------------------------------------
+// =======================================================================================
+// MATLAB Call ===========================================================================
 // Running MATLAB on the py (must run the py code first)
 app.post('/run_matlab_code', (req, res) => {
     // Perform any necessary cleanup or session handling on the server side
@@ -101,34 +98,5 @@ app.post('/run_matlab_code', (req, res) => {
       // Call the function to run MATLAB code
       runMatlabCode();
 });
-
-// -----------------------------------------------------------
-// Read the JSON file
-const fs = require('fs');
-/* app.get('/data', (req, res) => {
-    fs.readFile('./public/LAATSimData/SimOutput_ObjAircraft.json', 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            res.status(500).json({ error: 'Error reading JSON file' });
-        } else {
-            const jsonData = JSON.parse(data);
-            res.json(jsonData);
-        }
-    });
-}); */
-app.get('/data', (req, res) => {
-    const selectedFilename = req.query.filename || 'SimOutput_ObjAircraft.json';
-    const filePath = `./public/LAATSimData/${selectedFilename}`;
-
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            res.status(500).json({ error: 'Error reading JSON file' });
-        } else {
-            const jsonData = JSON.parse(data);
-            res.json(jsonData);
-        }
-    });
-});
-
-// ... (other routes)
+// END  ==================================================================================
+// =======================================================================================

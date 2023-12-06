@@ -14,7 +14,13 @@ module.exports = {
     output: {
         filename: 'app.js',
         path: path.resolve(__dirname, 'dist'),
+        publicPath: '/',  // Add this line
         sourcePrefix: ''
+    },
+    devServer: {
+        static: path.resolve(__dirname, 'dist'),
+        historyApiFallback: true,
+        port: 1111,
     },
     resolve: {
         fallback: { "https": false, "zlib": false, "http": false, "url": false },
@@ -31,9 +37,9 @@ module.exports = {
             test: /\.(js|jsx)$/,
             exclude: /node_modules/,
             use: {
-              loader: 'babel-loader'
+                loader: 'babel-loader'
             }
-          }]
+        }]
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -50,13 +56,13 @@ module.exports = {
         }),
         new webpack.DefinePlugin({
             // Define relative base path in cesium for loading assets
-            CESIUM_BASE_URL: JSON.stringify('')
+            CESIUM_BASE_URL: JSON.stringify('./')
         }),
         new CopyWebpackPlugin({
             patterns: [
-              { from: 'public', to: '' }, // Copy the entire 'public' folder to the root of the output directory
+                { from: 'public', to: '' }, // Copy the entire 'public' folder to the root of the output directory
             ],
-          }),
+        }),
     ],
     mode: 'development',
     devtool: 'eval',
