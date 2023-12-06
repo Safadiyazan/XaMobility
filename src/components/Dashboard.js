@@ -6,7 +6,11 @@ import { viewer } from '.././index';
 
 const Dashboard = () => {
 
+    // =======================================================================================
+    // MATLAB Call ===========================================================================
     // ============ MATLAB Code =========================
+
+
     const runMatlabCode = async () => {
         try {
             const response = await fetch('http://localhost:1110/run_matlab_code', {
@@ -16,11 +20,11 @@ const Dashboard = () => {
                 },
                 body: JSON.stringify({}),
             });
-
+    
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-
+    
             const data = await response.json();
             console.log('MATLAB Result:', data.result);
             // Update the DOM with the result
@@ -31,28 +35,26 @@ const Dashboard = () => {
             document.getElementById('result-container').innerHTML = 'Error: ' + error.message;
         }
     };
-
+    
+    // =======================================================================================
+    // GUI Handles ===========================================================================
     // Handle file dropdown change
     const handleDropdownChange = (event) => {
         const selectedOption = event.target.value;
         setSelectedFile(selectedOption);
     };
-
     // Handle file submission (if needed)
     const handleFileChange = (event) => {
         // Your file submission logic here if necessary
     };
-
     // Handle file submission (if needed)
     const handleSubmit = (event) => {
         event.preventDefault();
         // Your file submission logic here if necessary
     };
-
+    // =======================================================================================
+    // Run and Load Simulation Handles =======================================================
     const [selectedFile, setSelectedFile] = useState("/LAATSimData/SimOutput_ObjAircraft.json");
-
-    // ... Other code
-
     useEffect(() => {
         // Fetch initial data when the component mounts
         const initialSelectedFile = selectedFile;
@@ -60,15 +62,14 @@ const Dashboard = () => {
             .then(response => response.json())
             .then(data => {
                 // Call your function with the fetched data
-                LoadSimulation(viewer,data);
+                LoadSimulation(viewer, data);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     }, [selectedFile]);  // Dependency array ensures this effect runs when selectedFile changes
-
-
-
+    // =======================================================================================
+    // GUI ===================================================================================
     return (
         <div className="container mt-5">
             <h1>Dashboard</h1>
@@ -102,7 +103,7 @@ const Dashboard = () => {
         </div>
     );
 };
-
+// =======================================================================================
 export default Dashboard;
 // END  ==================================================================================
 // =======================================================================================

@@ -14,10 +14,10 @@ def runMatlabCode():
     try:
         # Your MATLAB code
         print(datetime.datetime.now())
-        result = eng.RunLAATSim(1.0, '', nargout=1)
-        print(result)
+        NewJSONDir = eng.RunLAATSim(1.0, '', nargout=1)
+        print(NewJSONDir)
 
-        return jsonify({'result': result})
+        return jsonify({'NewJSONDir': NewJSONDir})
     except Exception as e:
         return jsonify({'error': str(e)}), 500  # Return a 500 Internal Server Error status code
 

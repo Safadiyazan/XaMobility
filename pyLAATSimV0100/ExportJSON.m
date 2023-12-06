@@ -1,4 +1,4 @@
-function [] = ExportJSON(SimInfo,ObjAircraft,TFC,EC,Settings)
+function [file_name] = ExportJSON(SimInfo,ObjAircraft,TFC,EC,Settings)
 M = SimInfo.M(end);
 full_pdt = full(SimInfo.pdt)';
 ObjAircraftData = cell(1, M);

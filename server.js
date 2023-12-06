@@ -78,25 +78,28 @@ app.listen(PORT, () => {
 // =======================================================================================
 // MATLAB Call ===========================================================================
 // Running MATLAB on the py (must run the py code first)
-app.post('/run_matlab_code', (req, res) => {
+app.post('/run_matlab_code', async (req, res) => {
     // Perform any necessary cleanup or session handling on the server side
     console.log(`Running MATLAB`);
-    const runMatlabCode = async () => {
-        try {
-          const response = await axios.get('http://127.0.0.1:5000/run_matlab_code');
-          
-          if (response.status === 200) {
-            console.log('MATLAB Result:', response.data.result);
-          } else {
-            console.error('1 Error:', response.data.error);
-          }
-        } catch (error) {
-          console.error('2 Error:', error.message);
+    try {
+        const response = await axios.get('http://127.0.0.1:5000/run_matlab_code');
+
+        if (response.status === 200) {
+            console.log('Server MATLAB Result Directory:', response.data.NewJSONDir);
+
+            // Send the expected structure to the frontend
+            res.json({ result: response.data.NewJSONDir });
+        } else {
+            console.error('Error:', response.data.error);
+            res.status(response.status).json({ error: response.data.error });
         }
-      };
-      
-      // Call the function to run MATLAB code
-      runMatlabCode();
+    } catch (error) {
+        console.error('Error:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
+
+
+// export { NewJSONDir };
 // END  ==================================================================================
 // =======================================================================================
