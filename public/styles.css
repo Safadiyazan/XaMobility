@@ -1,0 +1,400 @@
+/* public/styles.css */
+
+/* Additional styles specific to the dashboard */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+}
+
+nav {
+  background-color: #4CAF50;
+  overflow: hidden;
+}
+
+nav a {
+  float: left;
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+nav a:hover {
+  background-color: #45a049;
+  color: white;
+}
+
+main {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 1rem;
+  padding: 1rem;
+  margin: 60px auto 80px;
+  /* Added bottom margin */
+  padding: 20px;
+  text-align: center;
+  box-sizing: border-box;
+  /* Include padding and borders in the width and height */
+}
+
+.main {
+  display: flex;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+input {
+  margin: 5px 0;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+
+label {
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+footer {
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 0.5rem;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.loading-bar {
+  background-color: #f2f2f2;
+  height: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.progress {
+  background-color: #4CAF50;
+  height: 100%;
+  width: 0%;
+  transition: width 1s ease-in-out;
+}
+
+a {
+  color: #3498db;
+  /* Change the color to your preference */
+  text-decoration: none;
+  /* Remove the underline by default */
+  transition: color 0.3s ease-in-out;
+  /* Smooth color transition */
+  font-weight: bold;
+  /* Make the font bold */
+}
+
+a:hover {
+  color: #1abc9c;
+  /* Change the color on hover to a different shade */
+}
+
+.menu {
+  width: 25%;
+  padding: 10px;
+  margin-left: auto;
+  /* Center horizontally by setting left and right margins to auto */
+  margin-right: auto;
+}
+
+.content {
+  width: 75%;
+  padding: 10px;
+  margin-left: auto;
+  /* Center horizontally by setting left and right margins to auto */
+  margin-right: auto;
+}
+
+.collapsible {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 10px;
+}
+
+.collapsible-button {
+  background-color: #45a0494b;
+  color: #000000;
+  border: none;
+  border-radius: 4px;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  /* Add this line */
+  align-items: center;
+  /* Add this line */
+  position: relative;
+  /* Add this line */
+}
+
+.collapsible-arrow {
+  color: #45a049;
+  font-size: 1.2rem;
+  position: absolute;
+  /* Add this line */
+  right: 10px;
+  /* Add this line */
+  top: 50%;
+  /* Add this line */
+  transform: translateY(-50%);
+  /* Add this line */
+  transition: transform 0.2s;
+}
+
+.collapsible-content {
+  display: none;
+  padding: 10px;
+  background-color: #f5f5f5;
+}
+
+.collapsible.expanded .collapsible-arrow {
+  transform: translateY(-50%) rotate(90deg);
+}
+
+
+
+
+.smart-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.smart-table th,
+.smart-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+.smart-table th {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.smart-table input {
+  width: 90%;
+}
+
+.save-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+.user-info h2,
+.sidebar-menu,
+#signOutBtn {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+.login-form body {
+  background-color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.login-form header {
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.login-form main {
+  margin: 20px;
+  padding: 20px;
+  text-align: center;
+  width: 300px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 1rem;
+  padding: 1rem;
+  margin: 60px auto 80px;
+  /* Added bottom margin */
+  padding: 20px;
+  text-align: center;
+  box-sizing: border-box;
+  /* Include padding and borders in the width and height */
+}
+
+.login-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-form label {
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.login-form input {
+  margin: 5px 0;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.login-form button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.login-form button:hover {
+  background-color: #0056b3;
+}
+
+.login-form footer {
+  margin-top: 20px;
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+/* DROPDOWN LIST */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+  background-color: #f5f5f5;
+  color: #333;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+}
+
+.dropbtn::after {
+  content: "\25BC";
+  font-size: 12px;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  width: 100%;
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 12px 16px;
+  display: block;
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  background-color: #45a049;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/*  NEW DROPDOWN LIST */
+.dropdown-container {
+  margin-bottom: 20px;
+}
+
+.dropdown-label {
+  font-size: 18px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.filename-dropdown {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 300px;
+  cursor: pointer;
+}
+
+.selected-file-text {
+  font-size: 16px;
+  margin-top: 10px;
+}
