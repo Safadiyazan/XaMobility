@@ -10,7 +10,7 @@ for i = 1:M
 end
 json_data = struct('ObjAircraft', ObjAircraftData);
 json_str = jsonencode(json_data);
-file_name = [SimInfo.SimOutputDirStr 'SimOutput_ObjAircraft'  '.json']; % datestr(now,'yyyymmdd_hhMMss')
+file_name = ['./public/Outputs/' 'SimOutput_ObjAircraft_' datestr(now,'yyyymmdd_hhMMss')  '.json']; % datestr(now,'yyyymmdd_hhMMss')
 fid = fopen(file_name, 'w');
 if fid > 0
     fwrite(fid, json_str, 'char');

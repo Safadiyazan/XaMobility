@@ -737,7 +737,7 @@ export  async function LoadSimulation(viewer, data) {
     var entitiesArray = [];
 
     data.forEach((ObjAircraft, index) => {
-        if ((index > 0) & (index < 50)) {
+        if ((index > 0) & (index < 20)) {
             //const startAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.ObjAircraft.tda, new JulianDate());
             //const stopAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.ObjAircraft.taa, new JulianDate());
             const trajectoryPositions = [];

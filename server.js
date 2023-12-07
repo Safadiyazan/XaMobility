@@ -9,6 +9,7 @@ const bcrypt = require('bcrypt');
 const { errorHandler, logRequests } = require('./middleware');
 const history = require('connect-history-api-fallback');
 const axios = require('axios');
+const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 1110;
 
@@ -102,6 +103,22 @@ app.post('/api/run_matlab_code', async (req, res) => {
 });
 
 
+
+// =======================================================================================
+// MATLAB Call ===========================================================================
+const folderPath = path.join(__dirname, 'public/Outputs'); // Update the path accordingly
+app.get('/api/getJsonFiles', (req, res) => {
+    fs.readdir(folderPath, (err, files) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+        return;
+      }
+  
+      const jsonFiles = files.filter(file => file.endsWith('.json'));
+      res.json({ files: jsonFiles });
+    });
+  });
 // export { NewJSONDir };
 // END  ==================================================================================
 // =======================================================================================
