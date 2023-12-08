@@ -76,7 +76,7 @@ const Dashboard = () => {
     };
     // =======================================================================================
     // Run and Load Simulation Handles =======================================================
-    const [selectedFile, setSelectedFile] = useState("/LAATSimData/SimOutput_ObjAircraft_Subset.json");
+    const [selectedFile, setSelectedFile] = useState("/LAATSimData/SimOutput_ObjAircraft_Default.json");
     useEffect(() => {
         // Fetch initial data when the component mounts
         const initialSelectedFile = selectedFile;
@@ -156,9 +156,11 @@ const Dashboard = () => {
                             <option value={selectedFile}>
                                 Choose a Simulation Sample
                             </option>
+                            <option value="/LAATSimData/SimOutput_ObjAircraft_Default.json">Default</option>
                             <option value="/LAATSimData/SimOutput_ObjAircraft_VTOL.json">VTOL</option>
                             <option value="/LAATSimData/SimOutput_ObjAircraft_Subset.json">Subset</option>
-                            <option value="/LAATSimData/SimOutput_ObjAircraft_1515.json">Metro</option>
+                            <option value="/LAATSimData/SimOutput_ObjAircraft_Control.json">VTOL Control</option>
+                            <option value="/LAATSimData/SimOutput_ObjAircraft_Congestion_Control.json">VTOL Control - OSC</option>
                             {/* <option value="/LAATSimData/SimOutput_ObjAircraft.json">VTOL Control Concept</option> */}
                             {/* <option value="/LAATSimData/SimOutput_ObjAircraft_Subset_LowDemand.json">Subset Low Demand</option> */}
                             {/* <option value="/LAATSimData/SimOutput_ObjAircraft_Subset_LowMidDemand.json">Subset Mid Demand</option> */}
