@@ -5,9 +5,6 @@ import { LoadSimulation } from '.././LoaderSimulation';
 
 import { viewer } from '.././index';
 
-// import copyPublicFolder from './copyPublicFolder';
-
-// import LSDropdown from './LSDropdown';
 
 const Dashboard = () => {
     // =======================================================================================
@@ -63,32 +60,6 @@ const Dashboard = () => {
     };
 
     // GUI Handles ===========================================================================
-    // const handleCopyPublicFolderClick = (event) => {
-    //     // Call the function to copy the public folder
-    //     const selectedOption = event.target.value;
-    //     setSelectedFile(selectedOption);
-    //     copyPublicFolder();
-    // };
-
-    // const fs = require('fs-extra');
-    // const path = require('path');
-    // const publicFolderPath = path.resolve(__dirname, 'public/Outputs');
-    // const outputFolderPath = path.resolve(__dirname, 'dist/Outputs'); // Change 'dist' to your actual output directory
-
-    // async function copyPublicFolder() {
-    //     try {
-    //         // Ensure the 'dist' folder exists
-    //         await fs.ensureDir(outputFolderPath);
-
-    //         // Copy the entire 'public' folder to the root of the output directory
-    //         await fs.copy(publicFolderPath, outputFolderPath);
-
-    //         console.log('Public folder copied to the root of the output directory.');
-    //     } catch (error) {
-    //         console.error('Error copying public folder:', error);
-    //     }
-    // }
-    // GUI Handles ===========================================================================
     // Handle file dropdown change
     const handleDropdownChange = (event) => {
         const selectedOption = event.target.value;
@@ -105,7 +76,7 @@ const Dashboard = () => {
     };
     // =======================================================================================
     // Run and Load Simulation Handles =======================================================
-    const [selectedFile, setSelectedFile] = useState("/LAATSimData/SimOutput_ObjAircraft.json");
+    const [selectedFile, setSelectedFile] = useState("/LAATSimData/SimOutput_ObjAircraft_Subset.json");
     useEffect(() => {
         // Fetch initial data when the component mounts
         const initialSelectedFile = selectedFile;
@@ -152,12 +123,12 @@ const Dashboard = () => {
                             Select JSON File:
                         </label>
                         <select className="form-select btn-gold btn-lg btn-block mb-3" id="jsonDropdown" onChange={handleDropdownChange} value={selectedFile}>
-                            <option value="" disabled selected>
+                            <option value={selectedFile}>
                                 Choose a Simulation Data
                             </option>
                             {jsonFiles.map((file, index) => (
-                                <option key={index} value={'./public/Outputs/' + file}>
-                                    {'./public/Outputs/' + file}
+                                <option key={index} value={'/Outputs/' + file}>
+                                    {'/Outputs/' + file}
                                 </option>
                             ))}
                         </select>
@@ -181,10 +152,16 @@ const Dashboard = () => {
                     <div className="form-group">
                         <label htmlFor="filenameDropdown">Select a simulation sample:</label>
                         <select className="form-control" id="filenameDropdown" onChange={handleDropdownChange} value={selectedFile}>
-                            <option value="/LAATSimData/SimOutput_ObjAircraft.json">Default</option>
-                            <option value="/LAATSimData/SimOutput_ObjAircraft.json">VTOL Control Concept</option>
-                            <option value="/LAATSimData/SimOutput_ObjAircraft_Subset_LowDemand.json">Subset Low Demand</option>
-                            <option value="/LAATSimData/SimOutput_ObjAircraft_Subset_LowMidDemand.json">Subset Mid Demand</option>
+                            {/* <option value="/LAATSimData/SimOutput_ObjAircraft.json">Default</option> */}
+                            <option value={selectedFile}>
+                                Choose a Simulation Sample
+                            </option>
+                            <option value="/LAATSimData/SimOutput_ObjAircraft_VTOL.json">VTOL</option>
+                            <option value="/LAATSimData/SimOutput_ObjAircraft_Subset.json">Subset</option>
+                            <option value="/LAATSimData/SimOutput_ObjAircraft_1515.json">Metro</option>
+                            {/* <option value="/LAATSimData/SimOutput_ObjAircraft.json">VTOL Control Concept</option> */}
+                            {/* <option value="/LAATSimData/SimOutput_ObjAircraft_Subset_LowDemand.json">Subset Low Demand</option> */}
+                            {/* <option value="/LAATSimData/SimOutput_ObjAircraft_Subset_LowMidDemand.json">Subset Mid Demand</option> */}
                         </select>
                     </div>
                 </div>

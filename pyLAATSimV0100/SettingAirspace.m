@@ -7,7 +7,7 @@ Airspace.dz = Airspace.dz2-Airspace.dz1;  % height [m]
 Airspace.xyz = [[-Airspace.dx;Airspace.dx]/2,[-Airspace.dy;Airspace.dy]/2,[[Airspace.dz1;Airspace.dz1]+[0;Airspace.dz]]];
 Airspace.Space = Airspace.dx*Airspace.dy*Airspace.dz;
 %% Pads heights
-Airspace.VTOL = 1;
+Airspace.VTOL = 0;
 if Airspace.VTOL
     Airspace.z01 = 0; % for takeoff and landing [m]
     Airspace.z02 = Airspace.dz1; % for takeoff and landing [m]

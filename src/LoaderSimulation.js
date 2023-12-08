@@ -4,7 +4,7 @@ import "cesium/Build/Cesium/Widgets/widgets.css";
 // Cesium Simulation
 // =================================================================================================================================================
 
-export  async function LoadSimulation(viewer, data) {
+export async function LoadSimulation(viewer, data) {
     try {
         viewer.entities.removeAll();
     } catch (error) {
@@ -41,6 +41,9 @@ export  async function LoadSimulation(viewer, data) {
     }
     ///////////////////////////////////////////////////////////////////////////////////////
     // Center point
+    var dx = data[0].dx;
+    var dy = data[0].dy;
+    var dz = data[0].dz;
     var dz0 = 480;
     // var center = Cartesian3.fromDegrees(-122.3816, 37.6191, dz0); // SF
     // var center = Cartesian3.fromDegrees(35.045628640781565, 32.77278697558125,  dz0); // NESHER
@@ -208,10 +211,6 @@ export  async function LoadSimulation(viewer, data) {
     ///////////////////////////////////////////////////////////////////////////////////////
     // Plot Airspace Border  
     function PlotAirspace(center) {
-        var dx = 1500; // in meters, eastward direction
-        var dy = 1500; // in meters, northward direction
-        var dz = 80;  // in meters, upward direction
-        //var dz0 = 40; // start height for airspace in meters AGL
         var newPointSEGround = computeNewPoint(center, dx / 2, -dy / 2, 0); plotPoint(newPointSEGround);
         var newPointNEGround = computeNewPoint(center, dx / 2, dy / 2, 0); plotPoint(newPointNEGround);
         var newPointSWGround = computeNewPoint(center, -dx / 2, -dy / 2, 0); plotPoint(newPointSWGround);
@@ -257,10 +256,6 @@ export  async function LoadSimulation(viewer, data) {
     PlotAirspace(center);
 
     function PlotAirspaceLayers(center) {
-        var dx = 1500; // in meters, eastward direction
-        var dy = 1500; // in meters, northward direction
-        var dz = 80;  // in meters, upward direction
-        //var dz0 = 40; // start height for airspace in meters AGL
         const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
         var newPointSE = computeNewPoint(centerPlotting, dx / 2, -dy / 2, 0);
         var newPointNE = computeNewPoint(centerPlotting, dx / 2, dy / 2, 0);
@@ -337,19 +332,15 @@ export  async function LoadSimulation(viewer, data) {
     PlotAirspaceLayers(center);
 
     function PlotAirspaceCentersRegions(center) {
-        var dx = 500; // in meters, eastward direction
-        var dy = 500; // in meters, northward direction
-        var dz = 80;  // in meters, upward direction
-        //var dz0 = 40; // start height for airspace in meters AGL
         const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
-        var newPointSE = computeNewPoint(centerPlotting, dx / 2, -dy / 2, 0);
-        var newPointNE = computeNewPoint(centerPlotting, dx / 2, dy / 2, 0);
-        var newPointSW = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, 0);
-        var newPointNW = computeNewPoint(centerPlotting, -dx / 2, dy / 2, 0);
-        var newPointSEUP = computeNewPoint(centerPlotting, dx / 2, -dy / 2, dz);
-        var newPointNEUP = computeNewPoint(centerPlotting, dx / 2, dy / 2, dz);
-        var newPointSWUP = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, dz);
-        var newPointNWUP = computeNewPoint(centerPlotting, -dx / 2, dy / 2, dz);
+        var newPointSE = computeNewPoint(centerPlotting, dx / 6, -dy / 6, 0);
+        var newPointNE = computeNewPoint(centerPlotting, dx / 6, dy / 6, 0);
+        var newPointSW = computeNewPoint(centerPlotting, -dx / 6, -dy / 6, 0);
+        var newPointNW = computeNewPoint(centerPlotting, -dx / 6, dy / 6, 0);
+        var newPointSEUP = computeNewPoint(centerPlotting, dx / 6, -dy / 6, dz);
+        var newPointNEUP = computeNewPoint(centerPlotting, dx / 6, dy / 6, dz);
+        var newPointSWUP = computeNewPoint(centerPlotting, -dx / 6, -dy / 6, dz);
+        var newPointNWUP = computeNewPoint(centerPlotting, -dx / 6, dy / 6, dz);
         //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
         //console.log("Distance between points: " + distance + " meters");
         // Convert Cartesian3 coordinates to Cartographic coordinates
@@ -468,7 +459,7 @@ export  async function LoadSimulation(viewer, data) {
     }
     // TestFlightsFunctions();
 
-    async function AddAircraftMotion(startSim, stopSim, timeStepInSeconds, AircraftIndex, flightData, tda, taa, vertical, entitiesArray) {
+    async function AddAircraftMotion(startSim, stopSim, timeStepInSeconds, AircraftIndex, flightData, statusData, tda, taa, rs, rd, vertical, entitiesArray) {
         const startAircraft = new JulianDate.addSeconds(startSim, tda, new JulianDate());
         const stopAircraft = new JulianDate.addSeconds(startSim, taa, new JulianDate());
         const positionProperty = new SampledPositionProperty();
@@ -594,7 +585,7 @@ export  async function LoadSimulation(viewer, data) {
             description: ``,
             position: positionProperty,
             ellipsoid: {
-                radii: new Cartesian3(15.0, 15.0, 15.0),
+                radii: new Cartesian3(rs, rs, rs),
                 material: Color.RED.withAlpha(0.1),
                 outline: true,
                 outlineColor: Color.BLACK.withAlpha(0.2),
@@ -609,13 +600,14 @@ export  async function LoadSimulation(viewer, data) {
             0.0,
             45.5
         );
+
         // Add Aircraft detection radius
         const DetectionSphereEntity = viewer.entities.add({
             name: `Aircraft: ${AircraftIndex}, Detection Space`,
             description: ``,
             position: positionProperty,
             ellipsoid: {
-                radii: new Cartesian3(45.5, 45.5, 45.5),
+                radii: new Cartesian3(rd, rd, rd),
                 material: Color.BLACK.withAlpha(0.05),
                 outline: true,
                 outlineColor: Color.BLACK.withAlpha(0.05),
@@ -716,12 +708,12 @@ export  async function LoadSimulation(viewer, data) {
 
     //async function main() {
     // Add Aircraft Data from the simulation
-    const tf = 1201;
-    const dtS = 0.5;
-    const timeStepInSeconds = 5; // for objects dt Plotting, every 00 seconds.
+    const dtS = data[0].dtS;
+    const tf = data[0].tf / dtS;
+    const timeStepInSeconds = 10 * dtS; // for objects dt Plotting, every 00 seconds.
     const dt = timeStepInSeconds / dtS; // for importing.
-    const totalSeconds = 600;//timeStepInSeconds * (tf - 1);
-    const startSim = JulianDate.fromIso8601("2023-09-19T00:00:00Z");
+    const totalSeconds = data[0].tf;//timeStepInSeconds * (tf - 1);
+    const startSim = JulianDate.fromIso8601("1903-12-17T10:35:00Z");
     const stopSim = JulianDate.addSeconds(startSim, totalSeconds, new JulianDate());
     viewer.clock.startTime = startSim.clone();
     viewer.clock.stopTime = stopSim.clone();
@@ -737,7 +729,7 @@ export  async function LoadSimulation(viewer, data) {
     var entitiesArray = [];
 
     data.forEach((ObjAircraft, index) => {
-        if ((index > 0) & (index < 20)) {
+        if ((index > 0) & (index < 500)) {
             //const startAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.ObjAircraft.tda, new JulianDate());
             //const stopAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.ObjAircraft.taa, new JulianDate());
             const trajectoryPositions = [];
@@ -749,7 +741,7 @@ export  async function LoadSimulation(viewer, data) {
                     height: Cartographic.fromCartesian(currentPosition).height
                 });
             } // IF INDEX END
-            AddAircraftMotion(startSim, stopSim, timeStepInSeconds, index + 1, trajectoryPositions, ObjAircraft.ObjAircraft.tda, ObjAircraft.ObjAircraft.taa, 0, entitiesArray);
+            AddAircraftMotion(startSim, stopSim, timeStepInSeconds, index + 1, trajectoryPositions, ObjAircraft.ObjAircraft.status, ObjAircraft.ObjAircraft.tda, ObjAircraft.ObjAircraft.taa, ObjAircraft.ObjAircraft.rs, ObjAircraft.ObjAircraft.rd, 0, entitiesArray);
         }
     });
 

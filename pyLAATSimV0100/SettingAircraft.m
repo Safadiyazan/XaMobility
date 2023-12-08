@@ -1,9 +1,9 @@
 function [Aircraft] = SettingAircraft()
-Aircraft.rs_range = [15;15];% Safety radius [m]
+Aircraft.rs_range = [10;20];% Safety radius [m]
 gr = 1.8;
 Aircraft.Gainfactor_rs = gr; % [?]
 Aircraft.Gainfactor_ra = gr; % [?]
-Aircraft.vm_range = [20;20];% Maximum speed [m/s]
+Aircraft.vm_range = [10;30];% Maximum speed [m/s]
 % AircraftS.gain_range = [2,2,2;2,2,2];%  % Control gain [?]
 %% Battery
 Aircraft.Bat_max = 69.5; %Battery capacity 250 [kJ] = 69.5 [Watt per hour]
