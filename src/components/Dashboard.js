@@ -11,14 +11,16 @@ const Dashboard = () => {
     // =======================================================================================
     // MATLAB Call ===========================================================================
     // ============ MATLAB Code =========================
+    const [setRunning, setRunningSuccess] = useState(false);
 
     const runMatlabCode = async () => {
         const loadingContainer = document.getElementById('loading');
         const resultContainer = document.getElementById('result-container');
-        const runButton = document.getElementById('runButton'); // Add an id to the button
-        const addButton = document.getElementById('addButton'); // Add an id to the button
+        const runButton = document.getElementById('runButton');
+        const addButton = document.getElementById('addButton');
 
         try {
+            setRunningSuccess(true);
             loadingContainer.style.display = 'block'; // Show loading indicator
             runButton.classList.add('btn-danger');
             const response = await fetch('/api/run_matlab_code', {
@@ -40,6 +42,7 @@ const Dashboard = () => {
 
             // Add the btn-success class to turn the button green
             addButton.classList.add('btn-success');
+            setRunningSuccess(false);
             
         } catch (error) {
             console.error('Error:', error);
@@ -141,6 +144,7 @@ const Dashboard = () => {
                             id="runButton"
                             className="btn btn-success btn-block mb-3"
                             onClick={runMatlabCode}
+                            disabled={setRunning}
                         >
                             Run new simulation on server
                         </button>

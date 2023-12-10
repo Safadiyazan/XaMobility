@@ -4,6 +4,8 @@ from flask_cors import CORS
 import matlab.engine
 import datetime
 import atexit
+import json  # Import the json module
+import os
 
 app = Flask(__name__, static_url_path='/')
 CORS(app, resources={r"/run_matlab_code": {"origins": "http://localhost:1110"}})
@@ -14,19 +16,28 @@ def runMatlabCode():
     try:
         # Your MATLAB code
         print(datetime.datetime.now())
-        if (NewSettingSaved):
-            x = 1
-            #NewSettings.Airspace.dx =
-            #NewSettings.Airspace.dy =
-            #NewSettings.Airspace.dz =
-            #NewSettings.Vmax = [,]
-            #NewSettings.Rs = [,]
-            #NewSettings.Qin = 
+        # # Load the JSON file
+        # json_file_path = os.path.join(os.getcwd(), 'public', 'NewSettings.json')
+        # print(json_file_path)
+        # with open(json_file_path, 'r') as json_file:
+        #     NewSettings = json.load(json_file)
+        
+        
+        
+        # Check if the JSON file exists
+        json_file_path = os.path.join(os.getcwd(), 'public', 'NewSettings.json')
+        if os.path.exists(json_file_path):
+            # Load the JSON file
+            with open(json_file_path, 'r') as json_file:
+                NewSettings = json.load(json_file)
+            qin_value = NewSettings['Sim']['Qin']
+            NewJSONDir = eng.RunLAATSim(qin_value,NewSettings, '', nargout=1)
+            return jsonify({'NewJSONDir': NewJSONDir})
         else:
-            NewSettings = ''
+            NewJSONDir = eng.RunLAATSim(0.1,'', '', nargout=1)
+            return jsonify({'NewJSONDir': NewJSONDir})
 
-        NewJSONDir = eng.RunLAATSim(1,NewSettings, '', nargout=1)
-        print(NewJSONDir)
+
 
         return jsonify({'NewJSONDir': NewJSONDir})
     except Exception as e:

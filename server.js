@@ -102,10 +102,29 @@ app.post('/api/run_matlab_code', async (req, res) => {
     }
 });
 
+// =======================================================================================
+// MATLAB Settings =======================================================================
+// Endpoint to handle saving settings
+app.post('/api/save_settings', async (req, res) => {
+    // Extract the settings data from the request body
+    const { NewSettings } = req.body;
+    console.log(NewSettings)
+    const jsonFilePath = path.join(__dirname, 'public', 'NewSettings.json');
+    try {
+        // Save the settings to a JSON file
+        fs.writeFileSync(jsonFilePath, JSON.stringify(NewSettings, null, 2));
+
+        // Send the file path to the frontend
+        res.json({ result: jsonFilePath });
+    } catch (error) {
+        console.error('Error:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 
 // =======================================================================================
-// MATLAB Call ===========================================================================
+// Update dropdown list in simulation data ===============================================
 const folderPath = path.join(__dirname, 'public/Outputs'); // Update the path accordingly
 app.get('/api/getJsonFiles', (req, res) => {
     fs.readdir(folderPath, (err, files) => {

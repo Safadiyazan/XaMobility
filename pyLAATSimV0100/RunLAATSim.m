@@ -1,5 +1,4 @@
 function [NewJSONDir] = RunLAATSim(InflowRate,NewSettings,SceStr)
-%%
 clc; close all; dbstop if error;
 close all force; close all hidden;
 disp(['Starting Simulation']);
@@ -15,13 +14,13 @@ SimInfo.SimOutputDirStr = ['.\Outputs\SimOutput_' datestr(now,'yyyymmdd_hhMMss')
 %% Settings
 disp(['Determining Setting']);
 if (~isempty(NewSettings))
-    [Settings.Airspace] = SettingAirspace(NewSettings.Airspace.dx,NewSettings.Airspace.dy,NewSettings.Airspace.dz);
-    [Settings.Aircraft] = SettingAircraft(NewSettings.Vmax,NewSettings.Rs);
-    [Settings.Sim] = SettingSimulation(NewSettings.Qin);
+    [Settings.Airspace] = SettingAirspace(double(NewSettings.Airspace.dx),double(NewSettings.Airspace.dy),double(NewSettings.Airspace.dz));
+    [Settings.Aircraft] = SettingAircraft([double(NewSettings.Aircraft.VmaxMin);double(NewSettings.Aircraft.VmaxMax)],[double(NewSettings.Aircraft.RsMin);double(NewSettings.Aircraft.RsMax)]);
+    [Settings.Sim] = SettingSimulation(double(NewSettings.Sim.Qin));
 else
     [Settings.Airspace] = SettingAirspace(500,500,80);
     [Settings.Aircraft] = SettingAircraft([10,30],[10,30]);
-    [Settings.Sim] = SettingSimulation(1);
+    [Settings.Sim] = SettingSimulation(0.1);
 end
 %% Init Objects
 SimInfo.Mina = []; SimInfo.Mque = []; SimInfo.Mact = []; SimInfo.Marr = []; SimInfo.MactBQ = [];
