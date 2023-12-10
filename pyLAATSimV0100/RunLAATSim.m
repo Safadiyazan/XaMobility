@@ -1,4 +1,4 @@
-function [NewJSONDir] = RunLAATSim(InflowRate,SceStr)
+function [NewJSONDir] = RunLAATSim(InflowRate,NewSettings,SceStr)
 %%
 clc; close all; dbstop if error;
 close all force; close all hidden;
@@ -9,14 +9,20 @@ SimInfo.RT.SimStartTime = datetime;
 disp(['Simuation started: Time=' datestr(SimInfo.RT.SimStartTime,'yyyy-mm-dd HH:MM:SS.FFF')])
 SimFilename = ['_Qin' sprintf('%0.0f',InflowRate*10) SceStr];
 SimInfo.SimOutputDirStr = ['.\Outputs\SimOutput_' datestr(now,'yyyymmdd_hhMMss') SimFilename '\'];
-if ~exist(SimInfo.SimOutputDirStr, 'dir')
-    mkdir(SimInfo.SimOutputDirStr)
-end
+% if ~exist(SimInfo.SimOutputDirStr, 'dir')
+%    mkdir(SimInfo.SimOutputDirStr)
+% end
 %% Settings
 disp(['Determining Setting']);
-[Settings.Airspace] = SettingAirspace();
-[Settings.Aircraft] = SettingAircraft();
-[Settings.Sim] = SettingSimulation(InflowRate);
+if (~isempty(NewSettings))
+    [Settings.Airspace] = SettingAirspace(NewSettings.Airspace.dx,NewSettings.Airspace.dy,NewSettings.Airspace.dz);
+    [Settings.Aircraft] = SettingAircraft(NewSettings.Vmax,NewSettings.Rs);
+    [Settings.Sim] = SettingSimulation(NewSettings.Qin);
+else
+    [Settings.Airspace] = SettingAirspace(500,500,80);
+    [Settings.Aircraft] = SettingAircraft([10,30],[10,30]);
+    [Settings.Sim] = SettingSimulation(1);
+end
 %% Init Objects
 SimInfo.Mina = []; SimInfo.Mque = []; SimInfo.Mact = []; SimInfo.Marr = []; SimInfo.MactBQ = [];
 SimInfo.M = 1:1:Settings.Sim.M; SimInfo.cc = 0;
@@ -28,7 +34,7 @@ TFC = []; EC = []; EC.ECdt = zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2))
 disp(['Initalizing Aircraft']);
 [SimInfo,ObjAircraft] = InitAircraftObj(SimInfo,Settings);
 %% Export Settings
-save([SimInfo.SimOutputDirStr 'Settings' SimFilename],'-v7.3');
+% save([SimInfo.SimOutputDirStr 'Settings' SimFilename],'-v7.3');
 disp(['Initalizing Aircraft']);
 %% Simulation
 % Start Simulation
@@ -43,7 +49,6 @@ for t=0:dtS:tf
     %% Arrival
     [SimInfo,ObjAircraft] = AircraftArrivals(SimInfo,ObjAircraft);
     %% Update SimInfo
-    % Q - Maybe we can store this in the ObjAircraft?
     [SimInfo] = UpdateSimInfo(SimInfo,ObjAircraft);
     %% Energy Conspution
     if (t~=0)
@@ -69,12 +74,12 @@ disp(['TCP_Post RunningTime: Time=' num2str(sum(SimInfo.RT.TCP_PostRunningTime))
 disp(['Exporting Data'])
 %% Exporting and Plotting
 % Export Workspace
-save([SimInfo.SimOutputDirStr 'Results' SimFilename],'TFC','EC','-v7.3');
-save([SimInfo.SimOutputDirStr 'Trajectories' SimFilename],'-v7.3'); clear SimFilename;
+% save([SimInfo.SimOutputDirStr 'Results' SimFilename],'TFC','EC','-v7.3');
+% save([SimInfo.SimOutputDirStr 'Trajectories' SimFilename],'-v7.3'); clear SimFilename;
 NewJSONDir = ExportJSON(SimInfo,ObjAircraft,TFC,EC,Settings);
 disp(NewJSONDir)
 disp(['Finishing Simulation'])
 % % Export Video
-%PlotMotionPicture(30,SimInfo,ObjAircraft,TFC,Settings);
+% PlotMotionPicture(30,SimInfo,ObjAircraft,TFC,Settings);
 TTS_Final = TFC.N.cumTTS(end)/3600;
 end

@@ -4,20 +4,15 @@ Aircraft = Settings.Aircraft;
 Airspace = Settings.Airspace;
 Mact = SimInfo.Mact;
 t = SimInfo.t;
-%%
 vm_matrix=zeros(3*length(SimInfo.Mact),length(SimInfo.Mact));
 for aa=1:length(SimInfo.Mact)
-    % TODO: Only aircraft in detection radius
     Diffaaxyz = (ObjAircraft(SimInfo.Mact(aa)).fpt.*ones(length(SimInfo.Mact),1) - cat(1,ObjAircraft(SimInfo.Mact).fpt));
     Distanceaa =  vecnorm(Diffaaxyz')';
     Vectorrd = cat(1,(ObjAircraft(SimInfo.Mact).rd)) + (ObjAircraft(SimInfo.Mact(aa)).rd).*ones(length(SimInfo.Mact),1);
     BolInrd = all([(0<Distanceaa),(Distanceaa<=Vectorrd)],2)';
     MactDetaa = cat(1,ObjAircraft(SimInfo.Mact(BolInrd)).id);
-%     MactDetaa = SimInfo.Mact;
     for aaj=1:length(MactDetaa)
         if SimInfo.Mact(aa)~=MactDetaa(aaj)
-            %Verification
-            % Q- What is the problem?
             if norm((ObjAircraft(SimInfo.Mact(aa)).pt) - (ObjAircraft(MactDetaa(aaj)).pt)) - (ObjAircraft(SimInfo.Mact(aa)).rs + ObjAircraft(MactDetaa(aaj)).rs) < 0
                 SimInfo.cc = SimInfo.cc + 1;
                 SimInfo.Objcc(SimInfo.cc).t = t;
@@ -25,7 +20,6 @@ for aa=1:length(SimInfo.Mact)
                 SimInfo.Objcc(SimInfo.cc).dis = norm((ObjAircraft(SimInfo.Mact(aa)).pt) - (ObjAircraft(MactDetaa(aaj)).pt));
                 SimInfo.Objcc(SimInfo.cc).desireddis = (ObjAircraft(SimInfo.Mact(aa)).rs + ObjAircraft(MactDetaa(aaj)).rs);
             end
-            %             %-------V3----------
             ksiaa = ObjAircraft(SimInfo.Mact(aa)).fpt;
             ksiaaj = ObjAircraft(MactDetaa(aaj)).fpt;
             ksimil = ksiaa-ksiaaj;
@@ -57,7 +51,6 @@ for aa=1:length(SimInfo.Mact)
 end
 end
 %% Additional Function for the control.
-%%
 function [u] = dmys(x,rs)
 x2 =  1 + 1/tan(67.5/180*pi)*rs;
 x1 = x2 - sin(45/180*pi)*rs;
@@ -69,7 +62,6 @@ else
     u = 0;
 end
 end
-%%
 function [u] = mys(x,rs)
 x2 =  1 + 1/tan(67.5/180*pi)*rs;
 x1 = x2 - sin(45/180*pi)*rs;
@@ -81,7 +73,6 @@ else
     u = 1;
 end
 end
-%%
 function [u] = dmysigma(x,d1,d2)
 if x<=d1
     u = 0;
@@ -92,7 +83,6 @@ else
     u = 0;
 end
 end
-%%
 function [u] = mysigma(x,d1,d2)
 if x<=d1
     u = 1;
@@ -103,7 +93,6 @@ else
     u = 0;
 end
 end
-%%
 function u = mycontrol(aa,matrix,Mact,ObjAircraft)
 fpt  =  ObjAircraft(Mact(aa)).fpt;
 wpt  =  ObjAircraft(Mact(aa)).wp(ObjAircraft(Mact(aa)).wpCR+1,:);
@@ -117,7 +106,6 @@ Vmz=sum(matrix(3*aa,:));
 Vm=[Vmx;Vmy;Vmz];
 u = mysat(Vw+Vm,vm);
 end
-%%
 function [u] = mysat(x,a)
 if norm(x)>a
     u =a*x/norm(x);

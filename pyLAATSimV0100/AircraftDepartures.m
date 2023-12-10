@@ -4,9 +4,6 @@ Mque = SimInfo.Mque;
 Mact = SimInfo.Mact;
 dt = SimInfo.dtS;
 t = SimInfo.t;
-% %% Pre traffic control policy
-% [TFC,ObjAircraft] = TCPPre(SimInfo,ObjAircraft,Settings,TFC,t);
-%%
 epsilon = 1.0000e-03;
 aa = 1;
 LMque = length(Mque);
@@ -80,7 +77,6 @@ while aa<=LMina
         aa = aa + 1;
     end
 end
-%% Update SimInfo
 SimInfo.Mina = Mina;
 SimInfo.Mque = Mque;
 SimInfo.Mact = Mact;

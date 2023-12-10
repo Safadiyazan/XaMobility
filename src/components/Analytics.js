@@ -7,7 +7,7 @@ function Analytics() {
             <hr />
             <center><b><h4>Analytics</h4></b></center>
             <Accordion defaultActiveKey="0">
-                <Accordion.Item eventKey="0">
+                <Accordion.Item eventKey="1">
                     <Accordion.Header>Time series</Accordion.Header>
                     <Accordion.Body>
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do

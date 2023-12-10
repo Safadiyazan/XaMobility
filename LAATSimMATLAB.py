@@ -14,7 +14,18 @@ def runMatlabCode():
     try:
         # Your MATLAB code
         print(datetime.datetime.now())
-        NewJSONDir = eng.RunLAATSim(0.5, '', nargout=1)
+        if (NewSettingSaved):
+            x = 1
+            #NewSettings.Airspace.dx =
+            #NewSettings.Airspace.dy =
+            #NewSettings.Airspace.dz =
+            #NewSettings.Vmax = [,]
+            #NewSettings.Rs = [,]
+            #NewSettings.Qin = 
+        else:
+            NewSettings = ''
+
+        NewJSONDir = eng.RunLAATSim(1,NewSettings, '', nargout=1)
         print(NewJSONDir)
 
         return jsonify({'NewJSONDir': NewJSONDir})

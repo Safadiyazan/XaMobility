@@ -3,7 +3,6 @@ Airspace = Settings.Airspace;
 Aircraft = Settings.Aircraft;
 Sim = Settings.Sim;
 Mina = SimInfo.Mina;
-%%
 for aa = 1:Sim.M
     ObjAircraft(aa).id = aa; % index
     ObjAircraft(aa).status = 0; % status % 0 - Want to depart % 1 - Flying % 2 - Landed % 100 - Priority want to depart % 101 - Priority % 102 - Priority landed % 12 - Obstacle % 10 - Queue
@@ -13,7 +12,6 @@ for aa = 1:Sim.M
     ObjAircraft(aa).vt = [0,0,0]; % current velocity
     ObjAircraft(aa).vct = [0,0,0]; % current  velocity command
     ObjAircraft(aa).vnt = norm(ObjAircraft(aa).vt); % speed
-    %     warning('double check the control gain')
     gain = [5,5,5]; %AircraftS.gain_range(1,:)+rand*(AircraftS.gain_range(2,:)-AircraftS.gain_range(1,:)); % aircraft motion control gain (can be scalar as well)
     ObjAircraft(aa).gain = (eye(length((gain))).*(gain));
     ObjAircraft(aa).lgain = (eye(length((gain)))./(gain));
@@ -23,20 +21,9 @@ for aa = 1:Sim.M
     ObjAircraft(aa).rv = ObjAircraft(aa).vm*norm(ObjAircraft(aa).lgain); % rv
     ObjAircraft(aa).rd = ObjAircraft(aa).ra + ObjAircraft(aa).rs + 2*ObjAircraft(aa).rv; % detetion radius
     %% Origin, Destiation, Waypoints, positions
-    if (Airspace.VTOL)
-        ObjAircraft(aa).VTOL = 1;
-%         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODGround(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground
-        [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODGround2R(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground Two Regions Uniformly
-        ObjAircraft(aa).wp  = AircraftRouteTL(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs); % waypoints
-    elseif(Airspace.SubsetNetwork)
-        ObjAircraft(aa).VTOL = 0;
-        [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODBoundary(Airspace,ObjAircraft(aa).rd); % origin and desitation at the boundaries
-        ObjAircraft(aa).wp  = AircraftRoute(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d); % waypoints
-    else
-        ObjAircraft(aa).VTOL = 0;
-        [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftOD(Airspace,ObjAircraft(aa).rd); % origin and desitation
-        ObjAircraft(aa).wp  = AircraftRoute(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d); % waypoints
-    end
+    ObjAircraft(aa).VTOL = 0;
+    [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODBoundary(Airspace,ObjAircraft(aa).rd); % origin and desitation at the boundaries
+    ObjAircraft(aa).wp  = AircraftRoute(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d); % waypoints
     ObjAircraft(aa).wpSet = ObjAircraft(aa).wp;
     ObjAircraft(aa).wpChange = 0;
     ObjAircraft(aa).wpRouting = 0;
@@ -49,11 +36,6 @@ for aa = 1:Sim.M
     ObjAircraft(aa).rio = RegionIndexXYZ(Airspace,ObjAircraft(aa).o); % origin region
     ObjAircraft(aa).rid = RegionIndexXYZ(Airspace,ObjAircraft(aa).d); % des. region
     ObjAircraft(aa).rit = RegionIndexXYZ(Airspace,ObjAircraft(aa).pt); % current region
-%     %%
-%     ObjAircraft(aa).ptdt = [ObjAircraft(aa).pt];
-%     ObjAircraft(aa).vtdt = [ObjAircraft(aa).vt];
-%     ObjAircraft(aa).statusdt = [ObjAircraft(aa).status];
-%     ObjAircraft(aa).ridt = [ObjAircraft(aa).rit];
     %% Times and Distances
     ObjAircraft(aa).tt = [inf]; % travel time
     ObjAircraft(aa).tte = [inf];%ObjAircraft(aa).tle/ObjAircraft(aa).vm; % expected travel time
@@ -94,21 +76,11 @@ for aa = 1:Sim.M
 end
 SimInfo.Mina = Mina; % Update SimInfo Object
 end
-%%
-function [o, d] = AircraftOD(AirspaceS,rd)
-o = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, AirspaceS.dz1 + (rand)*AirspaceS.dz];
-d = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, AirspaceS.dz1 + (rand)*AirspaceS.dz];
-while norm(o-d)<rd % verify the o and d is not close enough
-    d = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, AirspaceS.dz1 + (rand)*AirspaceS.dz];
-end
-end
 
 function [o, d] = AircraftODBoundary(AirspaceS,rd)
 ODFaces = randperm(18,2);
 o = PointatFace(AirspaceS,ODFaces(1),rd);
 d = PointatFace(AirspaceS,ODFaces(2),rd);
-% o = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, AirspaceS.dz1 + (rand)*AirspaceS.dz];
-% d = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, AirspaceS.dz1 + (rand)*AirspaceS.dz];
 while norm(o-d)<2*rd % verify the o and d is not close enough
     o = PointatFace(AirspaceS,ODFaces(1),rd);
     d = PointatFace(AirspaceS,ODFaces(2),rd);
@@ -134,87 +106,22 @@ switch Face
         end
 end
 end
-
-function [o, d] = AircraftODGround(AirspaceS,rs,rd)
-% ('Optional Take off and landing from builiding on the ground.')
-z0o = 0;%max(0,min(AirspaceS.z02,rs + rand*(AirspaceS.z02 - rs - AirspaceS.z01)));
-z0d = 0;%max(0,min(AirspaceS.z02,rs + rand*(AirspaceS.z02 - rs - AirspaceS.z01)));
-o = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, z0o];
-d = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, z0d];
-while norm(o-d)<rd % verify the o and d is not close enough
-    d = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, 0];
-end
-% TODO: warning('Optional Fixed-OD - Similiar to TLOF,')
-end
-
-function [o, d] = AircraftODGround2R(AirspaceS,rs,rd)
-% ('Optional Take off and landing from builiding on the ground.')
-z0o = 0;%max(0,min(AirspaceS.z02,rs + rand*(AirspaceS.z02 - rs - AirspaceS.z01)));
-z0d = 0;%max(0,min(AirspaceS.z02,rs + rand*(AirspaceS.z02 - rs - AirspaceS.z01)));
-ODRi = randperm(8,1); % 11, 12, 21, 22
-R2_options = [-1, -1, 0; 0, -1, 0; 1, -1, 0; -1, 0, 0; 1, 0, 0; -1, 1, 0; 0, 1, 0; 1, 1, 0];
-switch ODRi
-    case 1 % R1->R1
-        o = [2*(rand-0.5)*AirspaceS.dx/6, 2*(rand-0.5)*AirspaceS.dy/6, z0o];
-        d = [2*(rand-0.5)*AirspaceS.dx/6, 2*(rand-0.5)*AirspaceS.dy/6, z0d];
-    case 2 % R1->R2
-        o = [2*(rand-0.5)*AirspaceS.dx/6, 2*(rand-0.5)*AirspaceS.dy/6, z0o];
-%         d = [(2*randi([0, 1])-1),(2*randi([0, 1])-1),0].*([AirspaceS.dx/6,AirspaceS.dx/6,0] + [(rand)*AirspaceS.dx/3, (rand)*AirspaceS.dy/3, z0d]);
-        d = R2_options(randi(size(R2_options, 1)),:).*[AirspaceS.dx/3, AirspaceS.dy/3, z0o] + [2*(rand-0.5)*AirspaceS.dx/6, 2*(rand-0.5)*AirspaceS.dy/6, z0o];
-    case 3 % R2->R1
-        o = R2_options(randi(size(R2_options, 1)),:).*[AirspaceS.dx/3, AirspaceS.dy/3, z0o] + [2*(rand-0.5)*AirspaceS.dx/6, 2*(rand-0.5)*AirspaceS.dy/6, z0o];
-        d = [2*(rand-0.5)*AirspaceS.dx/6, 2*(rand-0.5)*AirspaceS.dy/6, z0o];
-    otherwise %case 4 % R2->R2
-        o = R2_options(randi(size(R2_options, 1)),:).*[AirspaceS.dx/3, AirspaceS.dy/3, z0o] + [2*(rand-0.5)*AirspaceS.dx/6, 2*(rand-0.5)*AirspaceS.dy/6, z0o];
-        d = R2_options(randi(size(R2_options, 1)),:).*[AirspaceS.dx/3, AirspaceS.dy/3, z0o] + [2*(rand-0.5)*AirspaceS.dx/6, 2*(rand-0.5)*AirspaceS.dy/6, z0o];
-end
-while norm(o-d)<rd % verify the o and d is not close enough
-    d = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, 0];
-end
-% TODO: warning('Optional Fixed-OD - Similiar to TLOF,')
-end
-%%
 function wp  = AircraftRoute(AirspaceS,o,d)
 wp = [o;d];
 end
-function wp  = AircraftRouteTL(AirspaceS,o,d,rs)
-if(AirspaceS.Regions.zn<=2)
-    TakeOff = [o(1:2),0] + [0,0,AirspaceS.z02+AirspaceS.dz/2];
-    Landing = [d(1:2),0] + [0,0,AirspaceS.z02+AirspaceS.dz/2];
-else
-    TakeOff = [o(1:2),0] + [0,0,AirspaceS.Regions.B(1).center(3)];
-    Landing = [d(1:2),0] + [0,0,AirspaceS.Regions.B(1).center(3)];
-end
-wp = [o;TakeOff;Landing;d];
-end
-%%
 function ri = RegionIndexXYZ(AirspaceS,xyz)
-% regions clasification
 ri =  max(0,AirspaceS.Regions.B(all((abs(repmat(xyz,AirspaceS.Regions.n,1) - cat(1,AirspaceS.Regions.B.center))) <= cat(1,AirspaceS.Regions.B.ssize)./2,2)).ri);
-% regions
-% rn = AirspaceS.Regions.n;
-% for ri=1:rn
-%     p1 = AirspaceS.Regions.B(ri).xyz(1,:);
-%     p2 = AirspaceS.Regions.B(ri).xyz(2,:);
-%     center = (p1 + p2) / 2;
-%     ssize = abs(p2 - p1);
-%     if all(abs(xyz - center) <= ssize/2)
-%         break;
-%     end
-% end
 end
-%%
 function tdp = AircraftDepartTime(aa,Sim)
-% TODO: warning('change to unirformly distrubtion.')
 if aa ~= Sim.M
     tt = Sim.dtsim:Sim.dtsim:Sim.tf;
-    II = Sim.AircraftCumNumdtSim; % Tables of indexes
-    IN = diff([1;(ones(size(II)).*aa >= II)]); % Idetifny the right row
+    II = Sim.AircraftCumNumdtSim;
+    IN = diff([1;(ones(size(II)).*aa >= II)]);
     tdp = tt(IN~=0)-Sim.dtsim;
 else
     tt = Sim.dtsim:Sim.dtsim:Sim.tf;
-    II = Sim.AircraftCumNumdtSim; % Tables of indexes
-    IN = diff([1;(ones(size(II)).*(aa-1) >= II)]); % Idetifny the right row
+    II = Sim.AircraftCumNumdtSim;
+    IN = diff([1;(ones(size(II)).*(aa-1) >= II)]);
     tdp = tt(IN~=0)-Sim.dtsim+Sim.dtsim;
 end
 end
