@@ -1,3 +1,0 @@
-node server.js
-npm start
-python LAATSimMATLAB.py

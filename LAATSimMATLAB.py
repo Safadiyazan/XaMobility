@@ -14,7 +14,7 @@ def runMatlabCode():
     try:
         # Your MATLAB code
         print(datetime.datetime.now())
-        NewJSONDir = eng.RunLAATSim(1, '', nargout=1)
+        NewJSONDir = eng.RunLAATSim(0.5, '', nargout=1)
         print(NewJSONDir)
 
         return jsonify({'NewJSONDir': NewJSONDir})
