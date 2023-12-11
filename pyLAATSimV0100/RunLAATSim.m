@@ -1,4 +1,4 @@
-function [NewJSONDir] = RunLAATSim(InflowRate,NewSettings,SceStr)
+function [scenarioName] = RunLAATSim(InflowRate,NewSettings,SceStr)
 clc; close all; dbstop if error;
 close all force; close all hidden;
 disp(['Starting Simulation']);
@@ -75,8 +75,8 @@ disp(['Exporting Data'])
 % Export Workspace
 % save([SimInfo.SimOutputDirStr 'Results' SimFilename],'TFC','EC','-v7.3');
 % save([SimInfo.SimOutputDirStr 'Trajectories' SimFilename],'-v7.3'); clear SimFilename;
-NewJSONDir = ExportJSON(SimInfo,ObjAircraft,TFC,EC,Settings);
-disp(NewJSONDir)
+scenarioName = ExportJSON(SceStr,SimInfo,ObjAircraft,TFC,EC,Settings);
+disp(scenarioName)
 disp(['Finishing Simulation'])
 % % Export Video
 % PlotMotionPicture(30,SimInfo,ObjAircraft,TFC,Settings);

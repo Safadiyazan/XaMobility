@@ -31,7 +31,8 @@ def runMatlabCode():
             with open(json_file_path, 'r') as json_file:
                 NewSettings = json.load(json_file)
             qin_value = NewSettings['Sim']['Qin']
-            NewJSONDir = eng.RunLAATSim(qin_value,NewSettings, '', nargout=1)
+            SceStr_value = NewSettings['Sim']['SceStr']
+            NewJSONDir = eng.RunLAATSim(qin_value,NewSettings, SceStr_value, nargout=1)
             return jsonify({'NewJSONDir': NewJSONDir})
         else:
             NewJSONDir = eng.RunLAATSim(0.1,'', '', nargout=1)

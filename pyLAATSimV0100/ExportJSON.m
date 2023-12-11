@@ -1,4 +1,4 @@
-function [file_name] = ExportJSON(SimInfo,ObjAircraft,TFC,EC,Settings)
+function [scenarioName] = ExportJSON(SceStr,SimInfo,ObjAircraft,TFC,EC,Settings)
 M = SimInfo.M(end);
 full_pdt = full(SimInfo.pdt)';
 full_stat = full(SimInfo.statusdt)';
@@ -29,7 +29,9 @@ json_data = struct(...
 'dz', Settings.Airspace.dz...
 );
 json_str = jsonencode(json_data);
-file_name = ['./public/Outputs/' 'SimOutput_ObjAircraft_' datestr(now,'yyyymmdd_hhMMss')  '.json']; % datestr(now,'yyyymmdd_hhMMss')
+TimestampNow = now;
+scenarioName = [SceStr ' '  datestr(TimestampNow,'yyyy-mm-dd HH:MM')];
+file_name = ['./public/Outputs/' 'SimOutput_' SceStr '_'  datestr(TimestampNow,'yyyymmdd_hhMM') '.json']; % datestr(now,'yyyymmdd_hhMMss')
 fid = fopen(file_name, 'w');
 if fid > 0
     fwrite(fid, json_str, 'char');

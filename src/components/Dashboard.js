@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import Accordion from 'react-bootstrap/Accordion';
 import axios from 'axios';
 
 import Analytics from './Analytics';
@@ -17,11 +18,12 @@ const Dashboard = () => {
         const loadingContainer = document.getElementById('loading');
         const resultContainer = document.getElementById('result-container');
         const runButton = document.getElementById('runButton');
-        const addButton = document.getElementById('addButton');
 
         try {
             setRunningSuccess(true);
             loadingContainer.style.display = 'block'; // Show loading indicator
+            runButton.classList.remove('btn-primary');
+            runButton.classList.remove('btn-success');
             runButton.classList.add('btn-danger');
             const response = await fetch('/api/run_matlab_code', {
                 method: 'POST',
@@ -38,12 +40,11 @@ const Dashboard = () => {
             const data = await response.json();
             console.log('MATLAB Result:', data.result);
             // Update the DOM with the result
-            resultContainer.innerHTML = 'Last run: ' + data.result;
-
-            // Add the btn-success class to turn the button green
-            addButton.classList.add('btn-success');
+            resultContainer.innerHTML =  'Scenario completed. ' + 'Last run: ' + data.result;
+            runButton.classList.remove('btn-danger');
+            runButton.classList.add('btn-secondary');
             setRunningSuccess(false);
-            
+            await fetchJsonFiles();
         } catch (error) {
             console.error('Error:', error);
             // Update the DOM with the error
@@ -71,27 +72,18 @@ const Dashboard = () => {
         fetchJsonFiles();
     }, []);
 
-    const handleAddFile = async () => {
-        const addButton = document.getElementById('addButton'); // Add an id to the button
-        addButton.classList.remove('btn-success');
-        await fetchJsonFiles();
-    };
-
     // GUI Handles ===========================================================================
     // Handle file dropdown change
     const handleDropdownChange = (event) => {
         const selectedOption = event.target.value;
         setSelectedFile(selectedOption);
     };
-    // Handle file submission (if needed)
-    const handleFileChange = (event) => {
-        // Your file submission logic here if necessary
-    };
-    // Handle file submission (if needed)
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        // Your file submission logic here if necessary
-    };
+
+    // const runButtonRef = useRef(null);
+
+    // const updateButtonClass = (newClass) => {
+    //     runButtonRef.classList.add(newClass);
+    // };
     // =======================================================================================
     // Run and Load Simulation Handles =======================================================
     const [selectedFile, setSelectedFile] = useState("/Samples/SimOutput_ObjAircraft_Default.json");
@@ -117,72 +109,82 @@ const Dashboard = () => {
     const handleToggleContent = () => {
         setIsContentVisible(!isContentVisible);
     };
+    const resultContainerStyle = {
+        wordWrap: 'break-word',
+        overflowWrap: 'break-word',
+        whiteSpace: 'pre-wrap',
+    };
     // =======================================================================================
     // GUI ===================================================================================
     return (
         <div className="container mt-5">
             <h3>Dashboard</h3>
-            <b><center><p className="mt-3">Viewer selected file: {selectedFile}</p></center></b>
             <div className="form-group text-center">
                 <select className="form-select" id="filenameDropdown" onChange={handleDropdownChange} value={selectedFile}>
                     <option value={selectedFile}>
-                        Select a simulation sample to view
+                        Choose a sample for display
                     </option>
                     <option value="/Samples/SimOutput_ObjAircraft_Default.json">Default</option>
-                    <option value="/Samples/SimOutput_ObjAircraft_VTOL.json">VTOL</option>
                     <option value="/Samples/SimOutput_ObjAircraft_Subset.json">Subset</option>
+                    <option value="/Samples/SimOutput_ObjAircraft_VTOL.json">VTOL</option>
                     <option value="/Samples/SimOutput_ObjAircraft_Control.json">VTOL Control</option>
                     <option value="/Samples/SimOutput_ObjAircraft_Congestion_Control.json">VTOL Control - OSC</option>
                 </select>
             </div>
             <br />
-            <hr />
-            <div className="container">
-                <div className="row">
-                    <div className="col-md-4">
-                        <button
-                            id="runButton"
-                            className="btn btn-success btn-block mb-3"
-                            onClick={runMatlabCode}
-                            disabled={setRunning}
-                        >
-                            Run new simulation on server
-                        </button>
-                    </div>
-                    <div className="col-md-4">
-                        <div id="loading" style={{ display: 'none' }}>
-                            <center>
-                            <p>Loading...</p>
-                            <div className="spinner-border" role="status">
-                                <span className="sr-only"></span>
-                            </div>
-                            </center>
-                        </div>
-                    </div>
-                    <div className="col-md-4">
-                        <button
-                            id="addButton"
-                            className="btn btn-block mb-3 btn-secondary"
-                            onClick={handleAddFile}
-                        >
-                            Refresh simulation data for viewer
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div id="result-container" className="mt-3"></div>
-            <br />
-            <select className="form-select" id="jsonDropdown" onChange={handleDropdownChange} value={selectedFile}>
-                <option value={selectedFile}>
-                    Select a simulation data to view
-                </option>
-                {jsonFiles.map((file, index) => (
-                    <option key={index} value={'/Outputs/' + file}>
-                        {'/Outputs/' + file}
-                    </option>
-                ))}
-            </select>
+            {/* <Settings updateButtonClass={updateButtonClass} /> */}
             <Settings />
+            <hr />
+            <Accordion defaultActiveKey="0">
+                <Accordion.Item eventKey="1">
+                    <Accordion.Header>
+                        <center><b><h4>Run simulation scenario</h4></b></center>
+                    </Accordion.Header>
+                    <Accordion.Body>
+                        <div className="container">
+                            <div className="row align-items-center justify-content-center">
+                                <div className="col-md-4">
+                                    <button
+                                        // ref={runButtonRef}
+                                        id="runButton"
+                                        className="btn btn-primary btn-block mb-3"
+                                        onClick={runMatlabCode}
+                                        disabled={setRunning}
+                                    >
+                                        Run a new scenario on the server
+                                    </button>
+                                </div>
+                                <div className="col-md-4 text-center">
+                                    <div id="loading" style={{ display: 'none' }}>
+                                        <p>Loading...</p>
+                                        <div className="spinner-border" role="status">
+                                            <span className="sr-only"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-4">
+                                    <div id="result-container" className="mt-3" style={resultContainerStyle}></div>
+                                </div>
+                            </div>
+                        </div>
+                        <label htmlFor="jsonDropdown"><b>Choose a new scenario for display:</b></label>
+                        <select className="form-select" id="jsonDropdown" onChange={handleDropdownChange} value={selectedFile}>
+                            <option value={selectedFile}>
+                                Choose a new scenario for display
+                            </option>
+                            {jsonFiles.map((file, index) => (
+                                <option key={index} value={'/Outputs/' + file}>
+                                    {file}
+                                </option>
+                            ))}
+                        </select>
+                        <div style={resultContainerStyle}>
+                            <b><center><p className="mt-3">Viewer selected file: {selectedFile}</p></center></b>
+                        </div>
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
+            <hr />
             <Analytics />
         </div>
     );

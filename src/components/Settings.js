@@ -8,6 +8,7 @@ function Settings() {
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [lastSavedTimestamp, setLastSavedTimestamp] = useState(null);
     const savedButton = document.getElementById('savedButton');
+    const runButton = document.getElementById('runButton');
 
     const [values, setValues] = useState({
         dx: 500,
@@ -18,11 +19,13 @@ function Settings() {
         RsMin: 10,
         RsMax: 30,
         Qin: 0.1,
+        SceStr: '',
     });
 
     const handleChange = (event) => {
         const { id, value } = event.target;
-        setValues((prevValues) => ({ ...prevValues, [id]: parseFloat(value) }));
+        const newValue = id === 'SceStr' ? value.replace(/\s/g, '') : parseFloat(value);
+        setValues((prevValues) => ({ ...prevValues, [id]: newValue }));
         setSaveSuccess(false);
         savedButton.classList.remove('btn-success');
         savedButton.classList.remove('btn-danger');
@@ -45,6 +48,7 @@ function Settings() {
             },
             Sim: {
                 Qin: values.Qin,
+                SceStr: values.SceStr
             },
         };
 
@@ -72,6 +76,8 @@ function Settings() {
             setLastSavedTimestamp(timestamp);
             // Indicate save success
             setSaveSuccess(true);
+            runButton.classList.add('btn-success');
+
         } catch (error) {
             console.error('Error:', error);
             setSaveSuccess(false);
@@ -233,6 +239,13 @@ function Settings() {
                                                 step={0.1}     // Set the step value  
                                             />
                                         </Form.Group>
+                                        <Form.Group controlId="SceStr">
+                                            <Form.Label>Scenario name:</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                onChange={handleChange}
+                                            />
+                                        </Form.Group>
                                     </Form>
                                 </Accordion.Body>
                             </Accordion.Item>
@@ -243,7 +256,7 @@ function Settings() {
                                 <p className="text-success">Settings last saved: {lastSavedTimestamp}</p>
                             )}
                             <Button id='savedButton' variant="primary" onClick={() => handleSave(values)} disabled={saveSuccess}>
-                                Save settings in server
+                                Save settings on the server
                             </Button>
                         </center>
                     </Accordion.Body>
