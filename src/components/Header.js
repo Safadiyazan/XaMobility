@@ -8,10 +8,10 @@ const Header = ({ isAuthenticated, onLoginButtonClick, username, onLogout }) => 
       <Navbar.Brand href="/">
         <img
           alt="Logo TSMART"
-          src="/logo.png"
-          width="100"
-          height="30"
-          className="d-inline-block align-top"
+          src="/ALSim_Logo.png"
+          width="30"
+          height="40"
+          className="d-inline-block align-center"
         />{' '}
         LAAT Flow Simulation
       </Navbar.Brand>

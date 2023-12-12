@@ -70,10 +70,10 @@ export async function LoadSimulation(viewer, data) {
         // Add the light source to the scene
         viewer.scene.sun = sunLight;
         // Fly the camera to San Francisco at the given longitude, latitude, and height.
-        var initialPosition = computeNewPoint(center, 0, -3000, 3000);
+        var initialPosition = computeNewPoint(center, 0, -1250, 2000);
         var initialOrientation = {
-            heading: CesiumMath.toRadians(0),
-            pitch: CesiumMath.toRadians(-45.0),
+            heading: CesiumMath.toRadians(0.0),
+            pitch: CesiumMath.toRadians(-60.0),
             roll: CesiumMath.toRadians(0),
         };
         viewer.camera.flyTo({
@@ -81,7 +81,8 @@ export async function LoadSimulation(viewer, data) {
             orientation: {
                 heading: initialOrientation.heading,
                 pitch: initialOrientation.pitch,
-            }
+            },
+            duration: 10,
         });
         var camera = viewer.camera;
         // Define variables to control flight dynamics
@@ -729,7 +730,7 @@ export async function LoadSimulation(viewer, data) {
     var entitiesArray = [];
 
     data.forEach((ObjAircraft, index) => {
-        if ((index > 0) & (index < 400)) {
+        if ((index > 0) & (index < 100)) {
             //const startAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.ObjAircraft.tda, new JulianDate());
             //const stopAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.ObjAircraft.taa, new JulianDate());
             const trajectoryPositions = [];
