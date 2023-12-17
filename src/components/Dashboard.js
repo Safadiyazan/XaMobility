@@ -84,6 +84,16 @@ const Dashboard = () => {
     // const updateButtonClass = (newClass) => {
     //     runButtonRef.classList.add(newClass);
     // };
+    // Define handleCheckboxChange in the global scope
+    const [navigationOn, setNavigationOn] = useState(false);
+
+    const handleCheckboxChange = () => {
+        const isChecked = !navigationOn;
+        setNavigationOn(isChecked);
+        NavigationOn = 1;
+        console.log('Checkbox Checked:', isChecked);
+        // Add any additional logic here
+    };
     // =======================================================================================
     // Run and Load Simulation Handles =======================================================
     const [selectedFile, setSelectedFile] = useState("/Samples/SimOutput_ObjAircraft_Default.json");

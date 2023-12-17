@@ -17,6 +17,7 @@ npm install --save-dev connect-history-api-fallback
 npm install --save-dev axios body-parser cors
 npm install --save-dev npm-run-all
 npm install --save-dev express-subdomain
-npm install --save-dev fs
+npm install --save-dev fs fs-extra
+npm install --save-dev react-bootstrap bootstrap
 
 

@@ -19,7 +19,7 @@ function Settings() {
         VmaxMax: 30,
         RsMin: 10,
         RsMax: 30,
-        Qin: 0.1,
+        Qin: 1,
         SceStr: '',
     });
 
