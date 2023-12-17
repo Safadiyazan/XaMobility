@@ -15,10 +15,12 @@ SimInfo.SimOutputDirStr = ['.\Outputs\SimOutput_' datestr(now,'yyyymmdd_hhMMss')
 disp(['Determining Setting']);
 if (~isempty(NewSettings))
     [Settings.Airspace] = SettingAirspace(double(NewSettings.Airspace.dx),double(NewSettings.Airspace.dy),double(NewSettings.Airspace.dz));
+    Settings.Airspace.as = NewSettings.Airspace.as;
     [Settings.Aircraft] = SettingAircraft([double(NewSettings.Aircraft.VmaxMin);double(NewSettings.Aircraft.VmaxMax)],[double(NewSettings.Aircraft.RsMin);double(NewSettings.Aircraft.RsMax)]);
     [Settings.Sim] = SettingSimulation(double(NewSettings.Sim.Qin));
 else
     [Settings.Airspace] = SettingAirspace(500,500,80);
+    Settings.Airspace.as = 1;
     [Settings.Aircraft] = SettingAircraft([10,30],[10,30]);
     [Settings.Sim] = SettingSimulation(0.1);
 end

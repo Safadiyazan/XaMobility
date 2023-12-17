@@ -44,6 +44,12 @@ export async function LoadSimulation(viewer, data) {
     var dx = data[0].dx;
     var dy = data[0].dy;
     var dz = data[0].dz;
+    var as;
+    if (data[0].as !== undefined) {
+        as = data[0].as;
+    } else {
+        as = 2;
+    }
     var dz0 = 480;
     // var center = Cartesian3.fromDegrees(-122.3816, 37.6191, dz0); // SF
     // var center = Cartesian3.fromDegrees(35.045628640781565, 32.77278697558125,  dz0); // NESHER
@@ -82,7 +88,7 @@ export async function LoadSimulation(viewer, data) {
                 heading: initialOrientation.heading,
                 pitch: initialOrientation.pitch,
             },
-            duration: 10,
+            duration: 20,
         });
         var camera = viewer.camera;
         // Define variables to control flight dynamics
@@ -127,14 +133,31 @@ export async function LoadSimulation(viewer, data) {
                     destination: initialPosition,
                     orientation: initialOrientation,
                 });
+                viewer.trackedEntity = undefined;
             }
             if (event.key === 'r') {
                 var randomNumber = Math.floor(Math.random() * entitiesArray.length);
-                viewer.trackedEntity = entitiesArray[randomNumber];
+                var FindEntity = 1;
+                while (FindEntity) {
+                    if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
+                        viewer.trackedEntity = entitiesArray[randomNumber];
+                        FindEntity = 0;
+                    } else {
+                        randomNumber = Math.floor(Math.random() * entitiesArray.length);
+                    }
+                }
             }
             if (event.key === 'f') {
                 var randomNumber = Math.floor(Math.random() * entitiesArray.length);
-                viewer.zoomTo(entitiesArray[randomNumber]);
+                var FindEntity = 1;
+                while (FindEntity) {
+                    if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
+                        viewer.zoomTo(entitiesArray[randomNumber]);
+                        FindEntity = 0;
+                    } else {
+                        randomNumber = Math.floor(Math.random() * entitiesArray.length);
+                    }
+                }
             }
 
         });
@@ -210,204 +233,255 @@ export async function LoadSimulation(viewer, data) {
     // End view settings
     ///////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////
-    // Plot Airspace Border  
-    function PlotAirspace(center) {
-        var newPointSEGround = computeNewPoint(center, dx / 2, -dy / 2, 0); plotPoint(newPointSEGround);
-        var newPointNEGround = computeNewPoint(center, dx / 2, dy / 2, 0); plotPoint(newPointNEGround);
-        var newPointSWGround = computeNewPoint(center, -dx / 2, -dy / 2, 0); plotPoint(newPointSWGround);
-        var newPointNWGround = computeNewPoint(center, -dx / 2, dy / 2, 0); plotPoint(newPointNWGround);
-        const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
-        plotPoint(centerPlotting);
-        var newPointSE = computeNewPoint(centerPlotting, dx / 2, -dy / 2, 0); plotPoint(newPointSE);
-        var newPointNE = computeNewPoint(centerPlotting, dx / 2, dy / 2, 0); plotPoint(newPointNE);
-        var newPointSW = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, 0); plotPoint(newPointSW);
-        var newPointNW = computeNewPoint(centerPlotting, -dx / 2, dy / 2, 0); plotPoint(newPointNW);
-        var newPointSEUP = computeNewPoint(centerPlotting, dx / 2, -dy / 2, dz); plotPoint(newPointSEUP);
-        var newPointNEUP = computeNewPoint(centerPlotting, dx / 2, dy / 2, dz); plotPoint(newPointNEUP);
-        var newPointSWUP = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, dz); plotPoint(newPointSWUP);
-        var newPointNWUP = computeNewPoint(centerPlotting, -dx / 2, dy / 2, dz); plotPoint(newPointNWUP);
-        //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
-        //console.log("Distance between points: " + distance + " meters");
-        // Convert Cartesian3 coordinates to Cartographic coordinates
-        var cartographicNW = Cartographic.fromCartesian(newPointNW);
-        var cartographicNE = Cartographic.fromCartesian(newPointNE);
-        var cartographicSE = Cartographic.fromCartesian(newPointSE);
-        var cartographicSW = Cartographic.fromCartesian(newPointSW);
-        // Create a polygon entity connecting the four points
-        const airspace = viewer.entities.add({
-            name: `Airspace`,
-            description: ``,
-            polygon: {
-                hierarchy: Cartesian3.fromDegreesArray([
-                    CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                    CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                    CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                    CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                ]),
-                height: dz0 + 40, // Set the minimum height to 40 meters AGL
-                extrudedHeight: dz0 + 40 + dz, // Set the maximum height to 120 meters AGL
-                material: Color.CYAN.withAlpha(0.05),
-                outline: true,
-                outlineColor: Color.CYAN,
-                allowPicking: false,
-            },
-        });
-        //viewer.zoomTo(airspace);
-    }
-    PlotAirspace(center);
+    // var as = 2;
+    if (as == 1) {
+        function PlotAirspace(center) {
+            //var newPointSEGround = computeNewPoint(center, dx / 2, -dy / 2, 0); plotPoint(newPointSEGround);
+            //var newPointNEGround = computeNewPoint(center, dx / 2, dy / 2, 0); plotPoint(newPointNEGround);
+            //var newPointSWGround = computeNewPoint(center, -dx / 2, -dy / 2, 0); plotPoint(newPointSWGround);
+            //var newPointNWGround = computeNewPoint(center, -dx / 2, dy / 2, 0); plotPoint(newPointNWGround);
+            const centerPlotting = computeNewPoint(center, 0, 0, 0); // For Subset Simulation
+            plotPoint(centerPlotting);
+            var newPointSE = computeNewPoint(centerPlotting, dx / 2, -dy / 2, 0); plotPoint(newPointSE);
+            var newPointNE = computeNewPoint(centerPlotting, dx / 2, dy / 2, 0); plotPoint(newPointNE);
+            var newPointSW = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, 0); plotPoint(newPointSW);
+            var newPointNW = computeNewPoint(centerPlotting, -dx / 2, dy / 2, 0); plotPoint(newPointNW);
+            var newPointSEUP = computeNewPoint(centerPlotting, dx / 2, -dy / 2, dz); plotPoint(newPointSEUP);
+            var newPointNEUP = computeNewPoint(centerPlotting, dx / 2, dy / 2, dz); plotPoint(newPointNEUP);
+            var newPointSWUP = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, dz); plotPoint(newPointSWUP);
+            var newPointNWUP = computeNewPoint(centerPlotting, -dx / 2, dy / 2, dz); plotPoint(newPointNWUP);
+            //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
+            //console.log("Distance between points: " + distance + " meters");
+            // Convert Cartesian3 coordinates to Cartographic coordinates
+            var cartographicNW = Cartographic.fromCartesian(newPointNW);
+            var cartographicNE = Cartographic.fromCartesian(newPointNE);
+            var cartographicSE = Cartographic.fromCartesian(newPointSE);
+            var cartographicSW = Cartographic.fromCartesian(newPointSW);
+            // Create a polygon entity connecting the four points
+            const airspace = viewer.entities.add({
+                name: `Airspace`,
+                description: ``,
+                polygon: {
+                    hierarchy: Cartesian3.fromDegreesArray([
+                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
+                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
+                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
+                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
+                    ]),
+                    height: dz0, // Set the minimum height to 40 meters AGL
+                    extrudedHeight: dz0 + dz, // Set the maximum height to 120 meters AGL
+                    material: Color.CYAN.withAlpha(0.1),
+                    outline: true,
+                    outlineColor: Color.CYAN,
+                    allowPicking: false,
+                },
+            });
+            //viewer.zoomTo(airspace);
+        }
+        PlotAirspace(center);
 
-    function PlotAirspaceLayers(center) {
-        const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
-        var newPointSE = computeNewPoint(centerPlotting, dx / 2, -dy / 2, 0);
-        var newPointNE = computeNewPoint(centerPlotting, dx / 2, dy / 2, 0);
-        var newPointSW = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, 0);
-        var newPointNW = computeNewPoint(centerPlotting, -dx / 2, dy / 2, 0);
-        var newPointSEUP = computeNewPoint(centerPlotting, dx / 2, -dy / 2, dz);
-        var newPointNEUP = computeNewPoint(centerPlotting, dx / 2, dy / 2, dz);
-        var newPointSWUP = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, dz);
-        var newPointNWUP = computeNewPoint(centerPlotting, -dx / 2, dy / 2, dz);
-        //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
-        //console.log("Distance between points: " + distance + " meters");
-        // Convert Cartesian3 coordinates to Cartographic coordinates
-        var cartographicNW = Cartographic.fromCartesian(newPointNW);
-        var cartographicNE = Cartographic.fromCartesian(newPointNE);
-        var cartographicSE = Cartographic.fromCartesian(newPointSE);
-        var cartographicSW = Cartographic.fromCartesian(newPointSW);
-        // Create a polygon entity connecting the four points
-        const airspaceL0 = viewer.entities.add({
-            name: `Layer 0`,
-            description: ``,
-            polygon: {
-                hierarchy: Cartesian3.fromDegreesArray([
-                    CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                    CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                    CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                    CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                ]),
-                height: dz0, // Set the minimum height to 40 meters AGL
-                extrudedHeight: dz0 + 40, // Set the maximum height to 120 meters AGL
-                material: Color.BLACK.withAlpha(0.1),
-                outline: true,
-                outlineColor: Color.BLACK,
-                allowPicking: false,
-            },
-        });
-        const airspaceL1 = viewer.entities.add({
-            name: `Layer 0`,
-            description: ``,
-            polygon: {
-                hierarchy: Cartesian3.fromDegreesArray([
-                    CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                    CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                    CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                    CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                ]),
-                height: dz0 + 40, // Set the minimum height to 40 meters AGL
-                extrudedHeight: dz0 + 40 + dz / 2, // Set the maximum height to 120 meters AGL
-                material: Color.YELLOW.withAlpha(0.1),
-                outline: true,
-                outlineColor: Color.BLACK,
-                allowPicking: false,
-            },
-        });
-        const airspaceL2 = viewer.entities.add({
-            name: `Layer 0`,
-            description: ``,
-            polygon: {
-                hierarchy: Cartesian3.fromDegreesArray([
-                    CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                    CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                    CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                    CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                ]),
-                height: dz0 + 40 + dz / 2, // Set the minimum height to 40 meters AGL
-                extrudedHeight: dz0 + 40 + dz, // Set the maximum height to 120 meters AGL
-                material: Color.BLACK.withAlpha(0.1),
-                outline: true,
-                outlineColor: Color.BLACK,
-                allowPicking: false,
-            },
-        });
-        //viewer.zoomTo(airspace);
-    }
-    PlotAirspaceLayers(center);
+    } else if(as == 2) {
+        // Plot Airspace Border  
+        function PlotAirspace(center) {
+            var newPointSEGround = computeNewPoint(center, dx / 2, -dy / 2, 0); plotPoint(newPointSEGround);
+            var newPointNEGround = computeNewPoint(center, dx / 2, dy / 2, 0); plotPoint(newPointNEGround);
+            var newPointSWGround = computeNewPoint(center, -dx / 2, -dy / 2, 0); plotPoint(newPointSWGround);
+            var newPointNWGround = computeNewPoint(center, -dx / 2, dy / 2, 0); plotPoint(newPointNWGround);
+            const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
+            plotPoint(centerPlotting);
+            var newPointSE = computeNewPoint(centerPlotting, dx / 2, -dy / 2, 0); plotPoint(newPointSE);
+            var newPointNE = computeNewPoint(centerPlotting, dx / 2, dy / 2, 0); plotPoint(newPointNE);
+            var newPointSW = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, 0); plotPoint(newPointSW);
+            var newPointNW = computeNewPoint(centerPlotting, -dx / 2, dy / 2, 0); plotPoint(newPointNW);
+            var newPointSEUP = computeNewPoint(centerPlotting, dx / 2, -dy / 2, dz); plotPoint(newPointSEUP);
+            var newPointNEUP = computeNewPoint(centerPlotting, dx / 2, dy / 2, dz); plotPoint(newPointNEUP);
+            var newPointSWUP = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, dz); plotPoint(newPointSWUP);
+            var newPointNWUP = computeNewPoint(centerPlotting, -dx / 2, dy / 2, dz); plotPoint(newPointNWUP);
+            //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
+            //console.log("Distance between points: " + distance + " meters");
+            // Convert Cartesian3 coordinates to Cartographic coordinates
+            var cartographicNW = Cartographic.fromCartesian(newPointNW);
+            var cartographicNE = Cartographic.fromCartesian(newPointNE);
+            var cartographicSE = Cartographic.fromCartesian(newPointSE);
+            var cartographicSW = Cartographic.fromCartesian(newPointSW);
+            // Create a polygon entity connecting the four points
+            const airspace = viewer.entities.add({
+                name: `Airspace`,
+                description: ``,
+                polygon: {
+                    hierarchy: Cartesian3.fromDegreesArray([
+                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
+                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
+                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
+                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
+                    ]),
+                    height: dz0 + 40, // Set the minimum height to 40 meters AGL
+                    extrudedHeight: dz0 + 40 + dz, // Set the maximum height to 120 meters AGL
+                    material: Color.CYAN.withAlpha(0.05),
+                    outline: true,
+                    outlineColor: Color.CYAN,
+                    allowPicking: false,
+                },
+            });
+            //viewer.zoomTo(airspace);
+        }
+        PlotAirspace(center);
 
-    function PlotAirspaceCentersRegions(center) {
-        const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
-        var newPointSE = computeNewPoint(centerPlotting, dx / 6, -dy / 6, 0);
-        var newPointNE = computeNewPoint(centerPlotting, dx / 6, dy / 6, 0);
-        var newPointSW = computeNewPoint(centerPlotting, -dx / 6, -dy / 6, 0);
-        var newPointNW = computeNewPoint(centerPlotting, -dx / 6, dy / 6, 0);
-        var newPointSEUP = computeNewPoint(centerPlotting, dx / 6, -dy / 6, dz);
-        var newPointNEUP = computeNewPoint(centerPlotting, dx / 6, dy / 6, dz);
-        var newPointSWUP = computeNewPoint(centerPlotting, -dx / 6, -dy / 6, dz);
-        var newPointNWUP = computeNewPoint(centerPlotting, -dx / 6, dy / 6, dz);
-        //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
-        //console.log("Distance between points: " + distance + " meters");
-        // Convert Cartesian3 coordinates to Cartographic coordinates
-        var cartographicNW = Cartographic.fromCartesian(newPointNW);
-        var cartographicNE = Cartographic.fromCartesian(newPointNE);
-        var cartographicSE = Cartographic.fromCartesian(newPointSE);
-        var cartographicSW = Cartographic.fromCartesian(newPointSW);
-        // Create a polygon entity connecting the four points
-        const airspaceL0 = viewer.entities.add({
-            name: `Layer 0`,
-            description: ``,
-            polygon: {
-                hierarchy: Cartesian3.fromDegreesArray([
-                    CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                    CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                    CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                    CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                ]),
-                height: dz0, // Set the minimum height to 40 meters AGL
-                extrudedHeight: dz0 + 40, // Set the maximum height to 120 meters AGL
-                material: Color.BLACK.withAlpha(0.1),
-                outline: true,
-                outlineColor: Color.BLACK,
-                allowPicking: false,
-            },
-        });
-        const airspaceL1 = viewer.entities.add({
-            name: `Layer 0`,
-            description: ``,
-            polygon: {
-                hierarchy: Cartesian3.fromDegreesArray([
-                    CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                    CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                    CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                    CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                ]),
-                height: dz0 + 40, // Set the minimum height to 40 meters AGL
-                extrudedHeight: dz0 + 40 + dz / 2, // Set the maximum height to 120 meters AGL
-                material: Color.RED.withAlpha(0.1),
-                outline: true,
-                outlineColor: Color.BLACK,
-                allowPicking: false,
-            },
-        });
-        const airspaceL2 = viewer.entities.add({
-            name: `Layer 0`,
-            description: ``,
-            polygon: {
-                hierarchy: Cartesian3.fromDegreesArray([
-                    CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                    CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                    CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                    CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                ]),
-                height: dz0 + 40 + dz / 2, // Set the minimum height to 40 meters AGL
-                extrudedHeight: dz0 + 40 + dz, // Set the maximum height to 120 meters AGL
-                material: Color.BLACK.withAlpha(0.1),
-                outline: true,
-                outlineColor: Color.BLACK,
-                allowPicking: false,
-            },
-        });
-        //viewer.zoomTo(airspace);
+        function PlotAirspaceLayers(center) {
+            const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
+            var newPointSE = computeNewPoint(centerPlotting, dx / 2, -dy / 2, 0);
+            var newPointNE = computeNewPoint(centerPlotting, dx / 2, dy / 2, 0);
+            var newPointSW = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, 0);
+            var newPointNW = computeNewPoint(centerPlotting, -dx / 2, dy / 2, 0);
+            var newPointSEUP = computeNewPoint(centerPlotting, dx / 2, -dy / 2, dz);
+            var newPointNEUP = computeNewPoint(centerPlotting, dx / 2, dy / 2, dz);
+            var newPointSWUP = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, dz);
+            var newPointNWUP = computeNewPoint(centerPlotting, -dx / 2, dy / 2, dz);
+            //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
+            //console.log("Distance between points: " + distance + " meters");
+            // Convert Cartesian3 coordinates to Cartographic coordinates
+            var cartographicNW = Cartographic.fromCartesian(newPointNW);
+            var cartographicNE = Cartographic.fromCartesian(newPointNE);
+            var cartographicSE = Cartographic.fromCartesian(newPointSE);
+            var cartographicSW = Cartographic.fromCartesian(newPointSW);
+            // Create a polygon entity connecting the four points
+            const airspaceL0 = viewer.entities.add({
+                name: `Layer 0`,
+                description: ``,
+                polygon: {
+                    hierarchy: Cartesian3.fromDegreesArray([
+                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
+                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
+                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
+                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
+                    ]),
+                    height: dz0, // Set the minimum height to 40 meters AGL
+                    extrudedHeight: dz0 + 40, // Set the maximum height to 120 meters AGL
+                    material: Color.BLACK.withAlpha(0.1),
+                    outline: true,
+                    outlineColor: Color.BLACK,
+                    allowPicking: false,
+                },
+            });
+            const airspaceL1 = viewer.entities.add({
+                name: `Layer 0`,
+                description: ``,
+                polygon: {
+                    hierarchy: Cartesian3.fromDegreesArray([
+                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
+                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
+                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
+                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
+                    ]),
+                    height: dz0 + 40, // Set the minimum height to 40 meters AGL
+                    extrudedHeight: dz0 + 40 + dz / 2, // Set the maximum height to 120 meters AGL
+                    material: Color.YELLOW.withAlpha(0.1),
+                    outline: true,
+                    outlineColor: Color.BLACK,
+                    allowPicking: false,
+                },
+            });
+            const airspaceL2 = viewer.entities.add({
+                name: `Layer 0`,
+                description: ``,
+                polygon: {
+                    hierarchy: Cartesian3.fromDegreesArray([
+                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
+                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
+                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
+                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
+                    ]),
+                    height: dz0 + 40 + dz / 2, // Set the minimum height to 40 meters AGL
+                    extrudedHeight: dz0 + 40 + dz, // Set the maximum height to 120 meters AGL
+                    material: Color.BLACK.withAlpha(0.1),
+                    outline: true,
+                    outlineColor: Color.BLACK,
+                    allowPicking: false,
+                },
+            });
+            //viewer.zoomTo(airspace);
+        }
+        PlotAirspaceLayers(center);
+
+        function PlotAirspaceCentersRegions(center) {
+            const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
+            var newPointSE = computeNewPoint(centerPlotting, dx / 6, -dy / 6, 0);
+            var newPointNE = computeNewPoint(centerPlotting, dx / 6, dy / 6, 0);
+            var newPointSW = computeNewPoint(centerPlotting, -dx / 6, -dy / 6, 0);
+            var newPointNW = computeNewPoint(centerPlotting, -dx / 6, dy / 6, 0);
+            var newPointSEUP = computeNewPoint(centerPlotting, dx / 6, -dy / 6, dz);
+            var newPointNEUP = computeNewPoint(centerPlotting, dx / 6, dy / 6, dz);
+            var newPointSWUP = computeNewPoint(centerPlotting, -dx / 6, -dy / 6, dz);
+            var newPointNWUP = computeNewPoint(centerPlotting, -dx / 6, dy / 6, dz);
+            //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
+            //console.log("Distance between points: " + distance + " meters");
+            // Convert Cartesian3 coordinates to Cartographic coordinates
+            var cartographicNW = Cartographic.fromCartesian(newPointNW);
+            var cartographicNE = Cartographic.fromCartesian(newPointNE);
+            var cartographicSE = Cartographic.fromCartesian(newPointSE);
+            var cartographicSW = Cartographic.fromCartesian(newPointSW);
+            // Create a polygon entity connecting the four points
+            const airspaceL0 = viewer.entities.add({
+                name: `Layer 0`,
+                description: ``,
+                polygon: {
+                    hierarchy: Cartesian3.fromDegreesArray([
+                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
+                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
+                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
+                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
+                    ]),
+                    height: dz0, // Set the minimum height to 40 meters AGL
+                    extrudedHeight: dz0 + 40, // Set the maximum height to 120 meters AGL
+                    material: Color.BLACK.withAlpha(0.1),
+                    outline: true,
+                    outlineColor: Color.BLACK,
+                    allowPicking: false,
+                },
+            });
+            const airspaceL1 = viewer.entities.add({
+                name: `Layer 0`,
+                description: ``,
+                polygon: {
+                    hierarchy: Cartesian3.fromDegreesArray([
+                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
+                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
+                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
+                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
+                    ]),
+                    height: dz0 + 40, // Set the minimum height to 40 meters AGL
+                    extrudedHeight: dz0 + 40 + dz / 2, // Set the maximum height to 120 meters AGL
+                    material: Color.RED.withAlpha(0.1),
+                    outline: true,
+                    outlineColor: Color.BLACK,
+                    allowPicking: false,
+                },
+            });
+            const airspaceL2 = viewer.entities.add({
+                name: `Layer 0`,
+                description: ``,
+                polygon: {
+                    hierarchy: Cartesian3.fromDegreesArray([
+                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
+                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
+                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
+                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
+                    ]),
+                    height: dz0 + 40 + dz / 2, // Set the minimum height to 40 meters AGL
+                    extrudedHeight: dz0 + 40 + dz, // Set the maximum height to 120 meters AGL
+                    material: Color.BLACK.withAlpha(0.1),
+                    outline: true,
+                    outlineColor: Color.BLACK,
+                    allowPicking: false,
+                },
+            });
+            //viewer.zoomTo(airspace);
+        }
+        PlotAirspaceCentersRegions(center);
+        // End airspace plotting
+    } else {
+
     }
-    PlotAirspaceCentersRegions(center);
-    // End airspace plotting
     ///////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     // Start Aircraft Motion
@@ -720,7 +794,7 @@ export async function LoadSimulation(viewer, data) {
     viewer.clock.stopTime = stopSim.clone();
     viewer.clock.currentTime = startSim.clone();
     viewer.timeline.zoomTo(startSim, stopSim);
-    viewer.clock.multiplier = 5;
+    viewer.clock.multiplier = 2;
     viewer.clock.shouldAnimate = false;
     viewer.clock.clockRange = ClockRange.CLAMPED;
     viewer.clock.clockStep = ClockStep.SYSTEM_CLOCK_MULTIPLIER;

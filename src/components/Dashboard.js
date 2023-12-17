@@ -125,9 +125,6 @@ const Dashboard = () => {
                         Choose a sample for display
                     </option>
                     <option value="/Samples/SimOutput_ObjAircraft_Default.json">Default</option>
-                    <option value="/Samples/SimOutput_ObjAircraft_Subset.json">Subset</option>
-                    <option value="/Samples/SimOutput_ObjAircraft_VTOL.json">VTOL</option>
-                    <option value="/Samples/SimOutput_ObjAircraft_Control.json">VTOL Control</option>
                     <option value="/Samples/SimOutput_ObjAircraft_Congestion_Control.json">VTOL Control - OSC</option>
                 </select>
             </div>
@@ -156,7 +153,7 @@ const Dashboard = () => {
                                 </div>
                                 <div className="col-md-4 text-center">
                                     <div id="loading" style={{ display: 'none' }}>
-                                        <p>Loading...</p>
+                                        <p>Running...</p>
                                         <div className="spinner-border" role="status">
                                             <span className="sr-only"></span>
                                         </div>

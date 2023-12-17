@@ -14,6 +14,7 @@ function Settings() {
         dx: 500,
         dy: 500,
         dz: 100,
+        as: 1,
         VmaxMin: 10,
         VmaxMax: 30,
         RsMin: 10,
@@ -39,6 +40,7 @@ function Settings() {
                 dx: values.dx,
                 dy: values.dy,
                 dz: values.dz,
+                as: values.as
             },
             Aircraft: {
                 VmaxMin: values.VmaxMin,
@@ -109,7 +111,7 @@ function Settings() {
                                         <div className="row">
                                             <div className="col">
                                                 <Form.Group controlId="dx" className="mb-3">
-                                                    <Form.Label>dx:</Form.Label>
+                                                    <Form.Label>dx [m]:</Form.Label>
                                                     <Form.Control
                                                         type="number"
                                                         value={values.dx}
@@ -123,7 +125,7 @@ function Settings() {
 
                                             <div className="col">
                                                 <Form.Group controlId="dy" className="mb-3">
-                                                    <Form.Label>dy:</Form.Label>
+                                                    <Form.Label>dy [m]:</Form.Label>
                                                     <Form.Control
                                                         type="number"
                                                         value={values.dy}
@@ -137,7 +139,7 @@ function Settings() {
 
                                             <div className="col">
                                                 <Form.Group controlId="dz" className="mb-3">
-                                                    <Form.Label>dz:</Form.Label>
+                                                    <Form.Label>dz [m]:</Form.Label>
                                                     <Form.Control
                                                         type="number"
                                                         value={values.dz}
@@ -148,6 +150,18 @@ function Settings() {
                                                     />
                                                 </Form.Group>
                                             </div>
+                                        </div>
+                                        <div className="col">
+                                                <Form.Group controlId="dropdown" className="mb-3">
+                                                    <Form.Label>Airspace structure:</Form.Label>
+                                                    <Form.Select
+                                                        value={values.as}
+                                                        onChange={handleChange}
+                                                    >
+                                                        <option value="AS1">Subset</option>
+                                                        {/* <option value="AS2">VTOL-2R</option> */}
+                                                    </Form.Select>
+                                                </Form.Group>
                                         </div>
                                     </Form>
                                 </Accordion.Body>
@@ -166,7 +180,7 @@ function Settings() {
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td>Maximum speed</td>
+                                                    <td>Maximum speed [m/s]</td>
                                                     <td>
                                                         <Form.Group controlId="VmaxMin">
                                                             <Form.Control
@@ -193,7 +207,7 @@ function Settings() {
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Safety radius</td>
+                                                    <td>Safety radius [m]</td>
                                                     <td>
                                                         <Form.Group controlId="RsMin">
                                                             <Form.Control
@@ -229,7 +243,7 @@ function Settings() {
                                 <Accordion.Body>
                                     <Form>
                                         <Form.Group controlId="Qin">
-                                            <Form.Label>Qin:</Form.Label>
+                                            <Form.Label>Qin [aircraft/s]:</Form.Label>
                                             <Form.Control
                                                 type="number"
                                                 value={values.Qin}

@@ -1,8 +1,9 @@
 {
   "Airspace": {
-    "dx": 5000,
-    "dy": 5000,
-    "dz": 100
+    "dx": 1500,
+    "dy": 1500,
+    "dz": 30,
+    "as": 1
   },
   "Aircraft": {
     "VmaxMin": 10,
@@ -11,7 +12,7 @@
     "RsMax": 30
   },
   "Sim": {
-    "Qin": 0.5,
-    "SceStr": "5kX5k"
+    "Qin": 1,
+    "SceStr": "30"
   }
 }

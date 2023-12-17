@@ -1,8 +1,8 @@
 function [Airspace] = SettingAirspace(dx,dy,dz)
 Airspace.dx = dx;%1500; % width [m]
 Airspace.dy = dy;%1500; % length [m]
-Airspace.dz1 = 40;  % start at height [m]
-Airspace.dz2 = dz+40;%120;  % end at height [m]
+Airspace.dz1 = 0;  % start at height [m]
+Airspace.dz2 = dz+0;%120;  % end at height [m]
 Airspace.dz = Airspace.dz2-Airspace.dz1;  % height [m]
 Airspace.xyz = [[-Airspace.dx;Airspace.dx]/2,[-Airspace.dy;Airspace.dy]/2,[[Airspace.dz1;Airspace.dz1]+[0;Airspace.dz]]];
 Airspace.Space = Airspace.dx*Airspace.dy*Airspace.dz;
