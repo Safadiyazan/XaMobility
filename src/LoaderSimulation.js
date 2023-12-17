@@ -117,7 +117,7 @@ export async function LoadSimulation(viewer, data) {
                 heading: initialOrientation.heading,
                 pitch: initialOrientation.pitch,
             },
-            duration: 1,
+            duration: 20,
         });
         var camera = viewer.camera;
 

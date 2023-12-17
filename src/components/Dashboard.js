@@ -135,7 +135,7 @@ const Dashboard = () => {
                         Choose a sample for display
                     </option>
                     <option value="/Samples/SimOutput_ObjAircraft_Default.json">Default</option>
-                    <option value="/Samples/SimOutput_ObjAircraft_Congestion_Control.json">VTOL Control - OSC</option>
+                    <option value="/Samples/SimOutput_ObjAircraft_VTOL_DBC.json">VTOL DBC</option>
                 </select>
             </div>
             <br />
@@ -192,7 +192,7 @@ const Dashboard = () => {
                 </Accordion.Item>
             </Accordion>
             <hr />
-            <Analytics />
+            {/* <Analytics /> */}
         </div>
     );
 };
