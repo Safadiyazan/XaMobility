@@ -136,6 +136,8 @@ const Dashboard = () => {
                     </option>
                     <option value="/Samples/SimOutput_ObjAircraft_Default.json">Default</option>
                     <option value="/Samples/SimOutput_ObjAircraft_VTOL_DBC.json">VTOL DBC</option>
+                    <option value="/Samples/Results_Qin23_Boundary_Testing.json">Boundary</option>
+                    <option value="/Samples/Results_Qin23_Departure_Testing.json">Departure</option>
                 </select>
             </div>
             <br />
