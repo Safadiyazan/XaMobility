@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { IonResource, ClockStep, ClockRange, HeadingPitchRoll, VelocityOrientationProperty, PathGraphics, DistanceDisplayCondition, CallbackProperty, TimeInterval, TimeIntervalCollection, SampledPositionProperty, JulianDate, Cartographic, Sun, ShadowMode, Color, Ellipsoid, Matrix4, Transforms, Cesium3DTileset, Cartesian3, createOsmBuildingsAsync, Ion, Math as CesiumMath, Terrain, Viewer } from 'cesium';
 import "cesium/Build/Cesium/Widgets/widgets.css";
+import ViewerToolBar from './components/ViewerToolBar';
 // =================================================================================================================================================
 // Cesium Simulation
 // =================================================================================================================================================
 
-export async function LoadSimulation(viewer, data) {
+export async function LoadSimulation(viewer, data, city) {
     try {
         viewer.entities.removeAll();
     } catch (error) {
@@ -52,12 +53,35 @@ export async function LoadSimulation(viewer, data) {
     } else {
         as = 2;
     }
-    var dz0 = 480;
-    // var center = Cartesian3.fromDegrees(-122.3816, 37.6191, dz0); // SF
+
+    switch (city) {
+        case "NYC":
+            var dz0 = 480;
+            var center = Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0); // NYC
+            break;
+        case "SF":
+            var dz0 = 80;
+            var center = Cartesian3.fromDegrees(-122.3816, 37.6191, dz0); // SF
+            break;
+        case "ZH":
+            var dz0 = 580;
+            var center = Cartesian3.fromDegrees(8.545094, 47.373878, dz0); // Zurich
+            break;
+        case "NZ":
+            var dz0 = 580;
+            var center = Cartesian3.fromDegrees(35.29755740551859, 32.702149095841264, dz0); // NAZ
+            break;
+        case "DXB":
+            var dz0 = 80;
+            var center = Cartesian3.fromDegrees(55.1390, 25.1124, dz0); // Dubai
+            break;
+        // default:
+        //     var dz0 = 80;
+        //     var center = Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0); // NYC
+    }
     // var center = Cartesian3.fromDegrees(35.045628640781565, 32.77278697558125,  dz0); // NESHER
     // var center = Cartesian3.fromDegrees(35.01178943640926, 32.76765420453765,  dz0); // HAIFA
-    // var center = Cartesian3.fromDegrees(35.29755740551859, 32.702149095841264, dz0); // NAZ
-    var center = Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0); // NYC
+
     ///////////////////////////////////////////////////////////////////////////////////////
     // Define handleCheckboxChange in the global scope
     // window.handleCheckboxChange = function () {
@@ -146,6 +170,124 @@ export async function LoadSimulation(viewer, data) {
                 while ((counterWhile < 100) && (FindEntity)) {
                     if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
                         viewer.trackedEntity = entitiesArray[randomNumber];
+                        // <ViewerToolBar  positionPropertyArray={positionPropertyArray} randomNumber={randomNumber}/>
+                        viewer.clock.onTick.addEventListener((clock) => {
+                            if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
+                                const cartographic = Cartographic.fromCartesian(positionPropertyArray[randomNumber].getValue(viewer.clock.currentTime));
+                                console.log("Aircraft ID:", randomNumber + 1);
+                                const formattedTime = new Date(viewer.clock.currentTime);
+                                console.log("Current time:", formattedTime.toLocaleTimeString());
+                                console.log("Longitude:", CesiumMath.toDegrees(cartographic.longitude).toFixed(4), "degrees");
+                                console.log("Latitude:", CesiumMath.toDegrees(cartographic.latitude).toFixed(4), "degrees");
+                                console.log("Height:", cartographic.height.toFixed(2), "meters"); // Adjust units if needed
+                                const time0 = entitiesArray[randomNumber].availability.start; // Get position 10 seconds earlier
+                                const time2 = viewer.clock.currentTime;
+                                const position0 = positionPropertyArray[randomNumber].getValue(time0);
+                                const position2 = positionPropertyArray[randomNumber].getValue(time2);
+                                const distance = Cartesian3.distance(position0, position2);
+                                const timeDifference = JulianDate.secondsDifference(time2, time0);
+                                console.log("Flight time:", timeDifference.toFixed(2), "second"); // Adjust units if needed
+                                console.log("Distance travelled:", distance.toFixed(2), "meters"); // Adjust units if needed
+                                const speed = distance / timeDifference;
+                                console.log("Aircraft speed:", speed.toFixed(2), "meters per second"); // Adjust units if needed
+
+                                const tableHtml = `
+                                    <table id="aircraft-data-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Aircraft ID</td>
+                                            <td>${randomNumber + 1}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Time</td>
+                                            <td>${formattedTime.toLocaleTimeString()}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Longitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.longitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Latitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.latitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Height</td>
+                                            <td>${cartographic.height.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Flight time</td>
+                                            <td>${timeDifference.toFixed(2)} [s]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Distance travelled</td>
+                                            <td>${distance.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Speed</td>
+                                            <td>${speed.toFixed(2)} [m/s]</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    `;
+                                const microtoolbar = document.getElementById('microtoolbar');
+                                microtoolbar.innerHTML = tableHtml;
+                            } else {
+                                const tableHtml = `
+                                        <table id="aircraft-data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Parameter</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Aircraft ID</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Time</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Longitude</td>
+                                                    <td>0 [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Latitude</td>
+                                                    <td>0 [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Height</td>
+                                                    <td>0 [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Flight time</td>
+                                                    <td>0 [s]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Distance travelled</td>
+                                                    <td>0 [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Speed</td>
+                                                    <td>0 [m/s]</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        `;
+                                const microtoolbar = document.getElementById('microtoolbar');
+                                microtoolbar.innerHTML = tableHtml;
+                            }
+                            ;
+                        });
+
                         FindEntity = 0;
                     } else {
                         randomNumber = Math.floor(Math.random() * entitiesArray.length);
@@ -277,6 +419,9 @@ export async function LoadSimulation(viewer, data) {
         }
     }
 
+
+
+    // (Optional) Add event listeners for interactive elements (checkboxes, etc.)
     // End view settings
     ///////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -744,7 +889,7 @@ export async function LoadSimulation(viewer, data) {
     }
     // TestFlightsFunctions();
 
-    async function AddAircraftMotion(startSim, stopSim, timeStepInSeconds, AircraftIndex, flightData, statusData, tda, taa, rs, rd, vertical, entitiesArray) {
+    async function AddAircraftMotion(startSim, stopSim, timeStepInSeconds, AircraftIndex, flightData, statusData, tda, taa, rs, rd, vertical, entitiesArray, positionPropertyArray) {
         const startAircraft = new JulianDate.addSeconds(startSim, tda, new JulianDate());
         const stopAircraft = new JulianDate.addSeconds(startSim, taa, new JulianDate());
         const positionProperty = new SampledPositionProperty();
@@ -910,17 +1055,34 @@ export async function LoadSimulation(viewer, data) {
 
         // Add Aircraft Model
         async function loadModel(positionProperty, entitiesArray) {
-            const airplaneUri = await IonResource.fromAssetId(2321473);
-            // const AircraftURL = "/VoloCity.glb";
-            
+
+            var AircraftURL = "/YS_VTOL.glb";
+            var AircraftURLScale = 2;
+            var AircraftModelIndex = Math.floor(Math.random() * 4) + 1;
+            switch (AircraftModelIndex) {
+                case 1:
+                    AircraftURL = "/YS_VTOL.glb";
+                    AircraftURLScale = 2;
+                    break;
+                case 2:
+                    AircraftURL = "/YS_Drone.glb";
+                    AircraftURLScale = 1;
+                    break;
+                default:
+                    AircraftURL = "/YS_VTOL.glb";
+                    AircraftURLScale = 2;
+
+            }
+
+
             const airplaneEntity = viewer.entities.add({
                 name: `Aircraft: ${AircraftIndex}, Model`,
                 description: ``,
                 position: positionProperty,
                 model: {
-                    uri: airplaneUri,
-                    // uri: AircraftURL,
-                    scale: 10.0
+                    // uri: airplaneUri,
+                    uri: AircraftURL,
+                    scale: AircraftURLScale
                 },
                 path: new PathGraphics({ width: 0.2 }),
                 // orientation: vertical === 0 ? new VelocityOrientationProperty(positionProperty) : undefined,
@@ -936,10 +1098,11 @@ export async function LoadSimulation(viewer, data) {
                 45.5
             );
             entitiesArray.push(airplaneEntity);
-            return entitiesArray;
+            positionPropertyArray.push(positionProperty);
+            return entitiesArray, positionPropertyArray;
         }
 
-        entitiesArray = loadModel(positionProperty, entitiesArray);
+        entitiesArray, positionPropertyArray = loadModel(positionProperty, entitiesArray, positionPropertyArray);
 
         function calculateOrientation(positionProperty) {
 
@@ -1018,9 +1181,10 @@ export async function LoadSimulation(viewer, data) {
     const currentTime = viewer.clock.currentTime;
 
     var entitiesArray = [];
+    var positionPropertyArray = [];
 
     data.ObjAircraft.forEach((ObjAircraft, index) => {
-        if ((index > 0) & (index < 300)) {
+        if ((index > 0) & (index < 50)) {
             //const startAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.tda, new JulianDate());
             //const stopAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.taa, new JulianDate());
             const trajectoryPositions = [];
@@ -1032,26 +1196,24 @@ export async function LoadSimulation(viewer, data) {
                     height: Cartographic.fromCartesian(currentPosition).height
                 });
             } // IF INDEX END
-            AddAircraftMotion(startSim, stopSim, timeStepInSeconds, index + 1, trajectoryPositions, ObjAircraft.status, ObjAircraft.tda, ObjAircraft.taa, ObjAircraft.rs, ObjAircraft.rd, 0, entitiesArray);
+            AddAircraftMotion(startSim, stopSim, timeStepInSeconds, index + 1, trajectoryPositions, ObjAircraft.status, ObjAircraft.tda, ObjAircraft.taa, ObjAircraft.rs, ObjAircraft.rd, 0, entitiesArray, positionPropertyArray);
         }
     });
 
+    // // const url = "/Cesium_Man.glb";
+    // const url = "/CesiumMilkTruck.glb";
+    // // const resource = await IonResource.fromAssetId(2461035);
 
-
-                // // const url = "/Cesium_Man.glb";
-                // const url = "/CesiumMilkTruck.glb";
-                // // const resource = await IonResource.fromAssetId(2461035);
-    
-                // const entity = (viewer.trackedEntity = viewer.entities.add({
-                //     name: url,
-                //     position: positionProperty,
-                //     model: {
-                //         uri: url,
-                //         scale: 1.0
-                //     },
-                // }));
-                // entitiesArray.push(entity);
-                // return entitiesArray;
+    // const entity = (viewer.trackedEntity = viewer.entities.add({
+    //     name: url,
+    //     position: positionProperty,
+    //     model: {
+    //         uri: url,
+    //         scale: 1.0
+    //     },
+    // }));
+    // entitiesArray.push(entity);
+    // return entitiesArray;
 
     // Cesium Main End
     //};

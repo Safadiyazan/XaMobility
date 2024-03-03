@@ -4,49 +4,52 @@
 <head>
     <meta charset="utf-8">
     <title>LAAT Flow Simulation</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
-        #leftContainer {
-            width: 50%;
-            height: 100vh;
-            float: left;
-            overflow-y: scroll;
-            border-right: 1px solid #343a40;
-            /* Optional: Add a border to visually separate containers */
-
-            /* Style the scrollbar */
-            scrollbar-width: thin;
-            scrollbar-color: #343a40;
-        }
-
-        #leftContainer::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        #leftContainer::-webkit-scrollbar-thumb {
-            background-color: #343a40;
-        }
-
-        #rightContainer {
-            width: 50%;
-            height: 100vh;
-            float: left;
-        }
-    </style>
 </head>
 
 <body style="margin: 0; padding: 0;">
     <div id="leftContainer">
         <nav id="App"></nav>
     </div>
-
     <div id="rightContainer">
         <div id="cesiumContainer"></div>
     </div>
 </body>
+
+       <!-- 
+        <div id="dropdown-city-container">
+            <span class="dropdown-city-label">Select City:</span>
+            <select id="dropdown-city" onChange={handleDropdownChange} value={selectedCity}>
+                <option value="NYC">NYC</option>
+                <option value="SF">SF</option>
+                <option value="ZH">ZH</option>
+                <option value="NZ">NZ</option>
+                <option value="HF">HF</option>
+                <option value="DXB">DXB</option>
+            </select>
+        </div> -->
+<!-- <script>
+    // Get a reference to the toolbar element
+    const toolbar = document.getElementById('microtoolbar');
+    const showToolbarCheckbox = document.getElementById('showToolbar');
+
+    showToolbarCheckbox.addEventListener('change', function () {
+        toolbar.style.display = this.checked ? 'block' : 'none';
+    });
+
+
+    const dropdown = document.getElementById('dropdown-city');
+
+    const myFunction = (selectedOption) => {
+        // Function implementation to handle the selected option
+        console.log(`Selected option: ${selectedOption}`);
+
+        // Add your specific actions based on the selected option here
+    };
+
+    dropdown.addEventListener('change', function () {
+        const selectedOption = this.value;
+        myFunction(selectedOption);
+    });
+</script> -->
 
 </html>

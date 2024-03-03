@@ -14,3 +14,150 @@ body,
     left: 10px;
     z-index: 1000;
 }
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#leftContainer {
+    width: 50%;
+    height: 100vh;
+    float: left;
+    overflow-y: scroll;
+    border-right: 1px solid #343a40;
+    /* Optional: Add a border to visually separate containers */
+
+    /* Style the scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #343a40;
+}
+
+#leftContainer::-webkit-scrollbar {
+    width: 8px;
+}
+
+#leftContainer::-webkit-scrollbar-thumb {
+    background-color: #343a40;
+}
+
+#rightContainer {
+    width: 50%;
+    height: 100vh;
+    float: left;
+}
+
+#macrotoolbar {
+    z-index: 2;
+    position: absolute;
+    top: 50px;
+    width: 140px;
+    /* Adjust width as desired */
+    height: 26px;
+    /* Adjust height as desired */
+    /* Adjust for desired vertical positioning */
+    right: 10px;
+    /* Positions toolbar in the top-right corner */
+    padding: 2px;
+    /* Adjust padding for content spacing */
+    border: 1px solid #343a40;
+    /* Optional border (adjust color as needed) */
+    border-radius: 5px;
+    /* Rounded corners for a smoother look */
+    background-color: #343a40bb;
+    /* Grey color with opacity */
+    color: #D59F0F;
+    /* White text color for contrast */
+    font-family: sans-serif;
+    /* Clean, modern font */
+    font-size: 14px;
+    /* Adjust font size for readability */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow for depth */
+    text-align: center;
+}
+
+#microtoolbar {
+    z-index: 2;
+    position: absolute;
+    top: 36px;
+    width: 140px;
+    /* Adjust width as desired */
+    height: 315px;
+    /* Adjust height as desired */
+    /* Adjust for desired vertical positioning */
+    right: 0px;
+    /* Positions toolbar in the top-right corner */
+    padding: 10px;
+    /* Adjust padding for content spacing */
+    border: 1px solid #343a40;
+    /* Optional border (adjust color as needed) */
+    border-radius: 5px;
+    /* Rounded corners for a smoother look */
+    background-color: #343a40bb;
+    /* Grey color with opacity */
+    color: #D59F0F;
+    /* White text color for contrast */
+    font-family: sans-serif;
+    /* Clean, modern font */
+    font-size: 12px;
+    /* Adjust font size for readability */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow for depth */
+}
+
+input[type='checkbox'] {
+    accent-color: #D59F0F;
+}
+
+#dropdown-city-container {
+    z-index: 2;
+    position: absolute;
+    top: 10px;
+    /* Adjust for desired vertical positioning */
+    left: 51%;
+    /* Positions toolbar in the top-right corner */
+    width: 140px;
+    /* Adjust width as desired */
+    height: 26px;
+    /* Adjust height as desired */
+    padding: 2px;
+    /* Adjust padding for content spacing */
+    border: 1px solid #343a40;
+    /* Optional border (adjust color as needed) */
+    border-radius: 5px;
+    /* Rounded corners for a smoother look */
+    background-color: #ffffffb6;
+    /* Grey color with opacity */
+    color: #343a40;
+    /* White text color for contrast */
+    font-family: sans-serif;
+    /* Clean, modern font */
+    font-size: 12px;
+    /* Adjust font size for readability */
+    box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+    /* Subtle shadow for depth */
+    text-align: center;
+    /* Center text within the dropdown container */
+}
+
+#dropdown-city {
+    /* Additional styles for the dropdown element itself (if needed) */
+    /* Example: remove default border, adjust font-size, etc. */
+    border: none;
+    /* Remove default border */
+    font-size: inherit;
+    /* Inherit font size from #dropdown-container */
+    background-color: transparent;
+    /* Transparent background to match container */
+    /* Other styles for padding, margin, etc. (optional) */
+}
+
+.dropdown-city-label {
+    display: inline-block;
+    /* Allow text and dropdown side-by-side */
+    margin-right: 5px;
+    /* Add spacing between label and dropdown */
+    font-weight: bold;
+    /* Make label text bolder (optional) */
+}

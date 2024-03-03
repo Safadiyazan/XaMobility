@@ -1,32 +1,32 @@
 function [scenarioName] = ExportJSON(SceStr,SimInfo,ObjAircraft,TFC,EC,Settings)
-M = SimInfo.M(end);
-full_pdt = full(SimInfo.pdt)';
-full_stat = full(SimInfo.statusdt)';
+M = SimInfo.M(end); % number of aircraft
+full_pdt = full(SimInfo.pdt)'; % tranform position matrix
+full_stat = full(SimInfo.statusdt)'; % transform status matrix
 ObjAircraftData = cell(1, M);
 for i = 1:M
-    x = double(full_pdt(3*i-2, :));
-    y = double(full_pdt(3*i-1, :));
-    z = double(full_pdt(3*i, :));
-    stat = double(full_stat(i, :));
+    x = double(full_pdt(3*i-2, :)); % x position [m]
+    y = double(full_pdt(3*i-1, :)); % y position [m]
+    z = double(full_pdt(3*i, :)); % z position [m]
+    stat = double(full_stat(i, :));  % aircraft flight staus {0-inactive, 1-active, 2-arrived}
     ObjAircraftData{i} = struct(...
     'stat', stat,...
-    'tda',max(ObjAircraft(i).tdp,0),...
-    'taa',min(ObjAircraft(i).taa,SimInfo.tf),...
-    'rs',ObjAircraft(i).rs,...
-    'rd',ObjAircraft(i).rd,...
+    'tda',max(ObjAircraft(i).tdp,0),... % aircraft departure time [s]
+    'taa',min(ObjAircraft(i).taa,SimInfo.tf),... % aircraft arrival time [s]
+    'rs',ObjAircraft(i).rs,... % aircraft safety radius [m]
+    'rd',ObjAircraft(i).rd,... % aircraft detection radius [m]
     'x', x,...
     'y', y,...
     'z', z...
     );
 end
 Data.TFC = TFC;
-Data.SimInfo.tf = SimInfo.tf;
-Data.SimInfo.dtS = SimInfo.dtS;
+Data.SimInfo.tf = SimInfo.tf; % simulation final time [s]
+Data.SimInfo.dtS = SimInfo.dtS; % simulation time step [s]
 Data.SimInfo.dtM = SimInfo.dtM;
-Data.Settings.dx = Settings.Airspace.dx;
-Data.Settings.dy = Settings.Airspace.dy;
-Data.Settings.dz = Settings.Airspace.dz;
-Data.Settings.as = Settings.Airspace.as;
+Data.Settings.dx = Settings.Airspace.dx; % Airspace x-axis size [m]
+Data.Settings.dy = Settings.Airspace.dy; % Airspace y-axis size [m]
+Data.Settings.dz = Settings.Airspace.dz; % Airspace z-axis size [m]
+Data.Settings.as = Settings.Airspace.as; % Airspace config
 
 Data.ObjAircraft = ObjAircraftData;
 

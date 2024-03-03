@@ -6,6 +6,8 @@ import Analytics from './Analytics';
 import Settings from './Settings';
 import { LoadSimulation } from '.././LoaderSimulation';
 import { viewer } from '.././index';
+import CityDropdown from './CityDropdown';
+import ViewerToolBar from './ViewerToolBar';
 
 
 const Dashboard = () => {
@@ -40,7 +42,7 @@ const Dashboard = () => {
             const data = await response.json();
             console.log('MATLAB Result:', data.result);
             // Update the DOM with the result
-            resultContainer.innerHTML =  'Scenario completed. ' + 'Last run: ' + data.result;
+            resultContainer.innerHTML = 'Scenario completed. ' + 'Last run: ' + data.result;
             runButton.classList.remove('btn-danger');
             runButton.classList.add('btn-secondary');
             setRunningSuccess(false);
@@ -79,6 +81,12 @@ const Dashboard = () => {
         setSelectedFile(selectedOption);
     };
 
+    const handleDropdownCityChange = (event) => {
+        const selectedCityOption = event.target.value;
+        console.log(`Selected City option 1: ${selectedCityOption}`);
+        setSelectedCity(selectedCityOption);
+    };
+
     // const runButtonRef = useRef(null);
 
     // const updateButtonClass = (newClass) => {
@@ -100,16 +108,43 @@ const Dashboard = () => {
     useEffect(() => {
         // Fetch initial data when the component mounts
         const initialSelectedFile = selectedFile;
+        const initialSelectedCity = selectedCity;
         fetch(initialSelectedFile)
             .then(response => response.json())
             .then(data => {
                 // Call your function with the fetched data
-                LoadSimulation(viewer, data);
+                console.log(`Selected Data name: ${initialSelectedFile}`);
+                console.log(`Selected Data city name: ${initialSelectedCity}`);
+                LoadSimulation(viewer, data, initialSelectedCity);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     }, [selectedFile]);  // Dependency array ensures this effect runs when selectedFile changes
+
+    const [selectedCity, setSelectedCity] = useState("NYC");
+    useEffect(() => {
+        // LoadSimulation(viewer, selectedFile, selectedCity);
+        // Fetch initial data when the component mounts
+        const initialSelectedCity = selectedCity;
+        const initialSelectedFile = selectedFile;
+        fetch(initialSelectedFile)
+            .then(response => response.json())
+            .then(data => {
+                // Call your function with the fetched data
+                LoadSimulation(viewer, data, initialSelectedCity);
+            })
+            .catch(error => {
+                console.error('Error fetching city:', error);
+            });
+    }, [selectedCity]);  // Dependency array ensures this effect runs when selectedCity changes
+
+
+    // const [toolbarData, setToolbarData] = useState(null);
+
+    // const handleToolbarDataUpdate = (data) => {
+    //     setToolbarData(data);
+    // };
 
 
     // =======================================================================================
@@ -195,6 +230,8 @@ const Dashboard = () => {
             </Accordion>
             <hr />
             {/* <Analytics /> */}
+            <CityDropdown handleDropdownCityChange={handleDropdownCityChange} selectedCity={selectedCity} />
+            <ViewerToolBar />
         </div>
     );
 };
