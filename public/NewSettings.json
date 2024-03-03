@@ -1,13 +1,13 @@
 {
   "Airspace": {
-    "dx": 100000,
-    "dy": 100000,
+    "dx": 5000,
+    "dy": 5000,
     "dz": 100,
     "as": 1
   },
   "Aircraft": {
-    "VmaxMin": 10,
-    "VmaxMax": 30,
+    "VmaxMin": 20,
+    "VmaxMax": 20,
     "RsMin": 10,
     "RsMax": 30
   },
