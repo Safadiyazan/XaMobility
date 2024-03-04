@@ -249,35 +249,35 @@ export async function LoadSimulation(viewer, data, city) {
                                             <tbody>
                                                 <tr>
                                                     <td>Aircraft ID</td>
-                                                    <td>0</td>
+                                                    <td>N/A</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Time</td>
-                                                    <td>0</td>
+                                                    <td>N/A</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Longitude</td>
-                                                    <td>0 [deg]</td>
+                                                    <td>N/A [deg]</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Latitude</td>
-                                                    <td>0 [deg]</td>
+                                                    <td>N/A [deg]</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Height</td>
-                                                    <td>0 [m]</td>
+                                                    <td>N/A [m]</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Flight time</td>
-                                                    <td>0 [s]</td>
+                                                    <td>N/A [s]</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Distance travelled</td>
-                                                    <td>0 [m]</td>
+                                                    <td>N/A [m]</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Speed</td>
-                                                    <td>0 [m/s]</td>
+                                                    <td>N/A [m/s]</td>
                                                 </tr>
                                             </tbody>
                                         </table>

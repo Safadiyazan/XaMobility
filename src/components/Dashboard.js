@@ -7,6 +7,7 @@ import Settings from './Settings';
 import { LoadSimulation } from '.././LoaderSimulation';
 import { viewer } from '.././index';
 import CityDropdown from './CityDropdown';
+import ImageToolbar from './ImageToolbar';
 import ViewerToolBar from './ViewerToolBar';
 
 
@@ -232,6 +233,7 @@ const Dashboard = () => {
             {/* <Analytics /> */}
             <CityDropdown handleDropdownCityChange={handleDropdownCityChange} selectedCity={selectedCity} />
             <ViewerToolBar />
+            <ImageToolbar />
         </div>
     );
 };

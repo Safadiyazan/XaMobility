@@ -83,7 +83,7 @@ body {
     top: 36px;
     width: 140px;
     /* Adjust width as desired */
-    height: 315px;
+    height: 300px;
     /* Adjust height as desired */
     /* Adjust for desired vertical positioning */
     right: 0px;
@@ -110,6 +110,37 @@ input[type='checkbox'] {
     accent-color: #D59F0F;
 }
 
+#image-toolbar {
+    z-index: 2;
+    position: absolute;
+    top: 40px;
+    /* Adjust for desired vertical positioning */
+    left: 51%;
+    /* Positions toolbar in the top-right corner */
+    width: 140px;
+    /* Adjust width as desired */
+    height: 26px;
+    /* Adjust height as desired */
+    padding: 2px;
+    /* Adjust padding for content spacing */
+    border: 1px solid #343a40;
+    /* Optional border (adjust color as needed) */
+    border-radius: 5px;
+    /* Rounded corners for a smoother look */
+    background-color: #343a40bb;
+    /* Grey color with opacity */
+    color: #D59F0F;
+    /* White text color for contrast */
+    font-family: sans-serif;
+    /* Clean, modern font */
+    font-size: 11px;
+    /* Adjust font size for readability */
+    box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+    /* Subtle shadow for depth */
+    text-align: center;
+    /* Center text within the dropdown container */
+}
+
 #dropdown-city-container {
     z-index: 2;
     position: absolute;
@@ -127,9 +158,9 @@ input[type='checkbox'] {
     /* Optional border (adjust color as needed) */
     border-radius: 5px;
     /* Rounded corners for a smoother look */
-    background-color: #ffffffb6;
+    background-color: #343a40bb;
     /* Grey color with opacity */
-    color: #343a40;
+    color: #D59F0F;
     /* White text color for contrast */
     font-family: sans-serif;
     /* Clean, modern font */
@@ -141,23 +172,18 @@ input[type='checkbox'] {
     /* Center text within the dropdown container */
 }
 
-#dropdown-city {
-    /* Additional styles for the dropdown element itself (if needed) */
-    /* Example: remove default border, adjust font-size, etc. */
-    border: none;
-    /* Remove default border */
-    font-size: inherit;
-    /* Inherit font size from #dropdown-container */
-    background-color: transparent;
-    /* Transparent background to match container */
-    /* Other styles for padding, margin, etc. (optional) */
-}
 
 .dropdown-city-label {
     display: inline-block;
-    /* Allow text and dropdown side-by-side */
     margin-right: 5px;
-    /* Add spacing between label and dropdown */
     font-weight: bold;
-    /* Make label text bolder (optional) */
+}
+
+#dropdown-city {
+    border: none;
+    font-size: inherit;
+    background-color: transparent;
+    min-width: 40px;
+    color: #D59F0F;
+    cursor: pointer;
 }
