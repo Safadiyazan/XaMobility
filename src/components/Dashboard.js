@@ -9,7 +9,7 @@ import { viewer } from '.././index';
 import CityDropdown from './CityDropdown';
 import ImageToolbar from './ImageToolbar';
 import ViewerToolBar from './ViewerToolBar';
-
+import NetworkSetup from './NetworkSetup.js';
 
 const Dashboard = () => {
     // =======================================================================================
@@ -105,7 +105,9 @@ const Dashboard = () => {
     };
     // =======================================================================================
     // Run and Load Simulation Handles =======================================================
-    const [selectedFile, setSelectedFile] = useState("/Samples/SimOutput_ObjAircraft_Default.json");
+    const [selectedFile, setSelectedFile] = useState("/Samples/SimOutput_ObjAircraft_VTOL_DBC.json");
+    const [analyticsData, setAnalyticsData] = useState(null);
+
     useEffect(() => {
         // Fetch initial data when the component mounts
         const initialSelectedFile = selectedFile;
@@ -117,6 +119,8 @@ const Dashboard = () => {
                 console.log(`Selected Data name: ${initialSelectedFile}`);
                 console.log(`Selected Data city name: ${initialSelectedCity}`);
                 LoadSimulation(viewer, data, initialSelectedCity);
+                // ShowAnalytics(data);
+                setAnalyticsData(data); // Assuming a state variable for analytics data
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -134,6 +138,8 @@ const Dashboard = () => {
             .then(data => {
                 // Call your function with the fetched data
                 LoadSimulation(viewer, data, initialSelectedCity);
+                // ShowAnalytics(data);
+                setAnalyticsData(data); // Assuming a state variable for analytics data
             })
             .catch(error => {
                 console.error('Error fetching city:', error);
@@ -170,10 +176,12 @@ const Dashboard = () => {
                     <option value={selectedFile}>
                         Choose a sample for display
                     </option>
-                    <option value="/Samples/SimOutput_ObjAircraft_Default.json">Default</option>
-                    <option value="/Samples/SimOutput_ObjAircraft_VTOL_DBC.json">VTOL DBC</option>
-                    <option value="/Samples/Results_Qin23_Boundary_Testing.json">Boundary</option>
-                    <option value="/Samples/Results_Qin23_Departure_Testing.json">Departure</option>
+                    {/* <option value="/Samples/SimOutput_ObjAircraft_Default.json">Default</option> */}
+                    {/* <option value="/Samples/SimOutput_ObjAircraft_VTOL_DBC.json">VTOL DBC</option> */}
+                    {/* <option value="/Samples/Results_Qin23_Boundary_Testing.json">Boundary</option> */}
+                    {/* <option value="/Samples/Results_Qin23_Departure_Testing.json">Departure</option> */}
+                    <option value="/Samples/Results_Qin1_TestingEm.json">Em</option>
+                    
                 </select>
             </div>
             <br />
@@ -230,10 +238,11 @@ const Dashboard = () => {
                 </Accordion.Item>
             </Accordion>
             <hr />
-            {/* <Analytics /> */}
+            <Analytics data={analyticsData} />
             <CityDropdown handleDropdownCityChange={handleDropdownCityChange} selectedCity={selectedCity} />
             <ViewerToolBar />
             <ImageToolbar />
+            <NetworkSetup />
         </div>
     );
 };

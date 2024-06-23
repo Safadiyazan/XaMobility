@@ -2,7 +2,7 @@ function [Sim] = SettingSimulation(InflowRate)
 Sim.dtsim=double(0.5); % (min) simulation time step
 Sim.dtMFD=double(60); % (min)
 Sim.InflowRate = InflowRate;
-InflowSetting = 7; % (min)
+InflowSetting = 2; % (min)
 switch InflowSetting
     case 2
         % Test

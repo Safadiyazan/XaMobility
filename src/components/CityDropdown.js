@@ -11,6 +11,7 @@ const CityDropdown = ({ handleDropdownCityChange, selectedCity }) => {
         <option value="NZ">NZ</option>
         <option value="HF">HF</option>
         <option value="DXB">DXB</option>
+        <option value="KTH">KTH</option>
       </select>
     </div>
   );

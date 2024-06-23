@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
-import { IonResource, ClockStep, ClockRange, HeadingPitchRoll, VelocityOrientationProperty, PathGraphics, DistanceDisplayCondition, CallbackProperty, TimeInterval, TimeIntervalCollection, SampledPositionProperty, JulianDate, Cartographic, Sun, ShadowMode, Color, Ellipsoid, Matrix4, Transforms, Cesium3DTileset, Cartesian3, createOsmBuildingsAsync, Ion, Math as CesiumMath, Terrain, Viewer } from 'cesium';
+import * as Cesium from "cesium";
+import { Model, IonResource, ClockStep, ClockRange, HeadingPitchRoll, VelocityOrientationProperty, PathGraphics, DistanceDisplayCondition, CallbackProperty, TimeInterval, TimeIntervalCollection, SampledPositionProperty, JulianDate, Cartographic, Sun, ShadowMode, Color, Ellipsoid, Matrix4, Transforms, Cesium3DTileset, Cartesian3, createOsmBuildingsAsync, Ion, Math as CesiumMath, Terrain, Viewer } from 'cesium';
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import ViewerToolBar from './components/ViewerToolBar';
+import NetworkSetup from './components/NetworkSetup.js';
+
 // =================================================================================================================================================
 // Cesium Simulation
 // =================================================================================================================================================
@@ -37,8 +40,8 @@ export async function LoadSimulation(viewer, data, city) {
                 color: Color.BLACK,
                 outlineColor: Color.WHITE,
                 outlineWidth: 1,
-                allowPicking: false,
             },
+            allowPicking: false,
         });
         return undefined;
     }
@@ -67,6 +70,10 @@ export async function LoadSimulation(viewer, data, city) {
             var dz0 = 580;
             var center = Cartesian3.fromDegrees(8.545094, 47.373878, dz0); // Zurich
             break;
+        case "HF":
+            var dz0 = 580;
+            var center = Cartesian3.fromDegrees(35.023484, 32.777805, dz0); // NAZ
+            break;
         case "NZ":
             var dz0 = 580;
             var center = Cartesian3.fromDegrees(35.29755740551859, 32.702149095841264, dz0); // NAZ
@@ -74,6 +81,10 @@ export async function LoadSimulation(viewer, data, city) {
         case "DXB":
             var dz0 = 80;
             var center = Cartesian3.fromDegrees(55.1390, 25.1124, dz0); // Dubai
+            break;
+        case "KTH":
+            var dz0 = 580;
+            var center = Cartesian3.fromDegrees(18.070336, 59.349744, dz0); // Dubai
             break;
         // default:
         //     var dz0 = 80;
@@ -161,6 +172,7 @@ export async function LoadSimulation(viewer, data, city) {
                     destination: initialPosition,
                     orientation: initialOrientation,
                 });
+                // viewer.zoomTo(airspace)
                 viewer.trackedEntity = undefined;
             }
             if ((event.key === 'r')) {
@@ -174,22 +186,22 @@ export async function LoadSimulation(viewer, data, city) {
                         viewer.clock.onTick.addEventListener((clock) => {
                             if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
                                 const cartographic = Cartographic.fromCartesian(positionPropertyArray[randomNumber].getValue(viewer.clock.currentTime));
-                                console.log("Aircraft ID:", randomNumber + 1);
+                                // console.log("Aircraft ID:", randomNumber + 1);
                                 const formattedTime = new Date(viewer.clock.currentTime);
-                                console.log("Current time:", formattedTime.toLocaleTimeString());
-                                console.log("Longitude:", CesiumMath.toDegrees(cartographic.longitude).toFixed(4), "degrees");
-                                console.log("Latitude:", CesiumMath.toDegrees(cartographic.latitude).toFixed(4), "degrees");
-                                console.log("Height:", cartographic.height.toFixed(2), "meters"); // Adjust units if needed
+                                // console.log("Current time:", formattedTime.toLocaleTimeString());
+                                // console.log("Longitude:", CesiumMath.toDegrees(cartographic.longitude).toFixed(4), "degrees");
+                                // console.log("Latitude:", CesiumMath.toDegrees(cartographic.latitude).toFixed(4), "degrees");
+                                // console.log("Height:", cartographic.height.toFixed(2), "meters"); // Adjust units if needed
                                 const time0 = entitiesArray[randomNumber].availability.start; // Get position 10 seconds earlier
                                 const time2 = viewer.clock.currentTime;
                                 const position0 = positionPropertyArray[randomNumber].getValue(time0);
                                 const position2 = positionPropertyArray[randomNumber].getValue(time2);
                                 const distance = Cartesian3.distance(position0, position2);
                                 const timeDifference = JulianDate.secondsDifference(time2, time0);
-                                console.log("Flight time:", timeDifference.toFixed(2), "second"); // Adjust units if needed
-                                console.log("Distance travelled:", distance.toFixed(2), "meters"); // Adjust units if needed
+                                // console.log("Flight time:", timeDifference.toFixed(2), "second"); // Adjust units if needed
+                                // console.log("Distance travelled:", distance.toFixed(2), "meters"); // Adjust units if needed
                                 const speed = distance / timeDifference;
-                                console.log("Aircraft speed:", speed.toFixed(2), "meters per second"); // Adjust units if needed
+                                // console.log("Aircraft speed:", speed.toFixed(2), "meters per second"); // Adjust units if needed
 
                                 const tableHtml = `
                                     <table id="aircraft-data-table">
@@ -424,6 +436,57 @@ export async function LoadSimulation(viewer, data, city) {
     // (Optional) Add event listeners for interactive elements (checkboxes, etc.)
     // End view settings
     ///////////////////////////////////////////////////////////////////////////////////////
+    // Start Vertiport setting
+
+    // const VertiportLocationA = Cartesian3.fromDegrees(-73.97618892920757, 40.739661015289336, 10); // NYC NYC Health + Hospitals/Bellevue
+    // const headingPositionRollA = new Cesium.HeadingPitchRoll();
+    // const fixedFrameTransformA = Cesium.Transforms.localFrameToFixedFrameGenerator(
+    //     "north",
+    //     "west"
+    // );
+    // try {
+    //     const modelA = await Cesium.Model.fromGltfAsync({
+    //         url: "/Vertiport.glb",
+    //         scale: 0.5,
+    //         modelMatrix: Cesium.Transforms.headingPitchRollToFixedFrame(
+    //             VertiportLocationA,
+    //             headingPositionRollA,
+    //             Cesium.Ellipsoid.WGS84,
+    //             fixedFrameTransformA
+    //         ),
+    //         //minimumPixelSize: 128,
+    //     });
+    //     viewer.scene.primitives.add(modelA);
+    // } catch (error) {
+    //     console.log(`Failed to load model. ${error}`);
+    // }
+
+    // const VertiportLocationB = Cartesian3.fromDegrees(-73.98795424274152, 40.71316991516138, 30); // NYC Gotham Hospital
+    // const headingPositionRollB = new Cesium.HeadingPitchRoll();
+    // const fixedFrameTransformB = Cesium.Transforms.localFrameToFixedFrameGenerator(
+    //     "north",
+    //     "west"
+    // );
+    // try {
+    //     const modelB = await Cesium.Model.fromGltfAsync({
+    //         url: "/Vertiport.glb",
+    //         scale: 0.12,
+    //         modelMatrix: Cesium.Transforms.headingPitchRollToFixedFrame(
+    //             VertiportLocationB,
+    //             headingPositionRollB,
+    //             Cesium.Ellipsoid.WGS84,
+    //             fixedFrameTransformB
+    //         ),
+    //         //minimumPixelSize: 128,
+    //     });
+    //     viewer.scene.primitives.add(modelB);
+    // } catch (error) {
+    //     console.log(`Failed to load model. ${error}`);
+    // }
+
+
+    // End Vertiport setting
+    ///////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     // var as = 2;
     if (as == 1) {
@@ -465,8 +528,8 @@ export async function LoadSimulation(viewer, data, city) {
                     material: Color.CYAN.withAlpha(0.1),
                     outline: true,
                     outlineColor: Color.CYAN,
-                    allowPicking: false,
                 },
+                allowPicking: false,
             });
             //viewer.zoomTo(airspace);
         }
@@ -512,8 +575,8 @@ export async function LoadSimulation(viewer, data, city) {
                     material: Color.CYAN.withAlpha(0.05),
                     outline: true,
                     outlineColor: Color.CYAN,
-                    allowPicking: false,
                 },
+                allowPicking: false,
             });
             //viewer.zoomTo(airspace);
         }
@@ -552,8 +615,8 @@ export async function LoadSimulation(viewer, data, city) {
                     material: Color.BLACK.withAlpha(0.1),
                     outline: true,
                     outlineColor: Color.BLACK,
-                    allowPicking: false,
                 },
+                allowPicking: false,
             });
             const airspaceL1 = viewer.entities.add({
                 name: `Layer 0`,
@@ -570,8 +633,8 @@ export async function LoadSimulation(viewer, data, city) {
                     material: Color.YELLOW.withAlpha(0.1),
                     outline: true,
                     outlineColor: Color.BLACK,
-                    allowPicking: false,
                 },
+                allowPicking: false,
             });
             const airspaceL2 = viewer.entities.add({
                 name: `Layer 0`,
@@ -588,8 +651,8 @@ export async function LoadSimulation(viewer, data, city) {
                     material: Color.BLACK.withAlpha(0.1),
                     outline: true,
                     outlineColor: Color.BLACK,
-                    allowPicking: false,
                 },
+                allowPicking: false,
             });
             //viewer.zoomTo(airspace);
         }
@@ -628,8 +691,8 @@ export async function LoadSimulation(viewer, data, city) {
                     material: Color.BLACK.withAlpha(0.1),
                     outline: true,
                     outlineColor: Color.BLACK,
-                    allowPicking: false,
                 },
+                allowPicking: false,
             });
             const airspaceL1 = viewer.entities.add({
                 name: `Layer 0`,
@@ -646,8 +709,8 @@ export async function LoadSimulation(viewer, data, city) {
                     material: Color.RED.withAlpha(0.1),
                     outline: true,
                     outlineColor: Color.BLACK,
-                    allowPicking: false,
                 },
+                allowPicking: false,
             });
             const airspaceL2 = viewer.entities.add({
                 name: `Layer 0`,
@@ -664,8 +727,8 @@ export async function LoadSimulation(viewer, data, city) {
                     material: Color.BLACK.withAlpha(0.1),
                     outline: true,
                     outlineColor: Color.BLACK,
-                    allowPicking: false,
                 },
+                allowPicking: false,
             });
             //viewer.zoomTo(airspace);
         }
@@ -711,8 +774,8 @@ export async function LoadSimulation(viewer, data, city) {
                     material: Color.CYAN.withAlpha(0.05),
                     outline: true,
                     outlineColor: Color.CYAN,
-                    allowPicking: false,
                 },
+                allowPicking: false,
             });
             //viewer.zoomTo(airspace);
         }
@@ -751,8 +814,8 @@ export async function LoadSimulation(viewer, data, city) {
                     material: Color.BLACK.withAlpha(0.1),
                     outline: true,
                     outlineColor: Color.BLACK,
-                    allowPicking: false,
                 },
+                allowPicking: false,
             });
             const airspaceL1 = viewer.entities.add({
                 name: `Layer 1`,
@@ -769,8 +832,8 @@ export async function LoadSimulation(viewer, data, city) {
                     material: Color.YELLOW.withAlpha(0.1),
                     outline: true,
                     outlineColor: Color.BLACK,
-                    allowPicking: false,
                 },
+                allowPicking: false,
             });
             //viewer.zoomTo(airspace);
         }
@@ -809,8 +872,8 @@ export async function LoadSimulation(viewer, data, city) {
                     material: Color.BLACK.withAlpha(0.1),
                     outline: true,
                     outlineColor: Color.BLACK,
-                    allowPicking: false,
                 },
+                allowPicking: false,
             });
             const airspaceL1 = viewer.entities.add({
                 name: `Layer 0`,
@@ -827,8 +890,8 @@ export async function LoadSimulation(viewer, data, city) {
                     material: Color.RED.withAlpha(0.1),
                     outline: true,
                     outlineColor: Color.BLACK,
-                    allowPicking: false,
                 },
+                allowPicking: false,
             });
             //viewer.zoomTo(airspace);
         }
@@ -889,7 +952,7 @@ export async function LoadSimulation(viewer, data, city) {
     }
     // TestFlightsFunctions();
 
-    async function AddAircraftMotion(startSim, stopSim, timeStepInSeconds, AircraftIndex, flightData, statusData, tda, taa, rs, rd, vertical, entitiesArray, positionPropertyArray) {
+    async function AddAircraftMotion(startSim, stopSim, timeStepInSeconds, AircraftIndex, flightData, AMI, statusData, tda, taa, rs, rd, vertical, entitiesArray, positionPropertyArray) {
         const startAircraft = new JulianDate.addSeconds(startSim, tda, new JulianDate());
         const stopAircraft = new JulianDate.addSeconds(startSim, taa, new JulianDate());
         const positionProperty = new SampledPositionProperty();
@@ -1054,17 +1117,25 @@ export async function LoadSimulation(viewer, data, city) {
         );
 
         // Add Aircraft Model
-        async function loadModel(positionProperty, entitiesArray) {
+        async function loadModel(positionProperty, entitiesArray, positionPropertyArray, AMI) {
 
             var AircraftURL = "/YS_VTOL.glb";
             var AircraftURLScale = 2;
-            var AircraftModelIndex = Math.floor(Math.random() * 4) + 1;
-            switch (AircraftModelIndex) {
+            // var AircraftModelIndex = Math.floor(Math.random() * 4) + 1;
+            switch (AMI) {
                 case 1:
-                    AircraftURL = "/YS_VTOL.glb";
+                    AircraftURL = "/YS_VTOL_Medical.glb";
                     AircraftURLScale = 2;
                     break;
                 case 2:
+                    AircraftURL = "/YS_Drone_MedicalCargo.glb";
+                    AircraftURLScale = 1;
+                    break;
+                case 3:
+                    AircraftURL = "/YS_VTOL.glb";
+                    AircraftURLScale = 2;
+                    break;
+                case 4:
                     AircraftURL = "/YS_Drone.glb";
                     AircraftURLScale = 1;
                     break;
@@ -1087,7 +1158,7 @@ export async function LoadSimulation(viewer, data, city) {
                 path: new PathGraphics({ width: 0.2 }),
                 // orientation: vertical === 0 ? new VelocityOrientationProperty(positionProperty) : undefined,
                 orientation: calculateOrientation(positionProperty), // Use a callback for orientation
-                allowPicking: true,
+                allowPicking: false,
             });
             airplaneEntity.availability = new TimeIntervalCollection([new TimeInterval({
                 start: startAircraft,
@@ -1102,7 +1173,7 @@ export async function LoadSimulation(viewer, data, city) {
             return entitiesArray, positionPropertyArray;
         }
 
-        entitiesArray, positionPropertyArray = loadModel(positionProperty, entitiesArray, positionPropertyArray);
+        entitiesArray, positionPropertyArray = loadModel(positionProperty, entitiesArray, positionPropertyArray, AMI);
 
         function calculateOrientation(positionProperty) {
 
@@ -1154,11 +1225,166 @@ export async function LoadSimulation(viewer, data, city) {
 
         }
 
+        const isNetworkSetup = true; //document.getElementById('showNetworkSetup').checked;
+        // const isNetworkSetup = showNetworkSetup.isNetworkSetup;
+        if (!isNetworkSetup) {
+            ////////////////////////////////////////////
+            // Add vertiports.
+            var scene = viewer.scene;
+            // scene.globe.depthTestAgainstTerrain = true;
+            if (!scene.pickPositionSupported) {
+                window.alert("This browser does not support pickPosition.");
+            }
+            if (!scene.sampleHeightSupported) {
+                window.alert("This browser does not support sampleHeight.");
+            }
+            // var scene = this.viewer.scene;
+            var ellipsoid = scene.globe.ellipsoid;
+            var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
 
 
+            // Pickup location 
+
+            // Mouse over the globe to see the cartographic position
+            // handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+            const labelEntity = viewer.entities.add({
+                label: {
+                    show: false,
+                    showBackground: true,
+                    font: "14px sans-serif",
+                    horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+                    verticalOrigin: Cesium.VerticalOrigin.TOP,
+                    pixelOffset: new Cesium.Cartesian2(15, 0),
+                },
+            });
+
+            handler.setInputAction(function (movement) {
+                let foundPosition = false;
+
+                const scene = viewer.scene;
+                if (scene.mode !== Cesium.SceneMode.MORPHING) {
+                    if (scene.pickPositionSupported) {
+                        const cartesian = viewer.scene.pickPosition(
+                            movement.endPosition
+                        );
+
+                        if (Cesium.defined(cartesian)) {
+                            const cartographic = Cesium.Cartographic.fromCartesian(
+                                cartesian
+                            );
+                            const longitudeString = Cesium.Math.toDegrees(
+                                cartographic.longitude
+                            ).toFixed(2);
+                            const latitudeString = Cesium.Math.toDegrees(
+                                cartographic.latitude
+                            ).toFixed(2);
+                            const heightString = cartographic.height.toFixed(2);
+
+                            labelEntity.position = cartesian;
+                            labelEntity.label.show = true;
+                            labelEntity.label.text =
+                                `Lon: ${`   ${longitudeString}`.slice(-7)}\u00B0` +
+                                `\nLat: ${`   ${latitudeString}`.slice(-7)}\u00B0` +
+                                `\nAlt: ${`   ${heightString}`.slice(-7)}m`;
+
+                            labelEntity.label.eyeOffset = new Cesium.Cartesian3(
+                                0.0,
+                                0.0,
+                                -cartographic.height *
+                                (scene.mode === Cesium.SceneMode.SCENE2D ? 1.5 : 1.5)
+                            );
+
+                            foundPosition = true;
+                        }
+                    }
+                }
+
+                if (!foundPosition) {
+                    labelEntity.label.show = false;
+                }
+            }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+
+
+            handler.setInputAction(function (event) {
+                var cartesian = scene.camera.pickEllipsoid(event.position, ellipsoid);
+                const lonLat = Cesium.Cartographic.fromCartesian(cartesian);
+                const longitudeDeg = Cesium.Math.toDegrees(lonLat.longitude);
+                const latitudeDeg = Cesium.Math.toDegrees(lonLat.latitude);
+                const cartographic = new Cesium.Cartographic();
+                const objectsToExclude = [];
+                cartographic.longitude = lonLat.longitude;
+                cartographic.latitude = lonLat.latitude;
+                let Checkheight;
+                if (scene.sampleHeightSupported) {
+                    Checkheight = scene.sampleHeight(cartographic, objectsToExclude);
+                }
+                if (Cesium.defined(Checkheight)) {
+                    cartographic.height = Checkheight;
+                }
+                const heightDeg = cartographic.height;
+                const adjustedCartesian = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, cartographic.height); // Adjust height
+                addObjectAndSaveData(adjustedCartesian, longitudeDeg, latitudeDeg, heightDeg);
+            }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
+            async function addObjectAndSaveData(cartesian, longitudeDeg, latitudeDeg, heightDeg) {
+                try {
+                    const VertiportLocation = cartesian;
+                    const headingPositionRollVertiport = new Cesium.HeadingPitchRoll();
+                    const fixedFrameTransformVertiport = Cesium.Transforms.localFrameToFixedFrameGenerator(
+                        "north",
+                        "west"
+                    );
+                    const point = viewer.entities.add({
+                        name: ['Vertiport:' + longitudeDeg, latitudeDeg, heightDeg],
+                        position: VertiportLocation,
+                        point: {
+                            color: Cesium.Color.RED,
+                            pixelSize: 30,
+                        },
+                    });
+                    // // Create text entity for vertiport index and location
+                    // const textEntity = viewer.entities.add({
+                    //     position: vertiportLocation,
+                    //     label: {
+                    //         text: `Vertiport ${longitudeDeg.toFixed(2)}\u00B0, ${latitudeDeg.toFixed(2)}\u00B0, ${heightDeg.toFixed(2)}m`,
+                    //         font: '14px sans-serif',
+                    //         showBackground: true,
+                    //         horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                    //         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                    //         pixelOffset: new Cesium.Cartesian2(0, 15), // Offset text slightly below the point
+                    //     },
+                    // });
+
+                    // ... (rest of your code for optional model loading)
+
+                    // Return both entities for potential later use
+                    return { pointEntity: point, textEntity: textEntity };
+                    // const modelVertipot = await Cesium.Model.fromGltfAsync({
+                    //     url: "/Vertiport.glb",
+                    //     scale: 0.12,
+                    //     modelMatrix: Cesium.Transforms.headingPitchRollToFixedFrame(
+                    //         VertiportLocation,
+                    //         headingPositionRollVertiport,
+                    //         Cesium.Ellipsoid.WGS84,
+                    //         fixedFrameTransformVertiport
+                    //     ),
+                    // });
+                    // viewer.scene.primitives.add(modelVertipot);
+                    // console.log('Added vertiport at ' + longitudeDeg, latitudeDeg, height)
+                    // return modelVertipot;
+                } catch (error) {
+                    console.error("Error loading model:", error);
+                }
+
+            }
+        }
 
     }
+    // modelB.model.heightReference = Cesium.HeightReference.CLAMP_TO_3D_TILE;
+    // saveDataToJSON(longitude, latitude);
 
+    ///////////////////////////////////////////
 
     //async function main() {
     // Add Aircraft Data from the simulation
@@ -1184,7 +1410,7 @@ export async function LoadSimulation(viewer, data, city) {
     var positionPropertyArray = [];
 
     data.ObjAircraft.forEach((ObjAircraft, index) => {
-        if ((index > 0) & (index < 50)) {
+        if ((index > 0) & (index < 150)) {
             //const startAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.tda, new JulianDate());
             //const stopAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.taa, new JulianDate());
             const trajectoryPositions = [];
@@ -1196,7 +1422,7 @@ export async function LoadSimulation(viewer, data, city) {
                     height: Cartographic.fromCartesian(currentPosition).height
                 });
             } // IF INDEX END
-            AddAircraftMotion(startSim, stopSim, timeStepInSeconds, index + 1, trajectoryPositions, ObjAircraft.status, ObjAircraft.tda, ObjAircraft.taa, ObjAircraft.rs, ObjAircraft.rd, 0, entitiesArray, positionPropertyArray);
+            AddAircraftMotion(startSim, stopSim, timeStepInSeconds, index + 1, trajectoryPositions, ObjAircraft.AMI, ObjAircraft.status, ObjAircraft.tda, ObjAircraft.taa, ObjAircraft.rs, ObjAircraft.rd, 0, entitiesArray, positionPropertyArray);
         }
     });
 

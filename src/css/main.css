@@ -50,7 +50,7 @@ body {
 #macrotoolbar {
     z-index: 2;
     position: absolute;
-    top: 50px;
+    top: 100px;
     width: 140px;
     /* Adjust width as desired */
     height: 26px;
@@ -76,6 +76,8 @@ body {
     /* Subtle shadow for depth */
     text-align: center;
 }
+
+
 
 #microtoolbar {
     z-index: 2;
@@ -186,4 +188,78 @@ input[type='checkbox'] {
     min-width: 40px;
     color: #D59F0F;
     cursor: pointer;
+}
+
+#networksetup {
+    z-index: 2;
+    position: absolute;
+    top: 10px;
+    /* Adjust for desired vertical positioning */
+    left: 63%;
+    width: 140px;
+    /* Adjust width as desired */
+    height: 26px;
+    /* Adjust height as desired */
+    /* Adjust for desired vertical positioning */
+    /* right: 10px; */
+    /* Positions toolbar in the top-right corner */
+    padding: 2px;
+    /* Adjust padding for content spacing */
+    border: 1px solid #343a40;
+    /* Optional border (adjust color as needed) */
+    border-radius: 5px;
+    /* Rounded corners for a smoother look */
+    background-color: #343a40bb;
+    /* Grey color with opacity */
+    color: #D59F0F;
+    /* White text color for contrast */
+    font-family: sans-serif;
+    /* Clean, modern font */
+    font-size: 14px;
+    /* Adjust font size for readability */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow for depth */
+    text-align: center;
+}
+
+#setup-network-container {
+    z-index: 2;
+    position: absolute;
+    top: 10px;
+    /* Adjust for desired vertical positioning */
+    left: 51%;
+    /* Positions toolbar in the top-right corner */
+    width: 140px;
+    /* Adjust width as desired */
+    height: 26px;
+    /* Adjust height as desired */
+    padding: 2px;
+    /* Adjust padding for content spacing */
+    border: 1px solid #343a40;
+    /* Optional border (adjust color as needed) */
+    border-radius: 5px;
+    /* Rounded corners for a smoother look */
+    background-color: #343a40bb;
+    /* Grey color with opacity */
+    color: #D59F0F;
+    /* White text color for contrast */
+    font-family: sans-serif;
+    /* Clean, modern font */
+    font-size: 12px;
+    /* Adjust font size for readability */
+    box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+    /* Subtle shadow for depth */
+    text-align: center;
+    /* Center text within the dropdown container */
+}
+
+.chart-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    /* Defines a single column */
+}
+
+.chart-column {
+    grid-column: 1 / span 1;
+    /* Spans the entire column */
 }
