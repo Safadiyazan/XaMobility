@@ -105,7 +105,7 @@ const Dashboard = () => {
     };
     // =======================================================================================
     // Run and Load Simulation Handles =======================================================
-    const [selectedFile, setSelectedFile] = useState("/Samples/SimOutput_ObjAircraft_VTOL_DBC.json");
+    const [selectedFile, setSelectedFile] = useState("/Samples/Results_Testing.json");
     const [analyticsData, setAnalyticsData] = useState(null);
 
     useEffect(() => {
@@ -180,7 +180,7 @@ const Dashboard = () => {
                     {/* <option value="/Samples/SimOutput_ObjAircraft_VTOL_DBC.json">VTOL DBC</option> */}
                     {/* <option value="/Samples/Results_Qin23_Boundary_Testing.json">Boundary</option> */}
                     {/* <option value="/Samples/Results_Qin23_Departure_Testing.json">Departure</option> */}
-                    <option value="/Samples/Results_Qin1_TestingEm.json">Em</option>
+                    <option value="/Samples/Results_Testing.json">Em</option>
                     
                 </select>
             </div>

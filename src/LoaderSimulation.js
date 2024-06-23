@@ -31,9 +31,12 @@ export async function LoadSimulation(viewer, data, city) {
     // Function to plot Point as black dot circle
     function plotPoint(newPoint) {
         // Create a point entity at the new position
+        const scene = viewer.scene;
+        var ellipsoid = scene.globe.ellipsoid;
+        var PointCatroStr = Cartographic.fromCartesian(newPoint, ellipsoid)
         viewer.entities.add({
             name: `Point`,
-            description: `Location: (${newPoint.x}, ${newPoint.y}, ${newPoint.z})`,
+            description: `Location: (${CesiumMath.toDegrees(PointCatroStr.longitude)}, ${CesiumMath.toDegrees(PointCatroStr).latitude}, ${PointCatroStr.height})`,
             position: newPoint,
             point: {
                 pixelSize: 5,
@@ -47,16 +50,6 @@ export async function LoadSimulation(viewer, data, city) {
     }
     ///////////////////////////////////////////////////////////////////////////////////////
     // Center point
-    var dx = data.Settings.dx;
-    var dy = data.Settings.dy;
-    var dz = data.Settings.dz;
-    var as;
-    if (data.Settings.as !== undefined) {
-        as = data.Settings.as;
-    } else {
-        as = 2;
-    }
-
     switch (city) {
         case "NYC":
             var dz0 = 480;
@@ -182,27 +175,17 @@ export async function LoadSimulation(viewer, data, city) {
                 while ((counterWhile < 100) && (FindEntity)) {
                     if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
                         viewer.trackedEntity = entitiesArray[randomNumber];
-                        // <ViewerToolBar  positionPropertyArray={positionPropertyArray} randomNumber={randomNumber}/>
                         viewer.clock.onTick.addEventListener((clock) => {
                             if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
                                 const cartographic = Cartographic.fromCartesian(positionPropertyArray[randomNumber].getValue(viewer.clock.currentTime));
-                                // console.log("Aircraft ID:", randomNumber + 1);
                                 const formattedTime = new Date(viewer.clock.currentTime);
-                                // console.log("Current time:", formattedTime.toLocaleTimeString());
-                                // console.log("Longitude:", CesiumMath.toDegrees(cartographic.longitude).toFixed(4), "degrees");
-                                // console.log("Latitude:", CesiumMath.toDegrees(cartographic.latitude).toFixed(4), "degrees");
-                                // console.log("Height:", cartographic.height.toFixed(2), "meters"); // Adjust units if needed
-                                const time0 = entitiesArray[randomNumber].availability.start; // Get position 10 seconds earlier
+                                const time0 = entitiesArray[randomNumber].availability.start;
                                 const time2 = viewer.clock.currentTime;
                                 const position0 = positionPropertyArray[randomNumber].getValue(time0);
                                 const position2 = positionPropertyArray[randomNumber].getValue(time2);
                                 const distance = Cartesian3.distance(position0, position2);
                                 const timeDifference = JulianDate.secondsDifference(time2, time0);
-                                // console.log("Flight time:", timeDifference.toFixed(2), "second"); // Adjust units if needed
-                                // console.log("Distance travelled:", distance.toFixed(2), "meters"); // Adjust units if needed
                                 const speed = distance / timeDifference;
-                                // console.log("Aircraft speed:", speed.toFixed(2), "meters per second"); // Adjust units if needed
-
                                 const tableHtml = `
                                     <table id="aircraft-data-table">
                                         <thead>
@@ -306,6 +289,1005 @@ export async function LoadSimulation(viewer, data, city) {
                         counterWhile = counterWhile + 1;
                     }
                 }
+            }
+            if ((event.key === '1')) {
+                var randomNumber = 1 - 1;
+                viewer.trackedEntity = entitiesArray[randomNumber];
+                viewer.clock.onTick.addEventListener((clock) => {
+                    if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
+                        const cartographic = Cartographic.fromCartesian(positionPropertyArray[randomNumber].getValue(viewer.clock.currentTime));
+                        const formattedTime = new Date(viewer.clock.currentTime);
+                        const time0 = entitiesArray[randomNumber].availability.start;
+                        const time2 = viewer.clock.currentTime;
+                        const position0 = positionPropertyArray[randomNumber].getValue(time0);
+                        const position2 = positionPropertyArray[randomNumber].getValue(time2);
+                        const distance = Cartesian3.distance(position0, position2);
+                        const timeDifference = JulianDate.secondsDifference(time2, time0);
+                        const speed = distance / timeDifference;
+                        const tableHtml = `
+                                    <table id="aircraft-data-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Aircraft ID</td>
+                                            <td>${randomNumber + 1}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Time</td>
+                                            <td>${formattedTime.toLocaleTimeString()}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Longitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.longitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Latitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.latitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Height</td>
+                                            <td>${cartographic.height.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Flight time</td>
+                                            <td>${timeDifference.toFixed(2)} [s]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Distance travelled</td>
+                                            <td>${distance.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Speed</td>
+                                            <td>${speed.toFixed(2)} [m/s]</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    } else {
+                        const tableHtml = `
+                                        <table id="aircraft-data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Parameter</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Aircraft ID</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Time</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Longitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Latitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Height</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Flight time</td>
+                                                    <td>N/A [s]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Distance travelled</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Speed</td>
+                                                    <td>N/A [m/s]</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    }
+                    ;
+                });
+            }
+            if ((event.key === '2')) {
+                var randomNumber = 2 - 1;
+                viewer.trackedEntity = entitiesArray[randomNumber];
+                viewer.clock.onTick.addEventListener((clock) => {
+                    if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
+                        const cartographic = Cartographic.fromCartesian(positionPropertyArray[randomNumber].getValue(viewer.clock.currentTime));
+                        const formattedTime = new Date(viewer.clock.currentTime);
+                        const time0 = entitiesArray[randomNumber].availability.start;
+                        const time2 = viewer.clock.currentTime;
+                        const position0 = positionPropertyArray[randomNumber].getValue(time0);
+                        const position2 = positionPropertyArray[randomNumber].getValue(time2);
+                        const distance = Cartesian3.distance(position0, position2);
+                        const timeDifference = JulianDate.secondsDifference(time2, time0);
+                        const speed = distance / timeDifference;
+                        const tableHtml = `
+                                    <table id="aircraft-data-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Aircraft ID</td>
+                                            <td>${randomNumber + 1}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Time</td>
+                                            <td>${formattedTime.toLocaleTimeString()}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Longitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.longitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Latitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.latitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Height</td>
+                                            <td>${cartographic.height.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Flight time</td>
+                                            <td>${timeDifference.toFixed(2)} [s]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Distance travelled</td>
+                                            <td>${distance.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Speed</td>
+                                            <td>${speed.toFixed(2)} [m/s]</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    } else {
+                        const tableHtml = `
+                                        <table id="aircraft-data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Parameter</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Aircraft ID</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Time</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Longitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Latitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Height</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Flight time</td>
+                                                    <td>N/A [s]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Distance travelled</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Speed</td>
+                                                    <td>N/A [m/s]</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    }
+                    ;
+                });
+            }
+            if ((event.key === '3')) {
+                var randomNumber = 3 - 1;
+                viewer.trackedEntity = entitiesArray[randomNumber];
+                viewer.clock.onTick.addEventListener((clock) => {
+                    if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
+                        const cartographic = Cartographic.fromCartesian(positionPropertyArray[randomNumber].getValue(viewer.clock.currentTime));
+                        const formattedTime = new Date(viewer.clock.currentTime);
+                        const time0 = entitiesArray[randomNumber].availability.start;
+                        const time2 = viewer.clock.currentTime;
+                        const position0 = positionPropertyArray[randomNumber].getValue(time0);
+                        const position2 = positionPropertyArray[randomNumber].getValue(time2);
+                        const distance = Cartesian3.distance(position0, position2);
+                        const timeDifference = JulianDate.secondsDifference(time2, time0);
+                        const speed = distance / timeDifference;
+                        const tableHtml = `
+                                    <table id="aircraft-data-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Aircraft ID</td>
+                                            <td>${randomNumber + 1}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Time</td>
+                                            <td>${formattedTime.toLocaleTimeString()}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Longitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.longitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Latitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.latitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Height</td>
+                                            <td>${cartographic.height.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Flight time</td>
+                                            <td>${timeDifference.toFixed(2)} [s]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Distance travelled</td>
+                                            <td>${distance.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Speed</td>
+                                            <td>${speed.toFixed(2)} [m/s]</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    } else {
+                        const tableHtml = `
+                                        <table id="aircraft-data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Parameter</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Aircraft ID</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Time</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Longitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Latitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Height</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Flight time</td>
+                                                    <td>N/A [s]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Distance travelled</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Speed</td>
+                                                    <td>N/A [m/s]</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    }
+                    ;
+                });
+            }
+            if ((event.key === '4')) {
+                var randomNumber = 4 - 1;
+                viewer.trackedEntity = entitiesArray[randomNumber];
+                viewer.clock.onTick.addEventListener((clock) => {
+                    if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
+                        const cartographic = Cartographic.fromCartesian(positionPropertyArray[randomNumber].getValue(viewer.clock.currentTime));
+                        const formattedTime = new Date(viewer.clock.currentTime);
+                        const time0 = entitiesArray[randomNumber].availability.start;
+                        const time2 = viewer.clock.currentTime;
+                        const position0 = positionPropertyArray[randomNumber].getValue(time0);
+                        const position2 = positionPropertyArray[randomNumber].getValue(time2);
+                        const distance = Cartesian3.distance(position0, position2);
+                        const timeDifference = JulianDate.secondsDifference(time2, time0);
+                        const speed = distance / timeDifference;
+                        const tableHtml = `
+                                    <table id="aircraft-data-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Aircraft ID</td>
+                                            <td>${randomNumber + 1}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Time</td>
+                                            <td>${formattedTime.toLocaleTimeString()}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Longitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.longitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Latitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.latitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Height</td>
+                                            <td>${cartographic.height.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Flight time</td>
+                                            <td>${timeDifference.toFixed(2)} [s]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Distance travelled</td>
+                                            <td>${distance.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Speed</td>
+                                            <td>${speed.toFixed(2)} [m/s]</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    } else {
+                        const tableHtml = `
+                                        <table id="aircraft-data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Parameter</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Aircraft ID</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Time</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Longitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Latitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Height</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Flight time</td>
+                                                    <td>N/A [s]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Distance travelled</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Speed</td>
+                                                    <td>N/A [m/s]</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    }
+                    ;
+                });
+            }
+            if ((event.key === '5')) {
+                var randomNumber = 5 - 1;
+                viewer.trackedEntity = entitiesArray[randomNumber];
+                viewer.clock.onTick.addEventListener((clock) => {
+                    if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
+                        const cartographic = Cartographic.fromCartesian(positionPropertyArray[randomNumber].getValue(viewer.clock.currentTime));
+                        const formattedTime = new Date(viewer.clock.currentTime);
+                        const time0 = entitiesArray[randomNumber].availability.start;
+                        const time2 = viewer.clock.currentTime;
+                        const position0 = positionPropertyArray[randomNumber].getValue(time0);
+                        const position2 = positionPropertyArray[randomNumber].getValue(time2);
+                        const distance = Cartesian3.distance(position0, position2);
+                        const timeDifference = JulianDate.secondsDifference(time2, time0);
+                        const speed = distance / timeDifference;
+                        const tableHtml = `
+                                    <table id="aircraft-data-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Aircraft ID</td>
+                                            <td>${randomNumber + 1}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Time</td>
+                                            <td>${formattedTime.toLocaleTimeString()}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Longitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.longitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Latitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.latitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Height</td>
+                                            <td>${cartographic.height.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Flight time</td>
+                                            <td>${timeDifference.toFixed(2)} [s]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Distance travelled</td>
+                                            <td>${distance.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Speed</td>
+                                            <td>${speed.toFixed(2)} [m/s]</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    } else {
+                        const tableHtml = `
+                                        <table id="aircraft-data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Parameter</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Aircraft ID</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Time</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Longitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Latitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Height</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Flight time</td>
+                                                    <td>N/A [s]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Distance travelled</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Speed</td>
+                                                    <td>N/A [m/s]</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    }
+                    ;
+                });
+            }
+            if ((event.key === '6')) {
+                var randomNumber = 6 - 1;
+                viewer.trackedEntity = entitiesArray[randomNumber];
+                viewer.clock.onTick.addEventListener((clock) => {
+                    if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
+                        const cartographic = Cartographic.fromCartesian(positionPropertyArray[randomNumber].getValue(viewer.clock.currentTime));
+                        const formattedTime = new Date(viewer.clock.currentTime);
+                        const time0 = entitiesArray[randomNumber].availability.start;
+                        const time2 = viewer.clock.currentTime;
+                        const position0 = positionPropertyArray[randomNumber].getValue(time0);
+                        const position2 = positionPropertyArray[randomNumber].getValue(time2);
+                        const distance = Cartesian3.distance(position0, position2);
+                        const timeDifference = JulianDate.secondsDifference(time2, time0);
+                        const speed = distance / timeDifference;
+                        const tableHtml = `
+                                    <table id="aircraft-data-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Aircraft ID</td>
+                                            <td>${randomNumber + 1}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Time</td>
+                                            <td>${formattedTime.toLocaleTimeString()}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Longitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.longitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Latitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.latitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Height</td>
+                                            <td>${cartographic.height.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Flight time</td>
+                                            <td>${timeDifference.toFixed(2)} [s]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Distance travelled</td>
+                                            <td>${distance.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Speed</td>
+                                            <td>${speed.toFixed(2)} [m/s]</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    } else {
+                        const tableHtml = `
+                                        <table id="aircraft-data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Parameter</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Aircraft ID</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Time</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Longitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Latitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Height</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Flight time</td>
+                                                    <td>N/A [s]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Distance travelled</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Speed</td>
+                                                    <td>N/A [m/s]</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    }
+                    ;
+                });
+            }
+            if ((event.key === '7')) {
+                var randomNumber = 7 - 1;
+                viewer.trackedEntity = entitiesArray[randomNumber];
+                viewer.clock.onTick.addEventListener((clock) => {
+                    if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
+                        const cartographic = Cartographic.fromCartesian(positionPropertyArray[randomNumber].getValue(viewer.clock.currentTime));
+                        const formattedTime = new Date(viewer.clock.currentTime);
+                        const time0 = entitiesArray[randomNumber].availability.start;
+                        const time2 = viewer.clock.currentTime;
+                        const position0 = positionPropertyArray[randomNumber].getValue(time0);
+                        const position2 = positionPropertyArray[randomNumber].getValue(time2);
+                        const distance = Cartesian3.distance(position0, position2);
+                        const timeDifference = JulianDate.secondsDifference(time2, time0);
+                        const speed = distance / timeDifference;
+                        const tableHtml = `
+                                    <table id="aircraft-data-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Aircraft ID</td>
+                                            <td>${randomNumber + 1}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Time</td>
+                                            <td>${formattedTime.toLocaleTimeString()}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Longitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.longitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Latitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.latitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Height</td>
+                                            <td>${cartographic.height.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Flight time</td>
+                                            <td>${timeDifference.toFixed(2)} [s]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Distance travelled</td>
+                                            <td>${distance.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Speed</td>
+                                            <td>${speed.toFixed(2)} [m/s]</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    } else {
+                        const tableHtml = `
+                                        <table id="aircraft-data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Parameter</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Aircraft ID</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Time</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Longitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Latitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Height</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Flight time</td>
+                                                    <td>N/A [s]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Distance travelled</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Speed</td>
+                                                    <td>N/A [m/s]</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    }
+                    ;
+                });
+            }
+            if ((event.key === '8')) {
+                var randomNumber = 8 - 1;
+                viewer.trackedEntity = entitiesArray[randomNumber];
+                viewer.clock.onTick.addEventListener((clock) => {
+                    if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
+                        const cartographic = Cartographic.fromCartesian(positionPropertyArray[randomNumber].getValue(viewer.clock.currentTime));
+                        const formattedTime = new Date(viewer.clock.currentTime);
+                        const time0 = entitiesArray[randomNumber].availability.start;
+                        const time2 = viewer.clock.currentTime;
+                        const position0 = positionPropertyArray[randomNumber].getValue(time0);
+                        const position2 = positionPropertyArray[randomNumber].getValue(time2);
+                        const distance = Cartesian3.distance(position0, position2);
+                        const timeDifference = JulianDate.secondsDifference(time2, time0);
+                        const speed = distance / timeDifference;
+                        const tableHtml = `
+                                    <table id="aircraft-data-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Aircraft ID</td>
+                                            <td>${randomNumber + 1}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Time</td>
+                                            <td>${formattedTime.toLocaleTimeString()}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Longitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.longitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Latitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.latitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Height</td>
+                                            <td>${cartographic.height.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Flight time</td>
+                                            <td>${timeDifference.toFixed(2)} [s]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Distance travelled</td>
+                                            <td>${distance.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Speed</td>
+                                            <td>${speed.toFixed(2)} [m/s]</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    } else {
+                        const tableHtml = `
+                                        <table id="aircraft-data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Parameter</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Aircraft ID</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Time</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Longitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Latitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Height</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Flight time</td>
+                                                    <td>N/A [s]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Distance travelled</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Speed</td>
+                                                    <td>N/A [m/s]</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    }
+                    ;
+                });
+            }
+            if ((event.key === '9')) {
+                var randomNumber = 9 - 1;
+                viewer.trackedEntity = entitiesArray[randomNumber];
+                viewer.clock.onTick.addEventListener((clock) => {
+                    if ((viewer.clock.currentTime > entitiesArray[randomNumber].availability.start) && (viewer.clock.currentTime < entitiesArray[randomNumber].availability.stop)) {
+                        const cartographic = Cartographic.fromCartesian(positionPropertyArray[randomNumber].getValue(viewer.clock.currentTime));
+                        const formattedTime = new Date(viewer.clock.currentTime);
+                        const time0 = entitiesArray[randomNumber].availability.start;
+                        const time2 = viewer.clock.currentTime;
+                        const position0 = positionPropertyArray[randomNumber].getValue(time0);
+                        const position2 = positionPropertyArray[randomNumber].getValue(time2);
+                        const distance = Cartesian3.distance(position0, position2);
+                        const timeDifference = JulianDate.secondsDifference(time2, time0);
+                        const speed = distance / timeDifference;
+                        const tableHtml = `
+                                    <table id="aircraft-data-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Aircraft ID</td>
+                                            <td>${randomNumber + 1}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Time</td>
+                                            <td>${formattedTime.toLocaleTimeString()}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Longitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.longitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Latitude</td>
+                                            <td>${CesiumMath.toDegrees(cartographic.latitude).toFixed(4)} [deg]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Height</td>
+                                            <td>${cartographic.height.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Flight time</td>
+                                            <td>${timeDifference.toFixed(2)} [s]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Distance travelled</td>
+                                            <td>${distance.toFixed(2)} [m]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Speed</td>
+                                            <td>${speed.toFixed(2)} [m/s]</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    } else {
+                        const tableHtml = `
+                                        <table id="aircraft-data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Parameter</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Aircraft ID</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Time</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Longitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Latitude</td>
+                                                    <td>N/A [deg]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Height</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Flight time</td>
+                                                    <td>N/A [s]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Distance travelled</td>
+                                                    <td>N/A [m]</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Speed</td>
+                                                    <td>N/A [m/s]</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        `;
+                        const microtoolbar = document.getElementById('microtoolbar');
+                        microtoolbar.innerHTML = tableHtml;
+                    }
+                    ;
+                });
             }
             if ((event.key === 'f')) {
                 var randomNumber = Math.floor(Math.random() * entitiesArray.length);
@@ -487,419 +1469,71 @@ export async function LoadSimulation(viewer, data, city) {
 
     // End Vertiport setting
     ///////////////////////////////////////////////////////////////////////////////////////
+
     ///////////////////////////////////////////////////////////////////////////////////////
-    // var as = 2;
-    if (as == 1) {
-        function PlotAirspace(center) {
-            //var newPointSEGround = computeNewPoint(center, dx / 2, -dy / 2, 0); plotPoint(newPointSEGround);
-            //var newPointNEGround = computeNewPoint(center, dx / 2, dy / 2, 0); plotPoint(newPointNEGround);
-            //var newPointSWGround = computeNewPoint(center, -dx / 2, -dy / 2, 0); plotPoint(newPointSWGround);
-            //var newPointNWGround = computeNewPoint(center, -dx / 2, dy / 2, 0); plotPoint(newPointNWGround);
-            const centerPlotting = computeNewPoint(center, 0, 0, 0); // For Subset Simulation
-            plotPoint(centerPlotting);
-            var newPointSE = computeNewPoint(centerPlotting, dx / 2, -dy / 2, 0); plotPoint(newPointSE);
-            var newPointNE = computeNewPoint(centerPlotting, dx / 2, dy / 2, 0); plotPoint(newPointNE);
-            var newPointSW = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, 0); plotPoint(newPointSW);
-            var newPointNW = computeNewPoint(centerPlotting, -dx / 2, dy / 2, 0); plotPoint(newPointNW);
-            var newPointSEUP = computeNewPoint(centerPlotting, dx / 2, -dy / 2, dz); plotPoint(newPointSEUP);
-            var newPointNEUP = computeNewPoint(centerPlotting, dx / 2, dy / 2, dz); plotPoint(newPointNEUP);
-            var newPointSWUP = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, dz); plotPoint(newPointSWUP);
-            var newPointNWUP = computeNewPoint(centerPlotting, -dx / 2, dy / 2, dz); plotPoint(newPointNWUP);
-            //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
-            //console.log("Distance between points: " + distance + " meters");
-            // Convert Cartesian3 coordinates to Cartographic coordinates
-            var cartographicNW = Cartographic.fromCartesian(newPointNW);
-            var cartographicNE = Cartographic.fromCartesian(newPointNE);
-            var cartographicSE = Cartographic.fromCartesian(newPointSE);
-            var cartographicSW = Cartographic.fromCartesian(newPointSW);
-            // Create a polygon entity connecting the four points
-            const airspace = viewer.entities.add({
-                name: `Airspace`,
-                description: ``,
-                polygon: {
-                    hierarchy: Cartesian3.fromDegreesArray([
-                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                    ]),
-                    height: dz0, // Set the minimum height to 40 meters AGL
-                    extrudedHeight: dz0 + dz, // Set the maximum height to 120 meters AGL
-                    material: Color.CYAN.withAlpha(0.1),
-                    outline: true,
-                    outlineColor: Color.CYAN,
-                },
-                allowPicking: false,
-            });
-            //viewer.zoomTo(airspace);
-        }
-        PlotAirspace(center);
-
-    } else if (as == 2) {
-        // Plot Airspace Border  
-        function PlotAirspace(center) {
-            var newPointSEGround = computeNewPoint(center, dx / 2, -dy / 2, 0); plotPoint(newPointSEGround);
-            var newPointNEGround = computeNewPoint(center, dx / 2, dy / 2, 0); plotPoint(newPointNEGround);
-            var newPointSWGround = computeNewPoint(center, -dx / 2, -dy / 2, 0); plotPoint(newPointSWGround);
-            var newPointNWGround = computeNewPoint(center, -dx / 2, dy / 2, 0); plotPoint(newPointNWGround);
-            const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
-            plotPoint(centerPlotting);
-            var newPointSE = computeNewPoint(centerPlotting, dx / 2, -dy / 2, 0); plotPoint(newPointSE);
-            var newPointNE = computeNewPoint(centerPlotting, dx / 2, dy / 2, 0); plotPoint(newPointNE);
-            var newPointSW = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, 0); plotPoint(newPointSW);
-            var newPointNW = computeNewPoint(centerPlotting, -dx / 2, dy / 2, 0); plotPoint(newPointNW);
-            var newPointSEUP = computeNewPoint(centerPlotting, dx / 2, -dy / 2, dz); plotPoint(newPointSEUP);
-            var newPointNEUP = computeNewPoint(centerPlotting, dx / 2, dy / 2, dz); plotPoint(newPointNEUP);
-            var newPointSWUP = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, dz); plotPoint(newPointSWUP);
-            var newPointNWUP = computeNewPoint(centerPlotting, -dx / 2, dy / 2, dz); plotPoint(newPointNWUP);
-            //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
-            //console.log("Distance between points: " + distance + " meters");
-            // Convert Cartesian3 coordinates to Cartographic coordinates
-            var cartographicNW = Cartographic.fromCartesian(newPointNW);
-            var cartographicNE = Cartographic.fromCartesian(newPointNE);
-            var cartographicSE = Cartographic.fromCartesian(newPointSE);
-            var cartographicSW = Cartographic.fromCartesian(newPointSW);
-            // Create a polygon entity connecting the four points
-            const airspace = viewer.entities.add({
-                name: `Airspace`,
-                description: ``,
-                polygon: {
-                    hierarchy: Cartesian3.fromDegreesArray([
-                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                    ]),
-                    height: dz0 + 40, // Set the minimum height to 40 meters AGL
-                    extrudedHeight: dz0 + 40 + dz, // Set the maximum height to 120 meters AGL
-                    material: Color.CYAN.withAlpha(0.05),
-                    outline: true,
-                    outlineColor: Color.CYAN,
-                },
-                allowPicking: false,
-            });
-            //viewer.zoomTo(airspace);
-        }
-        PlotAirspace(center);
-
-        function PlotAirspaceLayers(center) {
-            const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
-            var newPointSE = computeNewPoint(centerPlotting, dx / 2, -dy / 2, 0);
-            var newPointNE = computeNewPoint(centerPlotting, dx / 2, dy / 2, 0);
-            var newPointSW = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, 0);
-            var newPointNW = computeNewPoint(centerPlotting, -dx / 2, dy / 2, 0);
-            var newPointSEUP = computeNewPoint(centerPlotting, dx / 2, -dy / 2, dz);
-            var newPointNEUP = computeNewPoint(centerPlotting, dx / 2, dy / 2, dz);
-            var newPointSWUP = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, dz);
-            var newPointNWUP = computeNewPoint(centerPlotting, -dx / 2, dy / 2, dz);
-            //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
-            //console.log("Distance between points: " + distance + " meters");
-            // Convert Cartesian3 coordinates to Cartographic coordinates
-            var cartographicNW = Cartographic.fromCartesian(newPointNW);
-            var cartographicNE = Cartographic.fromCartesian(newPointNE);
-            var cartographicSE = Cartographic.fromCartesian(newPointSE);
-            var cartographicSW = Cartographic.fromCartesian(newPointSW);
-            // Create a polygon entity connecting the four points
-            const airspaceL0 = viewer.entities.add({
-                name: `Layer 0`,
-                description: ``,
-                polygon: {
-                    hierarchy: Cartesian3.fromDegreesArray([
-                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                    ]),
-                    height: dz0, // Set the minimum height to 40 meters AGL
-                    extrudedHeight: dz0 + 40, // Set the maximum height to 120 meters AGL
-                    material: Color.BLACK.withAlpha(0.1),
-                    outline: true,
-                    outlineColor: Color.BLACK,
-                },
-                allowPicking: false,
-            });
-            const airspaceL1 = viewer.entities.add({
-                name: `Layer 0`,
-                description: ``,
-                polygon: {
-                    hierarchy: Cartesian3.fromDegreesArray([
-                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                    ]),
-                    height: dz0 + 40, // Set the minimum height to 40 meters AGL
-                    extrudedHeight: dz0 + 40 + dz / 2, // Set the maximum height to 120 meters AGL
-                    material: Color.YELLOW.withAlpha(0.1),
-                    outline: true,
-                    outlineColor: Color.BLACK,
-                },
-                allowPicking: false,
-            });
-            const airspaceL2 = viewer.entities.add({
-                name: `Layer 0`,
-                description: ``,
-                polygon: {
-                    hierarchy: Cartesian3.fromDegreesArray([
-                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                    ]),
-                    height: dz0 + 40 + dz / 2, // Set the minimum height to 40 meters AGL
-                    extrudedHeight: dz0 + 40 + dz, // Set the maximum height to 120 meters AGL
-                    material: Color.BLACK.withAlpha(0.1),
-                    outline: true,
-                    outlineColor: Color.BLACK,
-                },
-                allowPicking: false,
-            });
-            //viewer.zoomTo(airspace);
-        }
-        PlotAirspaceLayers(center);
-
-        function PlotAirspaceCentersRegions(center) {
-            const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
-            var newPointSE = computeNewPoint(centerPlotting, dx / 6, -dy / 6, 0);
-            var newPointNE = computeNewPoint(centerPlotting, dx / 6, dy / 6, 0);
-            var newPointSW = computeNewPoint(centerPlotting, -dx / 6, -dy / 6, 0);
-            var newPointNW = computeNewPoint(centerPlotting, -dx / 6, dy / 6, 0);
-            var newPointSEUP = computeNewPoint(centerPlotting, dx / 6, -dy / 6, dz);
-            var newPointNEUP = computeNewPoint(centerPlotting, dx / 6, dy / 6, dz);
-            var newPointSWUP = computeNewPoint(centerPlotting, -dx / 6, -dy / 6, dz);
-            var newPointNWUP = computeNewPoint(centerPlotting, -dx / 6, dy / 6, dz);
-            //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
-            //console.log("Distance between points: " + distance + " meters");
-            // Convert Cartesian3 coordinates to Cartographic coordinates
-            var cartographicNW = Cartographic.fromCartesian(newPointNW);
-            var cartographicNE = Cartographic.fromCartesian(newPointNE);
-            var cartographicSE = Cartographic.fromCartesian(newPointSE);
-            var cartographicSW = Cartographic.fromCartesian(newPointSW);
-            // Create a polygon entity connecting the four points
-            const airspaceL0 = viewer.entities.add({
-                name: `Layer 0`,
-                description: ``,
-                polygon: {
-                    hierarchy: Cartesian3.fromDegreesArray([
-                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                    ]),
-                    height: dz0, // Set the minimum height to 40 meters AGL
-                    extrudedHeight: dz0 + 40, // Set the maximum height to 120 meters AGL
-                    material: Color.BLACK.withAlpha(0.1),
-                    outline: true,
-                    outlineColor: Color.BLACK,
-                },
-                allowPicking: false,
-            });
-            const airspaceL1 = viewer.entities.add({
-                name: `Layer 0`,
-                description: ``,
-                polygon: {
-                    hierarchy: Cartesian3.fromDegreesArray([
-                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                    ]),
-                    height: dz0 + 40, // Set the minimum height to 40 meters AGL
-                    extrudedHeight: dz0 + 40 + dz / 2, // Set the maximum height to 120 meters AGL
-                    material: Color.RED.withAlpha(0.1),
-                    outline: true,
-                    outlineColor: Color.BLACK,
-                },
-                allowPicking: false,
-            });
-            const airspaceL2 = viewer.entities.add({
-                name: `Layer 0`,
-                description: ``,
-                polygon: {
-                    hierarchy: Cartesian3.fromDegreesArray([
-                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                    ]),
-                    height: dz0 + 40 + dz / 2, // Set the minimum height to 40 meters AGL
-                    extrudedHeight: dz0 + 40 + dz, // Set the maximum height to 120 meters AGL
-                    material: Color.BLACK.withAlpha(0.1),
-                    outline: true,
-                    outlineColor: Color.BLACK,
-                },
-                allowPicking: false,
-            });
-            //viewer.zoomTo(airspace);
-        }
-        PlotAirspaceCentersRegions(center);
-        // End airspace plotting
-    } else if (as == 3) {
-        // Plot Airspace Border  
-        function PlotAirspace(center) {
-            var newPointSEGround = computeNewPoint(center, dx / 2, -dy / 2, 0); plotPoint(newPointSEGround);
-            var newPointNEGround = computeNewPoint(center, dx / 2, dy / 2, 0); plotPoint(newPointNEGround);
-            var newPointSWGround = computeNewPoint(center, -dx / 2, -dy / 2, 0); plotPoint(newPointSWGround);
-            var newPointNWGround = computeNewPoint(center, -dx / 2, dy / 2, 0); plotPoint(newPointNWGround);
-            const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
-            plotPoint(centerPlotting);
-            var newPointSE = computeNewPoint(centerPlotting, dx / 2, -dy / 2, 0); plotPoint(newPointSE);
-            var newPointNE = computeNewPoint(centerPlotting, dx / 2, dy / 2, 0); plotPoint(newPointNE);
-            var newPointSW = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, 0); plotPoint(newPointSW);
-            var newPointNW = computeNewPoint(centerPlotting, -dx / 2, dy / 2, 0); plotPoint(newPointNW);
-            var newPointSEUP = computeNewPoint(centerPlotting, dx / 2, -dy / 2, dz); plotPoint(newPointSEUP);
-            var newPointNEUP = computeNewPoint(centerPlotting, dx / 2, dy / 2, dz); plotPoint(newPointNEUP);
-            var newPointSWUP = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, dz); plotPoint(newPointSWUP);
-            var newPointNWUP = computeNewPoint(centerPlotting, -dx / 2, dy / 2, dz); plotPoint(newPointNWUP);
-            //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
-            //console.log("Distance between points: " + distance + " meters");
-            // Convert Cartesian3 coordinates to Cartographic coordinates
-            var cartographicNW = Cartographic.fromCartesian(newPointNW);
-            var cartographicNE = Cartographic.fromCartesian(newPointNE);
-            var cartographicSE = Cartographic.fromCartesian(newPointSE);
-            var cartographicSW = Cartographic.fromCartesian(newPointSW);
-            // Create a polygon entity connecting the four points
-            const airspace = viewer.entities.add({
-                name: `Airspace`,
-                description: ``,
-                polygon: {
-                    hierarchy: Cartesian3.fromDegreesArray([
-                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                    ]),
-                    height: dz0 + 40, // Set the minimum height to 40 meters AGL
-                    extrudedHeight: dz0 + 40 + dz, // Set the maximum height to 120 meters AGL
-                    material: Color.CYAN.withAlpha(0.05),
-                    outline: true,
-                    outlineColor: Color.CYAN,
-                },
-                allowPicking: false,
-            });
-            //viewer.zoomTo(airspace);
-        }
-        PlotAirspace(center);
-
-        function PlotAirspaceLayers(center) {
-            const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
-            var newPointSE = computeNewPoint(centerPlotting, dx / 2, -dy / 2, 0);
-            var newPointNE = computeNewPoint(centerPlotting, dx / 2, dy / 2, 0);
-            var newPointSW = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, 0);
-            var newPointNW = computeNewPoint(centerPlotting, -dx / 2, dy / 2, 0);
-            var newPointSEUP = computeNewPoint(centerPlotting, dx / 2, -dy / 2, dz);
-            var newPointNEUP = computeNewPoint(centerPlotting, dx / 2, dy / 2, dz);
-            var newPointSWUP = computeNewPoint(centerPlotting, -dx / 2, -dy / 2, dz);
-            var newPointNWUP = computeNewPoint(centerPlotting, -dx / 2, dy / 2, dz);
-            //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
-            //console.log("Distance between points: " + distance + " meters");
-            // Convert Cartesian3 coordinates to Cartographic coordinates
-            var cartographicNW = Cartographic.fromCartesian(newPointNW);
-            var cartographicNE = Cartographic.fromCartesian(newPointNE);
-            var cartographicSE = Cartographic.fromCartesian(newPointSE);
-            var cartographicSW = Cartographic.fromCartesian(newPointSW);
-            // Create a polygon entity connecting the four points
-            const airspaceL0 = viewer.entities.add({
-                name: `Layer 0`,
-                description: ``,
-                polygon: {
-                    hierarchy: Cartesian3.fromDegreesArray([
-                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                    ]),
-                    height: dz0, // Set the minimum height to 40 meters AGL
-                    extrudedHeight: dz0 + 40, // Set the maximum height to 120 meters AGL
-                    material: Color.BLACK.withAlpha(0.1),
-                    outline: true,
-                    outlineColor: Color.BLACK,
-                },
-                allowPicking: false,
-            });
-            const airspaceL1 = viewer.entities.add({
-                name: `Layer 1`,
-                description: ``,
-                polygon: {
-                    hierarchy: Cartesian3.fromDegreesArray([
-                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                    ]),
-                    height: dz0 + 40, // Set the minimum height to 40 meters AGL
-                    extrudedHeight: dz0 + 40 + dz, // Set the maximum height to 120 meters AGL
-                    material: Color.YELLOW.withAlpha(0.1),
-                    outline: true,
-                    outlineColor: Color.BLACK,
-                },
-                allowPicking: false,
-            });
-            //viewer.zoomTo(airspace);
-        }
-        PlotAirspaceLayers(center);
-
-        function PlotAirspaceCentersRegions(center) {
-            const centerPlotting = computeNewPoint(center, 0, 0, 40); // For Subset Simulation
-            var newPointSE = computeNewPoint(centerPlotting, dx / 6, -dy / 6, 0);
-            var newPointNE = computeNewPoint(centerPlotting, dx / 6, dy / 6, 0);
-            var newPointSW = computeNewPoint(centerPlotting, -dx / 6, -dy / 6, 0);
-            var newPointNW = computeNewPoint(centerPlotting, -dx / 6, dy / 6, 0);
-            var newPointSEUP = computeNewPoint(centerPlotting, dx / 6, -dy / 6, dz);
-            var newPointNEUP = computeNewPoint(centerPlotting, dx / 6, dy / 6, dz);
-            var newPointSWUP = computeNewPoint(centerPlotting, -dx / 6, -dy / 6, dz);
-            var newPointNWUP = computeNewPoint(centerPlotting, -dx / 6, dy / 6, dz);
-            //var distance = Cartesian3.distance(center, computeNewPoint(center, 1500, 0, 0));
-            //console.log("Distance between points: " + distance + " meters");
-            // Convert Cartesian3 coordinates to Cartographic coordinates
-            var cartographicNW = Cartographic.fromCartesian(newPointNW);
-            var cartographicNE = Cartographic.fromCartesian(newPointNE);
-            var cartographicSE = Cartographic.fromCartesian(newPointSE);
-            var cartographicSW = Cartographic.fromCartesian(newPointSW);
-            // Create a polygon entity connecting the four points
-            const airspaceL0 = viewer.entities.add({
-                name: `Layer 0`,
-                description: ``,
-                polygon: {
-                    hierarchy: Cartesian3.fromDegreesArray([
-                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                    ]),
-                    height: dz0, // Set the minimum height to 40 meters AGL
-                    extrudedHeight: dz0 + 40, // Set the maximum height to 120 meters AGL
-                    material: Color.BLACK.withAlpha(0.1),
-                    outline: true,
-                    outlineColor: Color.BLACK,
-                },
-                allowPicking: false,
-            });
-            const airspaceL1 = viewer.entities.add({
-                name: `Layer 0`,
-                description: ``,
-                polygon: {
-                    hierarchy: Cartesian3.fromDegreesArray([
-                        CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
-                        CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
-                        CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
-                        CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
-                    ]),
-                    height: dz0 + 40, // Set the minimum height to 40 meters AGL
-                    extrudedHeight: dz0 + 40 + dz, // Set the maximum height to 120 meters AGL
-                    material: Color.RED.withAlpha(0.1),
-                    outline: true,
-                    outlineColor: Color.BLACK,
-                },
-                allowPicking: false,
-            });
-            //viewer.zoomTo(airspace);
-        }
-        PlotAirspaceCentersRegions(center);
-        // End airspace plotting
+    var dx = data.Settings.dx;
+    var dy = data.Settings.dy;
+    var dz = data.Settings.dz;
+    var dz1 = data.Settings.Airspace.dz1;
+    var as;
+    if (data.Settings.as !== undefined) {
+        as = data.Settings.as;
     } else {
-
+        as = 2;
     }
+
+    function PlotCube(CubeCC, CubeDx, CubeDy, CubeDz, CubeDz0, CubeDz1, nameStr, ColorStr, outlineColorStr) {
+        const centerPlotting = computeNewPoint(CubeCC, 0, 0, 0);
+        plotPoint(centerPlotting);
+        var newPointSE = computeNewPoint(centerPlotting, CubeDx / 2, -CubeDy / 2, 0); plotPoint(newPointSE);
+        var newPointNE = computeNewPoint(centerPlotting, CubeDx / 2, CubeDy / 2, 0); plotPoint(newPointNE);
+        var newPointSW = computeNewPoint(centerPlotting, -CubeDx / 2, -CubeDy / 2, 0); plotPoint(newPointSW);
+        var newPointNW = computeNewPoint(centerPlotting, -CubeDx / 2, CubeDy / 2, 0); plotPoint(newPointNW);
+        var newPointSEUP = computeNewPoint(centerPlotting, CubeDx / 2, -CubeDy / 2, CubeDz); plotPoint(newPointSEUP);
+        var newPointNEUP = computeNewPoint(centerPlotting, CubeDx / 2, CubeDy / 2, CubeDz); plotPoint(newPointNEUP);
+        var newPointSWUP = computeNewPoint(centerPlotting, -CubeDx / 2, -CubeDy / 2, CubeDz); plotPoint(newPointSWUP);
+        var newPointNWUP = computeNewPoint(centerPlotting, -CubeDx / 2, CubeDy / 2, CubeDz); plotPoint(newPointNWUP);
+        const scene = viewer.scene;
+        var ellipsoid = scene.globe.ellipsoid;
+        var cartographicNW = Cartographic.fromCartesian(newPointNW, ellipsoid);
+        var cartographicNE = Cartographic.fromCartesian(newPointNE, ellipsoid);
+        var cartographicSE = Cartographic.fromCartesian(newPointSE, ellipsoid);
+        var cartographicSW = Cartographic.fromCartesian(newPointSW, ellipsoid);
+        // var distance = Cartesian3.distance(newPointSE, newPointSEUP);
+        // console.log("Distance between points: " + distance + " meters");
+        const airspace = viewer.entities.add({
+            name: nameStr,// `Airspace`,
+            description: ``,
+            polygon: {
+                hierarchy: Cartesian3.fromDegreesArray([
+                    CesiumMath.toDegrees(cartographicNW.longitude), CesiumMath.toDegrees(cartographicNW.latitude),
+                    CesiumMath.toDegrees(cartographicNE.longitude), CesiumMath.toDegrees(cartographicNE.latitude),
+                    CesiumMath.toDegrees(cartographicSE.longitude), CesiumMath.toDegrees(cartographicSE.latitude),
+                    CesiumMath.toDegrees(cartographicSW.longitude), CesiumMath.toDegrees(cartographicSW.latitude),
+                ]),
+                height: CubeDz0 + CubeDz1,
+                extrudedHeight: CubeDz0 + CubeDz + CubeDz1,
+                material: ColorStr,//Color.CYAN.withAlpha(0.1),
+                outline: true,
+                outlineColor: outlineColorStr,//Color.CYAN,
+            },
+            allowPicking: false,
+        });
+        //viewer.zoomTo(airspace);
+    }
+    PlotCube(center, dx, dy, dz, dz0, dz1, 'Airspace', Color.BLACK.withAlpha(0.1), Color.BLACK);
+    PlotCube(center, dx, dy, dz1, dz0, 0, 'VTOLLayer', Color.RED.withAlpha(0.1), Color.RED);
+    data.Settings.Airspace.Layers.forEach((L, index) => {
+        // console.log(computeNewPoint(center, L.center[1],L.center[2],L.center[3]),L.dx,L.dy,L.dz,dz0,dz1)
+        PlotCube(computeNewPoint(center, L.center[0], L.center[1], L.center[2] - L.dz / 2), L.dx, L.dy, L.dz, dz0 + L.center[2] - L.dz / 2, 0, ['Layer ' + index], Color.CYAN.withAlpha(0.005), Color.CYAN.withAlpha(0.5))
+    });
+    data.Settings.Airspace.Regions.B.forEach((R, index) => {
+        // console.log(computeNewPoint(center, L.center[1],L.center[2],L.center[3]),L.dx,L.dy,L.dz,dz0,dz1)
+        if (R.ri === 1 || R.ri === 11 || R.ri === 21 || R.ri === 31) {
+            PlotCube(computeNewPoint(center, R.center[0], R.center[1], R.center[2] - R.dz / 2), R.dx, R.dy, R.dz, dz0 + R.center[2] - R.dz / 2, 0, ['Region ' + R.ri], Color.CYAN.withAlpha(0.005), Color.RED.withAlpha(0.5))
+        }
+    });
+
     ///////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     // Start Aircraft Motion
@@ -1410,7 +2044,7 @@ export async function LoadSimulation(viewer, data, city) {
     var positionPropertyArray = [];
 
     data.ObjAircraft.forEach((ObjAircraft, index) => {
-        if ((index > 0) & (index < 150)) {
+        if ((index > 0) & (index < 10)) {
             //const startAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.tda, new JulianDate());
             //const stopAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.taa, new JulianDate());
             const trajectoryPositions = [];
