@@ -6,7 +6,7 @@ SimInfo.RT.TCP_PostRunningTime = [];
 SimInfo.RT.TFCRunningTime = [];
 SimInfo.RT.SimStartTime = datetime;
 disp(['Simuation started: Time=' datestr(SimInfo.RT.SimStartTime,'yyyy-mm-dd HH:MM:SS.FFF')])
-SimFilename = ['_Qin' sprintf('%0.0f',InflowRate*10) SceStr];
+SimFilename = ['_Qin' sprintf('%0.0f',InflowRate) SceStr];
 SimInfo.SimOutputDirStr = ['.\Outputs\SimOutput_' datestr(now,'yyyymmdd_hhMMss') SimFilename '\'];
 % if ~exist(SimInfo.SimOutputDirStr, 'dir')
 %    mkdir(SimInfo.SimOutputDirStr)
@@ -17,12 +17,13 @@ if (~isempty(NewSettings))
     [Settings.Airspace] = SettingAirspace(double(NewSettings.Airspace.dx),double(NewSettings.Airspace.dy),double(NewSettings.Airspace.dz));
     Settings.Airspace.as = NewSettings.Airspace.as;
     [Settings.Aircraft] = SettingAircraft([double(NewSettings.Aircraft.VmaxMin);double(NewSettings.Aircraft.VmaxMax)],[double(NewSettings.Aircraft.RsMin);double(NewSettings.Aircraft.RsMax)]);
-    [Settings.Sim] = SettingSimulation(double(NewSettings.Sim.Qin),20);
+    [Settings.Sim] = SettingSimulation(double(NewSettings.Sim.Qin)/60,30);
+    disp(['Inflow aircraft/s:' double(NewSettings.Sim.Qin)/60])
 else
     [Settings.Airspace] = SettingAirspace(1500,1500,90);
     Settings.Airspace.as = 1;
     [Settings.Aircraft] = SettingAircraft([10,30],[10,30]);
-    [Settings.Sim] = SettingSimulation(0.1,20);
+    [Settings.Sim] = SettingSimulation(0.1,30);
 end
 %% Init Objects
 SimInfo.Mina = []; SimInfo.Mque = []; SimInfo.Mact = []; SimInfo.Marr = []; SimInfo.MactBQ = [];

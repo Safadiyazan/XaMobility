@@ -12,15 +12,15 @@ function Settings() {
     const runButton = document.getElementById('runButton');
 
     const [values, setValues] = useState({
-        dx: 500,
-        dy: 500,
+        dx: 1500,
+        dy: 1500,
         dz: 100,
         as: 1,
         VmaxMin: 10,
         VmaxMax: 30,
         RsMin: 10,
         RsMax: 30,
-        Qin: 1,
+        Qin: 6,
         SceStr: '',
     });
 
@@ -119,7 +119,7 @@ function Settings() {
                                                         onChange={handleChange}
                                                         min={500}
                                                         max={30000}
-                                                        step={100}
+                                                        step={500}
                                                     />
                                                 </Form.Group>
                                             </div>
@@ -133,7 +133,7 @@ function Settings() {
                                                         onChange={handleChange}
                                                         min={500}
                                                         max={30000}
-                                                        step={100}
+                                                        step={500}
                                                     />
                                                 </Form.Group>
                                             </div>
@@ -244,14 +244,14 @@ function Settings() {
                                 <Accordion.Body>
                                     <Form>
                                         <Form.Group controlId="Qin">
-                                            <Form.Label>Qin [aircraft/s]:</Form.Label>
+                                            <Form.Label>Qin [aircraft/m]:</Form.Label>
                                             <Form.Control
                                                 type="number"
                                                 value={values.Qin}
                                                 onChange={handleChange}
-                                                min={0.1}        // Set the minimum value
+                                                min={1}        // Set the minimum value
                                                 max={2}      // Set the maximum value
-                                                step={0.1}     // Set the step value  
+                                                step={1}     // Set the step value  
                                             />
                                         </Form.Group>
                                         <Form.Group controlId="SceStr">
