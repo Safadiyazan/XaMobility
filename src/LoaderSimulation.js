@@ -1522,15 +1522,15 @@ export async function LoadSimulation(viewer, data, city) {
         //viewer.zoomTo(airspace);
     }
     PlotCube(center, dx, dy, dz, dz0, dz1, 'Airspace', Color.BLACK.withAlpha(0.1), Color.BLACK);
-    PlotCube(center, dx, dy, dz1, dz0, 0, 'VTOLLayer', Color.RED.withAlpha(0.1), Color.RED);
+    PlotCube(center, dx, dy, dz1, dz0, 0, 'VTOLLayer', Color.RED.withAlpha(0.05), Color.RED);
     data.Settings.Airspace.Layers.forEach((L, index) => {
         // console.log(computeNewPoint(center, L.center[1],L.center[2],L.center[3]),L.dx,L.dy,L.dz,dz0,dz1)
-        PlotCube(computeNewPoint(center, L.center[0], L.center[1], L.center[2] - L.dz / 2), L.dx, L.dy, L.dz, dz0 + L.center[2] - L.dz / 2, 0, ['Layer ' + index], Color.CYAN.withAlpha(0.005), Color.CYAN.withAlpha(0.5))
+        PlotCube(computeNewPoint(center, L.center[0], L.center[1], L.center[2] - L.dz / 2), L.dx, L.dy, L.dz, dz0 + L.center[2] - L.dz / 2, 0, ['Layer ' + index], Color.CYAN.withAlpha(0.005), Color.CYAN.withAlpha(0.2))
     });
     data.Settings.Airspace.Regions.B.forEach((R, index) => {
         // console.log(computeNewPoint(center, L.center[1],L.center[2],L.center[3]),L.dx,L.dy,L.dz,dz0,dz1)
         if (R.ri === 1 || R.ri === 11 || R.ri === 21 || R.ri === 31) {
-            PlotCube(computeNewPoint(center, R.center[0], R.center[1], R.center[2] - R.dz / 2), R.dx, R.dy, R.dz, dz0 + R.center[2] - R.dz / 2, 0, ['Region ' + R.ri], Color.CYAN.withAlpha(0.005), Color.RED.withAlpha(0.5))
+            PlotCube(computeNewPoint(center, R.center[0], R.center[1], R.center[2] - R.dz / 2), R.dx, R.dy, R.dz, dz0 + R.center[2] - R.dz / 2, 0, ['Region ' + R.ri], Color.CYAN.withAlpha(0.005), Color.RED.withAlpha(0.2))
         }
     });
 
@@ -2044,7 +2044,7 @@ export async function LoadSimulation(viewer, data, city) {
     var positionPropertyArray = [];
 
     data.ObjAircraft.forEach((ObjAircraft, index) => {
-        if ((index > 0) & (index < 10)) {
+        if ((index > 0) & (index < 150)) {
             //const startAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.tda, new JulianDate());
             //const stopAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.taa, new JulianDate());
             const trajectoryPositions = [];

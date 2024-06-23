@@ -10,7 +10,7 @@ import os
 app = Flask(__name__, static_url_path='/')
 CORS(app, resources={r"/run_matlab_code": {"origins": "http://localhost:1110"}})
 eng = matlab.engine.start_matlab("-nojvm")
-eng.addpath('./pyLAATSimV0100', nargout=0)
+eng.addpath('./pyLAATSimV0200', nargout=0)
 
 def runMatlabCode():
     try:
@@ -32,7 +32,7 @@ def runMatlabCode():
                 NewSettings = json.load(json_file)
             qin_value = NewSettings['Sim']['Qin']
             SceStr_value = NewSettings['Sim']['SceStr']
-            NewJSONDir = eng.RunLAATSim(qin_value,NewSettings, SceStr_value, nargout=1)
+            NewJSONDir = eng.RunLAATSimUI(qin_value,NewSettings, SceStr_value, nargout=1)
             return jsonify({'NewJSONDir': NewJSONDir})
         else:
             NewJSONDir = eng.RunLAATSim(0.1,'', '', nargout=1)

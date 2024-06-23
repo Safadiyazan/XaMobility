@@ -1,4 +1,4 @@
-function [scenarioName] = RunLAATSim(InflowRate,NewSettings,SceStr)
+function [scenarioName] = RunLAATSimUI(InflowRate,NewSettings,SceStr)
 clc; close all; dbstop if error;
 close all force; close all hidden;
 disp(['Starting Simulation']);
@@ -17,12 +17,12 @@ if (~isempty(NewSettings))
     [Settings.Airspace] = SettingAirspace(double(NewSettings.Airspace.dx),double(NewSettings.Airspace.dy),double(NewSettings.Airspace.dz));
     Settings.Airspace.as = NewSettings.Airspace.as;
     [Settings.Aircraft] = SettingAircraft([double(NewSettings.Aircraft.VmaxMin);double(NewSettings.Aircraft.VmaxMax)],[double(NewSettings.Aircraft.RsMin);double(NewSettings.Aircraft.RsMax)]);
-    [Settings.Sim] = SettingSimulation(double(NewSettings.Sim.Qin));
+    [Settings.Sim] = SettingSimulation(double(NewSettings.Sim.Qin),20);
 else
-    [Settings.Airspace] = SettingAirspace(500,500,80);
+    [Settings.Airspace] = SettingAirspace(1500,1500,90);
     Settings.Airspace.as = 1;
     [Settings.Aircraft] = SettingAircraft([10,30],[10,30]);
-    [Settings.Sim] = SettingSimulation(0.1);
+    [Settings.Sim] = SettingSimulation(0.1,20);
 end
 %% Init Objects
 SimInfo.Mina = []; SimInfo.Mque = []; SimInfo.Mact = []; SimInfo.Marr = []; SimInfo.MactBQ = [];
@@ -30,7 +30,8 @@ SimInfo.M = 1:1:Settings.Sim.M; SimInfo.cc = 0;
 dtS = Settings.Sim.dtsim; dtM = Settings.Sim.dtMFD; tf = Settings.Sim.tf;
 SimInfo.dtS = dtS; SimInfo.dtM = dtM; SimInfo.tf = tf;
 SimInfo.pdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,3*size(SimInfo.M,2))); SimInfo.vdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,3*size(SimInfo.M,2))); SimInfo.statusdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2))); SimInfo.ridt = (zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2)));
-TFC = []; EC = []; EC.ECdt = zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2)); EC.sumECtdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); EC.sumECqdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); EC.avgECtdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); EC.avgECqdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); EC.sumECdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1);
+TFC = []; TFC.CS = []; TFC.EC = []; 
+TFC.EC.ECdt = zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2)); TFC.EC.sumECtdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.sumECqdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.avgECtdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.avgECqdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.sumECdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1);
 %% Aircraft Creation
 disp(['Initalizing Aircraft']);
 [SimInfo,ObjAircraft] = InitAircraftObj(SimInfo,Settings);
@@ -53,13 +54,13 @@ for t=0:dtS:tf
     [SimInfo] = UpdateSimInfo(SimInfo,ObjAircraft);
     %% Energy Conspution
     if (t~=0)
-        [EC,ObjAircraft] = CalEC_AG(EC,SimInfo,ObjAircraft);
+        [TFC.EC,ObjAircraft] = CalEC_AG(TFC.EC,SimInfo,ObjAircraft);
     end
     %% TFC
     if (t~=0)&&(mod(t,dtM)==0)
         SimInfo.RT.TFCStartTime = datetime;
-        [TFC,EC] = CalTFC_N(TFC,EC,SimInfo,ObjAircraft,Settings);
-        [TFC,EC] = CalTFC_Ri(TFC,EC,SimInfo,ObjAircraft,Settings);
+        [TFC] = CalTFC_N(TFC,SimInfo,ObjAircraft,Settings);
+        [TFC] = CalTFC_Ri(TFC,SimInfo,ObjAircraft,Settings);
         SimInfo.RT.TFCEndTime = datetime;
         SimInfo.RT.TFCRunningTime(end+1) = seconds(SimInfo.RT.TFCEndTime-SimInfo.RT.TFCStartTime);
     end
@@ -77,7 +78,7 @@ disp(['Exporting Data'])
 % Export Workspace
 % save([SimInfo.SimOutputDirStr 'Results' SimFilename],'TFC','EC','-v7.3');
 % save([SimInfo.SimOutputDirStr 'Trajectories' SimFilename],'-v7.3'); clear SimFilename;
-scenarioName = ExportJSON(SceStr,SimInfo,ObjAircraft,TFC,EC,Settings);
+scenarioName = ExportJSON(['./public/Outputs/' 'SimOutput_' SceStr],SimInfo,ObjAircraft,TFC,Settings);
 disp(scenarioName)
 disp(['Finishing Simulation'])
 % % Export Video
