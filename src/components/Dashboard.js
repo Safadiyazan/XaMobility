@@ -10,6 +10,7 @@ import CityDropdown from './CityDropdown';
 import ImageToolbar from './ImageToolbar';
 import ViewerToolBar from './ViewerToolBar';
 import NetworkSetup from './NetworkSetup.js';
+import '.././css/main.css'; // Ensure this import is here
 
 const Dashboard = () => {
     // =======================================================================================

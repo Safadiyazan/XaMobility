@@ -11,6 +11,8 @@ import Dashboard from './components/Dashboard';
 import About from './components/About';
 import Footer from './components/Footer';
 import Login from './components/Login';
+import './css/main.css'; // Ensure this import is here
+
 // =======================================================================================
 // Cesium Viewer Setting =================================================================
 import { IonResource, ClockStep, ClockRange, HeadingPitchRoll, VelocityOrientationProperty, PathGraphics, DistanceDisplayCondition, CallbackProperty, TimeInterval, TimeIntervalCollection, SampledPositionProperty, JulianDate, Cartographic, Sun, ShadowMode, Color, Ellipsoid, Matrix4, Transforms, Cesium3DTileset, Cartesian3, createOsmBuildingsAsync, Ion, Math as CesiumMath, Terrain, Viewer } from 'cesium';

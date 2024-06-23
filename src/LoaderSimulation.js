@@ -4,6 +4,7 @@ import { Model, IonResource, ClockStep, ClockRange, HeadingPitchRoll, VelocityOr
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import ViewerToolBar from './components/ViewerToolBar';
 import NetworkSetup from './components/NetworkSetup.js';
+import './css/main.css'; // Ensure this import is here
 
 // =================================================================================================================================================
 // Cesium Simulation

@@ -3,26 +3,36 @@ import Accordion from 'react-bootstrap/Accordion';
 import Form from 'react-bootstrap/Form';
 import Chart from 'chart.js/auto';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '.././css/main.css';
 
 function Analytics({ data }) {
   const [processedData, setProcessedData] = useState(null);
   const [selectedVariable, setSelectedVariable] = useState('TTS');
-  const [selectedXVariable, setSelectedXVariable] = useState('TTS');
-  const [selectedYVariable, setSelectedYVariable] = useState('TTD');
+  const [selectedXVariable, setSelectedXVariable] = useState('n');
+  const [selectedYVariable, setSelectedYVariable] = useState('G');
   const chartRef = useRef(null);
   const scatterChartRef = useRef(null);
 
   useEffect(() => {
     if (data && data.TFC && data.TFC.N) {
-      const tfcData = data.TFC.N;
-      const selectedValues = tfcData[selectedVariable];
+      let selectedValues;
 
+      if (selectedVariable && selectedVariable.startsWith('EC')) {
+        const ecData = data.TFC.EC.N;
+        selectedValues = ecData[selectedVariable];
+      } else {
+        const tfcData = data.TFC.N;
+        selectedValues = tfcData[selectedVariable];
+      }
       if (selectedValues) {
-        const dtS = data.SimInfo.dtM; // Get the simulation time step
-        const labels = selectedValues.map((_, index) => index * dtS); // Generate time series labels
+        const dtS = data.SimInfo.dtM; 
+        const labels = selectedValues.map((_, index) => (index + 1) * dtS); 
+        const labelsWithZero = [0, ...labels];
+        const valuesWithZero = [0, ...selectedValues];
+
         setProcessedData({
-          labels: labels,
-          values: selectedValues,
+          labels: labelsWithZero,
+          values: valuesWithZero,
         });
       } else {
         console.error("Selected variable data not found");
@@ -35,6 +45,7 @@ function Analytics({ data }) {
       const variableLabels = {
         TTS: 'Total Time Spent (TTS) [aircraft.s]',
         TTD: 'Total Travelled Distance (TTD) [aircraft.m]',
+        EC: 'Total Energy Consumption (TEC) [aircraft.Wh]',
         Q: 'Flow [aircraft/s/m2]',
         K: 'Density [aircraft/m3]',
         V: 'Speed [m/s]',
@@ -64,12 +75,37 @@ function Analytics({ data }) {
               title: {
                 display: true,
                 text: 'Time [s]',
+                font: {
+                  family: 'Latin Modern',
+                },
+              },
+              ticks: {
+                font: {
+                  family: 'Latin Modern',
+                },
               },
             },
             y: {
               title: {
                 display: true,
-                text: variableLabels[selectedVariable],
+                text: variableLabels[selectedVariable] || selectedVariable,
+                font: {
+                  family: 'Latin Modern',
+                },
+              },
+              ticks: {
+                font: {
+                  family: 'Latin Modern',
+                },
+              },
+            },
+          },
+          plugins: {
+            legend: {
+              labels: {
+                font: {
+                  family: 'Latin Modern',
+                },
               },
             },
           },
@@ -86,9 +122,24 @@ function Analytics({ data }) {
 
   useEffect(() => {
     if (data && data.TFC && data.TFC.N) {
-      const tfcData = data.TFC.N;
-      const xValues = tfcData[selectedXVariable];
-      const yValues = tfcData[selectedYVariable];
+
+      let xValues, yValues;
+
+      if (selectedXVariable && selectedXVariable.startsWith('EC')) {
+        const ecData = data.TFC.EC.N;
+        xValues = ecData[selectedXVariable];
+      } else {
+        const tfcData = data.TFC.N;
+        xValues = tfcData[selectedXVariable];
+      }
+
+      if (selectedYVariable && selectedYVariable.startsWith('EC')) {
+        const ecData = data.TFC.EC.N;
+        yValues = ecData[selectedYVariable];
+      } else {
+        const tfcData = data.TFC.N;
+        yValues = tfcData[selectedYVariable];
+      }
 
       if (xValues && yValues) {
         const scatterData = xValues.map((x, index) => ({
@@ -99,6 +150,7 @@ function Analytics({ data }) {
         const variableLabels = {
           TTS: 'Total Time Spent (TTS) [aircraft.s]',
           TTD: 'Total Travelled Distance (TTD) [aircraft.m]',
+          EC: 'Total Energy Consumption (TEC) [aircraft.Wh]',
           Q: 'Flow [aircraft/s/m2]',
           K: 'Density [aircraft/m3]',
           V: 'Speed [m/s]',
@@ -126,13 +178,38 @@ function Analytics({ data }) {
               x: {
                 title: {
                   display: true,
-                  text: variableLabels[selectedXVariable],
+                  text: variableLabels[selectedXVariable] || selectedXVariable,
+                  font: {
+                    family: 'Latin Modern',
+                  },
+                },
+                ticks: {
+                  font: {
+                    family: 'Latin Modern',
+                  },
                 },
               },
               y: {
                 title: {
                   display: true,
-                  text: variableLabels[selectedYVariable],
+                  text: variableLabels[selectedYVariable] || selectedYVariable,
+                  font: {
+                    family: 'Latin Modern',
+                  },
+                },
+                ticks: {
+                  font: {
+                    family: 'Latin Modern',
+                  },
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  font: {
+                    family: 'Latin Modern',
+                  },
                 },
               },
             },
@@ -187,6 +264,7 @@ function Analytics({ data }) {
                   >
                     <option value="TTS">Total Time Spent (TTS)</option>
                     <option value="TTD">Total Travelled Distance (TTD)</option>
+                    <option value="EC">Total Energy Consumption (TEC)</option>
                     <option value="Q">Flow (Q)</option>
                     <option value="K">Density (K)</option>
                     <option value="V">Speed (V)</option>
@@ -215,6 +293,7 @@ function Analytics({ data }) {
                   >
                     <option value="TTS">Total Time Spent (TTS)</option>
                     <option value="TTD">Total Travelled Distance (TTD)</option>
+                    <option value="EC">Total Energy Consumption (TEC)</option>
                     <option value="Q">Flow (Q)</option>
                     <option value="K">Density (K)</option>
                     <option value="V">Speed (V)</option>
@@ -231,6 +310,7 @@ function Analytics({ data }) {
                   >
                     <option value="TTS">Total Time Spent (TTS)</option>
                     <option value="TTD">Total Travelled Distance (TTD)</option>
+                    <option value="EC">Total Energy Consumption (TEC)</option>
                     <option value="Q">Flow (Q)</option>
                     <option value="K">Density (K)</option>
                     <option value="V">Speed (V)</option>

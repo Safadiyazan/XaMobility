@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import '.././css/main.css'; // Ensure this import is here
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');

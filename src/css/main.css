@@ -8,6 +8,11 @@ body,
     overflow: hidden;
 }
 
+body, html, .accordion, .form-control, canvas {
+    font-family: 'Latin Modern', sans-serif;
+  }
+  
+
 #settingsCheckbox {
     position: absolute;
     top: 10px;
@@ -68,7 +73,7 @@ body {
     /* Grey color with opacity */
     color: #D59F0F;
     /* White text color for contrast */
-    font-family: sans-serif;
+    /* font-family: sans-serif; */
     /* Clean, modern font */
     font-size: 14px;
     /* Adjust font size for readability */
@@ -100,7 +105,7 @@ body {
     /* Grey color with opacity */
     color: #D59F0F;
     /* White text color for contrast */
-    font-family: sans-serif;
+    /* font-family: sans-serif; */
     /* Clean, modern font */
     font-size: 12px;
     /* Adjust font size for readability */
@@ -133,7 +138,7 @@ input[type='checkbox'] {
     /* Grey color with opacity */
     color: #D59F0F;
     /* White text color for contrast */
-    font-family: sans-serif;
+    /* font-family: sans-serif; */
     /* Clean, modern font */
     font-size: 11px;
     /* Adjust font size for readability */
@@ -164,7 +169,7 @@ input[type='checkbox'] {
     /* Grey color with opacity */
     color: #D59F0F;
     /* White text color for contrast */
-    font-family: sans-serif;
+    /* font-family: sans-serif; */
     /* Clean, modern font */
     font-size: 12px;
     /* Adjust font size for readability */
@@ -213,7 +218,7 @@ input[type='checkbox'] {
     /* Grey color with opacity */
     color: #D59F0F;
     /* White text color for contrast */
-    font-family: sans-serif;
+    /* font-family: sans-serif; */
     /* Clean, modern font */
     font-size: 14px;
     /* Adjust font size for readability */
@@ -243,7 +248,7 @@ input[type='checkbox'] {
     /* Grey color with opacity */
     color: #D59F0F;
     /* White text color for contrast */
-    font-family: sans-serif;
+    /* font-family: sans-serif; */
     /* Clean, modern font */
     font-size: 12px;
     /* Adjust font size for readability */

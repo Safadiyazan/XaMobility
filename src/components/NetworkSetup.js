@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IonResource, ClockStep, ClockRange, HeadingPitchRoll, VelocityOrientationProperty, PathGraphics, DistanceDisplayCondition, CallbackProperty, TimeInterval, TimeIntervalCollection, SampledPositionProperty, JulianDate, Cartographic, Sun, ShadowMode, Color, Ellipsoid, Matrix4, Transforms, Cesium3DTileset, Cartesian3, createOsmBuildingsAsync, Ion, Math as CesiumMath, Terrain, Viewer } from 'cesium';
 import { Button } from 'react-bootstrap';
 import { LoadSimulation } from '.././LoaderSimulation';
+import '.././css/main.css'; // Ensure this import is here
 
 const NetworkSetup = ({ }) => {
 

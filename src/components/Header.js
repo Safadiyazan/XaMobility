@@ -1,6 +1,7 @@
 // src/components/Header.js
 import React from 'react';
 import { Navbar, Nav, Button, NavDropdown } from 'react-bootstrap';
+import '.././css/main.css'; // Ensure this import is here
 
 const Header = ({ isAuthenticated, onLoginButtonClick, username, onLogout }) => {
   return (

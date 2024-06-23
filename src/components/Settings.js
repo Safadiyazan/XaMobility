@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import '.././css/main.css'; // Ensure this import is here
 
 function Settings() {
 

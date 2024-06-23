@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '.././css/main.css'; // Ensure this import is here
 
 const ImageToolbar = () => {
   const [isChecked, setIsChecked] = useState(false); // Initially unchecked
