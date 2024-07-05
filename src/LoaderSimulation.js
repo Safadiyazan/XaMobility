@@ -2098,7 +2098,6 @@ export async function LoadSimulation(viewer, data, city) {
                             y: cartesian.y,
                             z: cartesian.z
                         },
-                        orientation: VertiportArray[VertiportIndex].orientation,
                         neuDistances: neuDistances,
                     };
                     vertiportData.push(vertiportInfo);
