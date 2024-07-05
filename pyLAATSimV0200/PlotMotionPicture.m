@@ -61,7 +61,8 @@ for dt=1:dstt:(1+SimS.tf/SimS.dtsim)
 %     hold off
     PlotAirspaceDesign(AirspaceS,FigFontSize);
     PlotTrajectories(tt,dt,SimInfo,ObjAircraft,FigFontSize);
-    view([45,5])
+    view([45,45])
+    % view(2);
     %% Save frame
     %     pause(0.1);
     FRAMEI = max(1,((dt-1)/dstt)+1);

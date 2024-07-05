@@ -11,7 +11,7 @@ ModelsVec = [1.*ones(ceil(Sim.M.*ModelsTypes(1)),1);2.*ones(ceil(Sim.M.*ModelsTy
 for aa = 1:Sim.M
     %% Aircraft Model UAV/PAV/EAV
     ObjAircraft(aa).AMI = ModelsVec(randi(size(ModelsVec,2)));
-    %% 
+    %%
     ObjAircraft(aa).id = aa; % index
     ObjAircraft(aa).status = 0; % status % 0 - Want to depart % 1 - Flying % 2 - Landed % 100 - Priority want to depart % 101 - Priority % 102 - Priority landed % 12 - Obstacle % 10 - Queue
     %% Velocity and Speed
@@ -32,12 +32,18 @@ for aa = 1:Sim.M
     ObjAircraft(aa).rv = ObjAircraft(aa).vm*norm(ObjAircraft(aa).lgain); % rv
     ObjAircraft(aa).rd = ObjAircraft(aa).ra + ObjAircraft(aa).rs + 2*ObjAircraft(aa).rv; % detetion radius
     %% Origin, Destiation, Waypoints, positions
-    if (Airspace.VTOL)
+    if (Airspace.VTOL)&&(~Airspace.Vertiports)
         ObjAircraft(aa).VTOL = 1;
-%         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODGround(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground
-        [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODGround2R(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground Two Regions Uniformly        
+        %         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODGround(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground
+        [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODGround2R(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground Two Regions Uniformly
+        ObjAircraft(aa).wp  = AircraftRouteTL(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs); % waypoints
+        % ObjAircraft(aa).wp  = AircraftRouteTL_MultiLayer(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs,ObjAircraft(aa).AMI); % waypoints
+    elseif (Airspace.VTOL)&&(Airspace.Vertiports)
+        ObjAircraft(aa).VTOL = 1;
+        [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODVertiports(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground Two Regions Uniformly
         % ObjAircraft(aa).wp  = AircraftRouteTL(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs); % waypoints
         ObjAircraft(aa).wp  = AircraftRouteTL_MultiLayer(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs,ObjAircraft(aa).AMI); % waypoints
+
     elseif(Airspace.SubsetNetwork)
         ObjAircraft(aa).VTOL = 0;
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODBoundary(Airspace,ObjAircraft(aa).rd); % origin and desitation at the boundaries
@@ -59,11 +65,11 @@ for aa = 1:Sim.M
     ObjAircraft(aa).rio = RegionIndexXYZ(Airspace,ObjAircraft(aa).o); % origin region
     ObjAircraft(aa).rid = RegionIndexXYZ(Airspace,ObjAircraft(aa).d); % des. region
     ObjAircraft(aa).rit = RegionIndexXYZ(Airspace,ObjAircraft(aa).pt); % current region
-%     %%
-%     ObjAircraft(aa).ptdt = [ObjAircraft(aa).pt];
-%     ObjAircraft(aa).vtdt = [ObjAircraft(aa).vt];
-%     ObjAircraft(aa).statusdt = [ObjAircraft(aa).status];
-%     ObjAircraft(aa).ridt = [ObjAircraft(aa).rit];
+    %     %%
+    %     ObjAircraft(aa).ptdt = [ObjAircraft(aa).pt];
+    %     ObjAircraft(aa).vtdt = [ObjAircraft(aa).vt];
+    %     ObjAircraft(aa).statusdt = [ObjAircraft(aa).status];
+    %     ObjAircraft(aa).ridt = [ObjAircraft(aa).rit];
     %% Times and Distances
     ObjAircraft(aa).tt = [inf]; % travel time
     ObjAircraft(aa).tte = [inf];%ObjAircraft(aa).tle/ObjAircraft(aa).vm; % expected travel time
@@ -185,7 +191,7 @@ switch ODRi
         d = [2*(rand-0.5)*AirspaceS.dx/6, 2*(rand-0.5)*AirspaceS.dy/6, z0d];
     case 2 % R1->R2
         o = [2*(rand-0.5)*AirspaceS.dx/6, 2*(rand-0.5)*AirspaceS.dy/6, z0o];
-%         d = [(2*randi([0, 1])-1),(2*randi([0, 1])-1),0].*([AirspaceS.dx/6,AirspaceS.dx/6,0] + [(rand)*AirspaceS.dx/3, (rand)*AirspaceS.dy/3, z0d]);
+        %         d = [(2*randi([0, 1])-1),(2*randi([0, 1])-1),0].*([AirspaceS.dx/6,AirspaceS.dx/6,0] + [(rand)*AirspaceS.dx/3, (rand)*AirspaceS.dy/3, z0d]);
         d = R2_options(randi(size(R2_options, 1)),:).*[AirspaceS.dx/3, AirspaceS.dy/3, z0o] + [2*(rand-0.5)*AirspaceS.dx/6, 2*(rand-0.5)*AirspaceS.dy/6, z0o];
     case 3 % R2->R1
         o = R2_options(randi(size(R2_options, 1)),:).*[AirspaceS.dx/3, AirspaceS.dy/3, z0o] + [2*(rand-0.5)*AirspaceS.dx/6, 2*(rand-0.5)*AirspaceS.dy/6, z0o];
@@ -198,6 +204,31 @@ while norm(o-d)<rd % verify the o and d is not close enough
     d = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, 0];
 end
 % TODO: warning('Optional Fixed-OD - Similiar to TLOF,')
+end
+
+function [o, d] = AircraftODVertiports(AirspaceS,rs,rd)
+% Vertiports = [
+% -73.98440300426283 40.77275113399261 20.89627363010538;
+% -73.96773955133848 40.75007173649506 4.318934694714676;
+% -73.98427004394215 40.72990870353391 -15.521595383896994;
+% -73.99687660760746 40.724604427122294 28.434851429241917;
+% ];
+if AirspaceS.Vertiports
+    [VertiportOD,MaxXY] = LoadVertiports();
+    ODMat = VertiportOD;
+else
+    ODMat = 0.99.*[
+        AirspaceS.dx/2,AirspaceS.dy/2,0;
+        -AirspaceS.dx/2,AirspaceS.dy/2,0;
+        AirspaceS.dx/2,-AirspaceS.dy/2,0;
+        -AirspaceS.dx/2,-AirspaceS.dy/2,0;
+        ];
+end
+z0o = 0;
+z0d = 0;
+ODRi = randperm(size(ODMat,1),2); % 11, 12, 21, 22
+o = ODMat(ODRi(1),:);
+d = ODMat(ODRi(2),:);
 end
 %%
 function wp  = AircraftRoute(AirspaceS,o,d)

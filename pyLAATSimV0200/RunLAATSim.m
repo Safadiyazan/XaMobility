@@ -14,10 +14,10 @@ if ~exist(SimInfo.SimOutputDirStr, 'dir')
 end
 %% Settings
 waitbar(0,fwaitbar,'Determining Setting');
-[Settings.Airspace] = SettingAirspace(20*60*30/3.6,20*60*30/3.6,90);
+[Settings.Airspace] = SettingAirspace(1500,1500,90); % 20*60*30/3.6,20*60*30/3.6
 Settings.Airspace.as = 1;
 [Settings.Aircraft] = SettingAircraft([10,30],[10,30]);
-[Settings.Sim] = SettingSimulation(InflowRate,30);
+[Settings.Sim] = SettingSimulation(InflowRate,10);
 [Settings.TFC] = SettingTrafficControl(Settings);
 %% Init Objects
 SimInfo.Mina = []; SimInfo.Mque = []; SimInfo.Mact = []; SimInfo.Marr = []; SimInfo.MactBQ = [];

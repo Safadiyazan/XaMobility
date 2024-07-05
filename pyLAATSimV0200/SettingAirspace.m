@@ -1,8 +1,17 @@
 function [Airspace] = SettingAirspace(dx,dy,dz)
-Airspace.dx = dx; % width [m]
-Airspace.dy = dy; % length [m]
-Airspace.dz = dz;%Airspace.dz2-Airspace.dz1;  % height [m]
-Airspace.dz1 = 30;  % start at height [m]
+Airspace.Vertiports = 1;
+if Airspace.Vertiports
+    [VertiportOD,MaxXY] = LoadVertiports();
+    Airspace.dx = MaxXY*2; % width [m]
+    Airspace.dy = MaxXY*2; % length [m]
+    Airspace.dz = dz;%Airspace.dz2-Airspace.dz1;  % height [m]
+    Airspace.dz1 = 400;  % start at height [m]
+else
+    Airspace.dx = dx; % width [m]
+    Airspace.dy = dy; % length [m]
+    Airspace.dz = dz;%Airspace.dz2-Airspace.dz1;  % height [m]
+    Airspace.dz1 = 30;  % start at height [m]
+end
 Airspace.dz2 = dz+Airspace.dz1; % end at height [m]
 Airspace.xyz = [[-Airspace.dx;Airspace.dx]/2,[-Airspace.dy;Airspace.dy]/2,[[Airspace.dz1;Airspace.dz1]+[0;Airspace.dz]]];
 Airspace.Space = Airspace.dx*Airspace.dy*Airspace.dz;
@@ -14,7 +23,8 @@ if Airspace.VTOL
     Airspace.VTOLxyz = [[-Airspace.dx;Airspace.dx]/2,[-Airspace.dy;Airspace.dy]/2,[Airspace.z01;Airspace.z02]];
 end
 %% Subset
-Airspace.SubsetNetwork = 1;
+Airspace.SubsetNetwork = 0;
+
 %% TODO: TLOF
 %% function for regions boundaries
 Airspace.RMode='2R';
@@ -35,6 +45,7 @@ warning('TODO: add multi-layer 5L with emergcnacy layer!')
 %% TODO: Wind settings
 %% TODO: Obstacles settings
 %% TODO: Highway settings
+
 end
 
 function [Ri,Li] = SettingAirspaceRegions(Airspace)

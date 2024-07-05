@@ -80,9 +80,16 @@ export async function LoadSimulation(viewer, data, city) {
             var dz0 = 580;
             var center = Cartesian3.fromDegrees(18.070336, 59.349744, dz0); // Dubai
             break;
+        case "UOM":
+            var dz0 = 580;
+            var center = Cartesian3.fromDegrees(-83.73826609087581, 42.28074004295685, dz0); // Dubai
+            break;
         // default:
         //     var dz0 = 80;
         //     var center = Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0); // NYC
+    }
+    if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
+        var dz0 = 0;
     }
     // var center = Cartesian3.fromDegrees(35.045628640781565, 32.77278697558125,  dz0); // NESHER
     // var center = Cartesian3.fromDegrees(35.01178943640926, 32.76765420453765,  dz0); // HAIFA
@@ -126,13 +133,13 @@ export async function LoadSimulation(viewer, data, city) {
         viewer.shadowMap.maximumDistance = 5000.0; // Maximum shadow distance in meters
 
         // Create a light source for the sun
-        var sunLight = new Sun();
+        // var sunLight = new Sun();
 
         // Set the light source direction (optional, the default is the sun's position)
-        sunLight.direction = Cartesian3.normalize(new Cartesian3(0.5, 0.5, 0.5), new Cartesian3());
+        // sunLight.direction = Cartesian3.normalize(new Cartesian3(0.5, 0.5, 0.5), new Cartesian3());
 
         // Add the light source to the scene
-        viewer.scene.sun = sunLight;
+        // viewer.scene.sun = sunLight;
         // Fly the camera to San Francisco at the given longitude, latitude, and height.
         var initialPosition = computeNewPoint(center, 0, -1250, 2000);
         var initialOrientation = {
@@ -1468,17 +1475,27 @@ export async function LoadSimulation(viewer, data, city) {
         //viewer.zoomTo(airspace);
     }
     PlotCube(center, dx, dy, dz, dz0, dz1, 'Airspace', Color.BLACK.withAlpha(0.1), Color.BLACK);
-    PlotCube(center, dx, dy, dz1, dz0, 0, 'VTOLLayer', Color.RED.withAlpha(0.05), Color.RED);
-    data.Settings.Airspace.Layers.forEach((L, index) => {
-        // console.log(computeNewPoint(center, L.center[1],L.center[2],L.center[3]),L.dx,L.dy,L.dz,dz0,dz1)
-        PlotCube(computeNewPoint(center, L.center[0], L.center[1], L.center[2] - L.dz / 2), L.dx, L.dy, L.dz, dz0 + L.center[2] - L.dz / 2, 0, ['Layer ' + index], Color.CYAN.withAlpha(0.005), Color.CYAN.withAlpha(0.2))
-    });
-    data.Settings.Airspace.Regions.B.forEach((R, index) => {
-        // console.log(computeNewPoint(center, L.center[1],L.center[2],L.center[3]),L.dx,L.dy,L.dz,dz0,dz1)
-        if (R.ri === 1 || R.ri === 11 || R.ri === 21 || R.ri === 31) {
-            PlotCube(computeNewPoint(center, R.center[0], R.center[1], R.center[2] - R.dz / 2), R.dx, R.dy, R.dz, dz0 + R.center[2] - R.dz / 2, 0, ['Region ' + R.ri], Color.CYAN.withAlpha(0.005), Color.RED.withAlpha(0.2))
-        }
-    });
+    if (data.Settings.Airspace.VTOL === 1) {
+        PlotCube(center, dx, dy, dz1, dz0, 0, 'VTOLLayer', Color.RED.withAlpha(0.05), Color.RED);
+    }
+    try {
+        data.Settings.Airspace.Layers.forEach((L, index) => {
+            // console.log(computeNewPoint(center, L.center[1],L.center[2],L.center[3]),L.dx,L.dy,L.dz,dz0,dz1)
+            PlotCube(computeNewPoint(center, L.center[0], L.center[1], L.center[2] - L.dz / 2), L.dx, L.dy, L.dz, dz0 + L.center[2] - L.dz / 2, 0, ['Layer ' + index], Color.CYAN.withAlpha(0.005), Color.CYAN.withAlpha(0.2))
+        });
+    } catch (error) {
+        console.log(`Error loading ${error}`);
+    }
+    try {
+        data.Settings.Airspace.Regions.B.forEach((R, index) => {
+            // console.log(computeNewPoint(center, L.center[1],L.center[2],L.center[3]),L.dx,L.dy,L.dz,dz0,dz1)
+            if (R.ri === 1 || R.ri === 11 || R.ri === 21 || R.ri === 31) {
+                PlotCube(computeNewPoint(center, R.center[0], R.center[1], R.center[2] - R.dz / 2), R.dx, R.dy, R.dz, dz0 + R.center[2] - R.dz / 2, 0, ['Region ' + R.ri], Color.CYAN.withAlpha(0.005), Color.RED.withAlpha(0.2))
+            }
+        });
+    } catch (error) {
+        console.log(`Error loading ${error}`);
+    }
     // End Layers and Regions Settings
     ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -1717,7 +1734,7 @@ export async function LoadSimulation(viewer, data, city) {
                     AircraftURLScale = 2;
                     break;
                 case 4:
-                    AircraftURL = "/YS_Drone.glb";
+                    AircraftURL = "/YS_Drone_Pack.glb";
                     AircraftURLScale = 1;
                     break;
                 default:
@@ -1857,10 +1874,10 @@ export async function LoadSimulation(viewer, data, city) {
         }
     }
 
-    const VertiportLocationA = Cartesian3.fromDegrees(-73.97618892920757, 40.739661015289336, 10); // NYC NYC Health + Hospitals/Bellevue
-    const headingPositionRollA = new Cesium.HeadingPitchRoll();
-    const fixedFrameTransformA = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
-    AddVertiport(VertiportLocationA, headingPositionRollA, fixedFrameTransformA)
+    // const VertiportLocationA = Cartesian3.fromDegrees(-73.97618892920757, 40.739661015289336, 10); // NYC NYC Health + Hospitals/Bellevue
+    // const headingPositionRollA = new Cesium.HeadingPitchRoll();
+    // const fixedFrameTransformA = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
+    // AddVertiport(VertiportLocationA, headingPositionRollA, fixedFrameTransformA)
 
 
     const isNetworkSetup = true; //document.getElementById('showNetworkSetup').checked;
@@ -1963,27 +1980,111 @@ export async function LoadSimulation(viewer, data, city) {
             addObjectAndSaveData(adjustedCartesian, longitudeDeg, latitudeDeg, heightDeg);
         }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
+        // function addObjectAndSaveData(cartesian, longitudeDeg, latitudeDeg, heightDeg) {
+        //     try {
+        //         const VertiportLocation = cartesian;
+        //         const headingPositionRollVertiport = new Cesium.HeadingPitchRoll();
+        //         const fixedFrameTransformVertiport = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
+        //         AddVertiport(VertiportLocation, headingPositionRollVertiport, fixedFrameTransformVertiport)
+        //         // const point = viewer.entities.add({
+        //         //     name: ['Vertiport:' + longitudeDeg, latitudeDeg, heightDeg],
+        //         //     position: VertiportLocation,
+        //         //     point: {
+        //         //         color: Cesium.Color.RED,
+        //         //         pixelSize: 30,
+        //         //     },
+        //         // });
+        //         console.log('Added vertiport at ' + longitudeDeg, latitudeDeg, heightDeg)
+        //         // return modelVertipot;
+        //     } catch (error) {
+        //         console.error("Error loading model:", error);
+        //     }
+
+        // }
+
+        function calculateNEUDistances(center, vertiportLocation) {
+            const transformMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(center);
+            const inverseTransformMatrix = Cesium.Matrix4.inverse(transformMatrix, new Cesium.Matrix4());
+
+            const localPosition = new Cesium.Cartesian3();
+            Cesium.Matrix4.multiplyByPoint(inverseTransformMatrix, vertiportLocation, localPosition);
+
+            return {
+                north: localPosition.y,
+                east: localPosition.x,
+                up: localPosition.z
+            };
+        }
+        const vertiportData = [];
+        var VertiportIndex = 0;
+
         function addObjectAndSaveData(cartesian, longitudeDeg, latitudeDeg, heightDeg) {
             try {
                 const VertiportLocation = cartesian;
                 const headingPositionRollVertiport = new Cesium.HeadingPitchRoll();
-                const fixedFrameTransformVertiport = Cesium.Transforms.localFrameToFixedFrameGenerator("north","west");
-                AddVertiport(VertiportLocation, headingPositionRollVertiport, fixedFrameTransformVertiport)
-                // const point = viewer.entities.add({
-                //     name: ['Vertiport:' + longitudeDeg, latitudeDeg, heightDeg],
-                //     position: VertiportLocation,
-                //     point: {
-                //         color: Cesium.Color.RED,
-                //         pixelSize: 30,
-                //     },
-                // });
-                console.log('Added vertiport at ' + longitudeDeg, latitudeDeg, heightDeg)
-                // return modelVertipot;
+                const fixedFrameTransformVertiport = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
+                AddVertiport(VertiportLocation, headingPositionRollVertiport, fixedFrameTransformVertiport);
+                const neuDistances = calculateNEUDistances(center, VertiportLocation);
+
+                // Save vertiport data
+                const vertiportInfo = {
+                    index: VertiportIndex,
+                    longitude: longitudeDeg,
+                    latitude: latitudeDeg,
+                    height: heightDeg,
+                    cartesian: {
+                        x: cartesian.x,
+                        y: cartesian.y,
+                        z: cartesian.z
+                    },
+                    neuDistances: neuDistances,
+                };
+                vertiportData.push(vertiportInfo);
+                console.log('Added vertiport at ' + longitudeDeg, latitudeDeg, heightDeg);
+                console.log('Distance of vertiport from cetner ' + neuDistances);
+
+                // Send vertiport data to the server
+                saveVertiportData(vertiportData);
+                VertiportIndex = VertiportIndex + 1;
+
             } catch (error) {
                 console.error("Error loading model:", error);
             }
-
         }
+
+        function saveVertiportData(data) {
+            fetch('/api/save_vertiports', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ vertiportData: data }),
+            })
+                .then(response => response.json())
+                .then(data => console.log('Server response:', data))
+                .catch(error => console.error('Error:', error));
+        }
+
+    } else {
+        if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
+            // Fetch and load fixed vertiport settings from JSON file
+            fetch('/FixedVertiportsSettings.json')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(vertiport => {
+                        const FunVertiportLocation = Cesium.Cartesian3.fromDegrees(
+                            vertiport.longitude,
+                            vertiport.latitude,
+                            vertiport.height
+                        );
+                        const headingPositionRoll = new Cesium.HeadingPitchRoll();
+                        const fixedFrameTransform = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
+                        AddVertiport(FunVertiportLocation, headingPositionRoll, fixedFrameTransform);
+                    });
+                })
+                .catch(error => console.error('Error loading fixed vertiport settings:', error));
+        }
+
     }
     // const VertiportLocationB = Cartesian3.fromDegrees(-73.98795424274152, 40.71316991516138, 30); // NYC Gotham Hospital
     // End Vertiport setting
@@ -1997,7 +2098,7 @@ export async function LoadSimulation(viewer, data, city) {
     const timeStepInSeconds = 10 * dtS; // for objects dt Plotting, every 00 seconds.
     const dt = timeStepInSeconds / dtS; // for importing.
     const totalSeconds = data.SimInfo.tf;//timeStepInSeconds * (tf - 1);
-    const startSim = JulianDate.fromIso8601("1903-12-17T10:35:00Z");
+    const startSim = JulianDate.fromIso8601("2024-07-16T09:30:00-04:00");
     const stopSim = JulianDate.addSeconds(startSim, totalSeconds, new JulianDate());
     viewer.clock.startTime = startSim.clone();
     viewer.clock.stopTime = stopSim.clone();

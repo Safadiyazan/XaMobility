@@ -122,6 +122,43 @@ app.post('/api/save_settings', async (req, res) => {
     }
 });
 
+// app.post('/api/save_vertiports', (req, res) => {
+//     const vertiportData = req.body.vertiportData;
+//     const filePath = path.join(__dirname, 'public', 'vertiports.json');
+
+//     fs.writeFile(filePath, JSON.stringify(vertiportData, null, 2), (err) => {
+//         if (err) {
+//             console.error('Error saving vertiport data:', err);
+//             res.status(500).json({ message: 'Failed to save vertiport data.' });
+//         } else {
+//             res.status(200).json({ message: 'Vertiport data saved successfully.' });
+//         }
+//     });
+// });
+
+const filePath = path.join(__dirname, 'public', 'VertiportsSettings.json');
+
+// Reset the file to an empty array when the server starts
+fs.writeFile(filePath, JSON.stringify([], null, 2), (err) => {
+    if (err) {
+        console.error('Error resetting vertiport data:', err);
+    } else {
+        console.log('Vertiport data reset to empty array.');
+    }
+});
+
+app.post('/api/save_vertiports', (req, res) => {
+    const vertiportData = req.body.vertiportData;
+
+    fs.writeFile(filePath, JSON.stringify(vertiportData, null, 2), (err) => {
+        if (err) {
+            console.error('Error saving vertiport data:', err);
+            res.status(500).json({ message: 'Failed to save vertiport data.' });
+        } else {
+            res.status(200).json({ message: 'Vertiport data saved successfully.' });
+        }
+    });
+});
 
 // =======================================================================================
 // Update dropdown list in simulation data ===============================================

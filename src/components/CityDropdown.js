@@ -13,6 +13,7 @@ const CityDropdown = ({ handleDropdownCityChange, selectedCity }) => {
         <option value="HF">HF</option>
         <option value="DXB">DXB</option>
         <option value="KTH">KTH</option>
+        <option value="UOM">UOM</option>
       </select>
     </div>
   );

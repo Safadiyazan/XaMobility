@@ -106,7 +106,7 @@ const Dashboard = () => {
     };
     // =======================================================================================
     // Run and Load Simulation Handles =======================================================
-    const [selectedFile, setSelectedFile] = useState("/Samples/SimOutput_Default.json");
+    const [selectedFile, setSelectedFile] = useState("/Samples/Results_Qin2Subset_2by2_10apm.json");
     const [analyticsData, setAnalyticsData] = useState(null);
 
     useEffect(() => {
@@ -177,7 +177,11 @@ const Dashboard = () => {
                     <option value={selectedFile}>
                         Choose a sample for display
                     </option>
-                    <option value="/Samples/SimOutput_Default.json">Default</option>
+                    <option value="/Samples/Results_Qin2Subset_2by2_10apm.json">Subset</option>
+                    <option value="/Samples/Results_Qin1TestingFixedOD.json">Fixed OD</option>
+                    <option value="/Samples/Results_Qin1TestingFixedVertiports.json">Fixed Vertiports</option>
+                    
+                    {/* <option value="/Samples/SimOutput_Default.json">Default</option> */}
                     <option value="/Samples/Results_Testing.json">Em</option>
                 </select>
             </div>
@@ -239,7 +243,7 @@ const Dashboard = () => {
             <CityDropdown handleDropdownCityChange={handleDropdownCityChange} selectedCity={selectedCity} />
             <ViewerToolBar />
             <ImageToolbar />
-            <NetworkSetup />
+            {/* <NetworkSetup /> */}
         </div>
     );
 };

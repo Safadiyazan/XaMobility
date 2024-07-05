@@ -17,13 +17,13 @@ if (~isempty(NewSettings))
     [Settings.Airspace] = SettingAirspace(double(NewSettings.Airspace.dx),double(NewSettings.Airspace.dy),double(NewSettings.Airspace.dz));
     Settings.Airspace.as = NewSettings.Airspace.as;
     [Settings.Aircraft] = SettingAircraft([double(NewSettings.Aircraft.VmaxMin);double(NewSettings.Aircraft.VmaxMax)],[double(NewSettings.Aircraft.RsMin);double(NewSettings.Aircraft.RsMax)]);
-    [Settings.Sim] = SettingSimulation(double(NewSettings.Sim.Qin)/60,30);
+    [Settings.Sim] = SettingSimulation(double(NewSettings.Sim.Qin)/60,10);
     disp(['Inflow aircraft/s:' double(NewSettings.Sim.Qin)/60])
 else
     [Settings.Airspace] = SettingAirspace(1500,1500,90);
     Settings.Airspace.as = 1;
     [Settings.Aircraft] = SettingAircraft([10,30],[10,30]);
-    [Settings.Sim] = SettingSimulation(0.1,30);
+    [Settings.Sim] = SettingSimulation(0.1,10);
 end
 %% Init Objects
 SimInfo.Mina = []; SimInfo.Mque = []; SimInfo.Mact = []; SimInfo.Marr = []; SimInfo.MactBQ = [];
