@@ -53,7 +53,11 @@ export async function LoadSimulation(viewer, data, city) {
     // Center point
     switch (city) {
         case "NYC":
-            var dz0 = 480;
+            if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
+                var dz0 = 0;
+            } else {
+                var dz0 = 480;
+            }
             var center = Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0); // NYC
             break;
         case "SF":
@@ -88,9 +92,7 @@ export async function LoadSimulation(viewer, data, city) {
         //     var dz0 = 80;
         //     var center = Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0); // NYC
     }
-    if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
-        var dz0 = 0;
-    }
+
     // var center = Cartesian3.fromDegrees(35.045628640781565, 32.77278697558125,  dz0); // NESHER
     // var center = Cartesian3.fromDegrees(35.01178943640926, 32.76765420453765,  dz0); // HAIFA
 
@@ -119,7 +121,7 @@ export async function LoadSimulation(viewer, data, city) {
     //     viewer.container.appendChild(customControlsDiv);
     // }
     // createCustomControls(viewer);
-
+    var randomNumberVerti = 0;
     ///////////////////////////////////////////////////////////////////////////////////////
     ViewSetting(center, NavigationOn);
     function ViewSetting(center, NavigationOn) {
@@ -163,6 +165,10 @@ export async function LoadSimulation(viewer, data, city) {
             if ((event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'PageUp' || event.key === 'PageDown')) {
                 event.preventDefault(); // Prevent scrolling when arrow keys are pressed
             }
+            if ((event.key === 'N')) {
+                isNetworkSetup = !isNetworkSetup; // Toggle the variable
+                handleNetworkSetup(isNetworkSetup);
+            }
             if ((event.key === 'h')) {
                 // Reset camera to initial position and orientation
                 pitch = initialOrientation.pitch;
@@ -175,6 +181,29 @@ export async function LoadSimulation(viewer, data, city) {
                 });
                 // viewer.zoomTo(airspace)
                 viewer.trackedEntity = undefined;
+            }
+            if ((event.key === 'V')) {
+                randomNumberVerti = Math.floor(Math.random() * VertiportArray.length);
+                viewer.trackedEntity = VertiportArray[randomNumberVerti];
+            }
+            if ((event.key === '!')) {
+                randomNumberVerti = 0;
+                viewer.trackedEntity = VertiportArray[randomNumberVerti];
+            }
+            if ((event.key === '@')) {
+                randomNumberVerti = 1;
+                viewer.trackedEntity = VertiportArray[randomNumberVerti];
+            }
+            if ((event.key === '#')) {
+                randomNumberVerti = 2;
+                viewer.trackedEntity = VertiportArray[randomNumberVerti];
+            }
+            if ((event.key === '$')) {
+                randomNumberVerti = 3;
+                viewer.trackedEntity = VertiportArray[randomNumberVerti];
+            }
+            if ((event.key === '+')) {
+                VertiportArray[randomNumberVerti] = rotateEntity(VertiportArray[randomNumberVerti],5);
             }
             if ((event.key === 'r')) {
                 var randomNumber = Math.floor(Math.random() * entitiesArray.length);
@@ -1827,266 +1856,323 @@ export async function LoadSimulation(viewer, data, city) {
     ///////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     // Start Vertiport setting
-    // modelB.model.heightReference = Cesium.HeightReference.CLAMP_TO_3D_TILE;
-    // saveDataToJSON(longitude, latitude);
+    var VertiportArray = [];
 
-    async function AddVertiport(FunVertiportLocation, FunheadingPositionRoll, FunfixedFrameTransform) {
+    async function AddVertiport(VertiportIndex, FunVertiportLocation, FunheadingPositionRoll, FunfixedFrameTransform, VertiportArray) {
         try {
-            const modelA = await Cesium.Model.fromGltfAsync({
-                url: "/Vertiport.glb",
-                scale: 0.5,
-                modelMatrix: Cesium.Transforms.headingPitchRollToFixedFrame(
+            const entityVertiport = viewer.entities.add({
+                name: "Vertiport " + VertiportIndex,
+                position: FunVertiportLocation,
+                model: {
+                    uri: "/Vertiport.glb",
+                    scale: 0.5,
+                    // minimumPixelSize: 128
+                },
+                orientation: Cesium.Transforms.headingPitchRollQuaternion(
                     FunVertiportLocation,
                     FunheadingPositionRoll,
                     Cesium.Ellipsoid.WGS84,
                     FunfixedFrameTransform
-                ),
+                )
             });
-            viewer.scene.primitives.add(modelA);
-            plotPoint(computeNewPoint(FunVertiportLocation, 0, 17.5, 2));
-            plotPoint(computeNewPoint(FunVertiportLocation, 0, -17.5, 2));
-            const VertiPortSphereEntityA = viewer.entities.add({
-                name: `Vertiport: 1a, Safety Space`,
-                description: ``,
-                position: computeNewPoint(FunVertiportLocation, 0, 17.5, 0),
-                ellipsoid: {
-                    radii: new Cartesian3(15, 15, 15),
-                    material: Color.RED.withAlpha(0.1),
-                    outline: true,
-                    outlineColor: Color.BLACK.withAlpha(0.2),
-                },
-                allowPicking: false,
-            });
-            const VertiPortSphereEntityB = viewer.entities.add({
-                name: `Vertiport: 1b, Safety Space`,
-                description: ``,
-                position: computeNewPoint(FunVertiportLocation, 0, -17.5, 0),
-                ellipsoid: {
-                    radii: new Cartesian3(15, 15, 15),
-                    material: Color.RED.withAlpha(0.1),
-                    outline: true,
-                    outlineColor: Color.BLACK.withAlpha(0.2),
-                },
-                allowPicking: false,
-            });
+            VertiportArray.push(entityVertiport);
+            // const modelA = await Cesium.Model.fromGltfAsync({
+            //     url: "/Vertiport.glb",
+            //     scale: 0.5,
+            //     modelMatrix: Cesium.Transforms.headingPitchRollToFixedFrame(
+            //         FunVertiportLocation,
+            //         FunheadingPositionRoll,
+            //         Cesium.Ellipsoid.WGS84,
+            //         FunfixedFrameTransform
+            //     ),
+            // });
+            // viewer.scene.primitives.add(modelA);
+
+            // plotPoint(computeNewPoint(FunVertiportLocation, 0, 17.5, 2));
+            // plotPoint(computeNewPoint(FunVertiportLocation, 0, -17.5, 2));
+            // const VertiPortSphereEntityA = viewer.entities.add({
+            //     name: 'Vertiport:'  + VertiportIndex + 'a - Safety Space',
+            //     description: ``,
+            //     position: computeNewPoint(FunVertiportLocation, 0, 17.5, 0),
+            //     ellipsoid: {
+            //         radii: new Cartesian3(15, 15, 15),
+            //         material: Color.RED.withAlpha(0.1),
+            //         outline: true,
+            //         outlineColor: Color.BLACK.withAlpha(0.2),
+            //     },
+            //     allowPicking: false,
+            // });
+            // const VertiPortSphereEntityB = viewer.entities.add({
+            //     name: 'Vertiport:'  + VertiportIndex + 'b - Safety Space',
+            //     description: ``,
+            //     position: computeNewPoint(FunVertiportLocation, 0, -17.5, 0),
+            //     ellipsoid: {
+            //         radii: new Cartesian3(15, 15, 15),
+            //         material: Color.RED.withAlpha(0.1),
+            //         outline: true,
+            //         outlineColor: Color.BLACK.withAlpha(0.2),
+            //     },
+            //     allowPicking: false,
+            // });
+            console.log(VertiportArray)
+            console.log('Added vertiport to array')
+            return VertiportArray;
         } catch (error) {
             console.log(`Failed to load model. ${error}`);
         }
     }
 
+    // function rotateEntity(entity, angleOffset) {
+    //     console.log(entity.id)
+    //     const currentOrientation = entity.orientation.getValue(Cesium.JulianDate.now());
+
+    //     // Calculate new orientation (modify existing matrix)
+    //     const rotation = Cesium.Matrix3.fromQuaternion(currentOrientation);
+    //     const rotationMatrix = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(angleOffset));
+    //     Cesium.Matrix3.multiply(rotation, rotationMatrix, rotation); // Modify rotation in-place
+
+    //     // Apply new orientation
+    //     entity.orientation = Cesium.Quaternion.fromRotationMatrix(rotation);
+    // }
     // const VertiportLocationA = Cartesian3.fromDegrees(-73.97618892920757, 40.739661015289336, 10); // NYC NYC Health + Hospitals/Bellevue
     // const headingPositionRollA = new Cesium.HeadingPitchRoll();
     // const fixedFrameTransformA = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
     // AddVertiport(VertiportLocationA, headingPositionRollA, fixedFrameTransformA)
+    ////////////////////////////////////////////
+    // Add vertiports.
+    var scene = viewer.scene;
+    // scene.globe.depthTestAgainstTerrain = true;
+    if (!scene.pickPositionSupported) {
+        window.alert("This browser does not support pickPosition.");
+    }
+    if (!scene.sampleHeightSupported) {
+        window.alert("This browser does not support sampleHeight.");
+    }
+    // var scene = this.viewer.scene;
+    var ellipsoid = scene.globe.ellipsoid;
+    var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
 
+    var isNetworkSetup = false; //document.getElementById('showNetworkSetup').checked;
 
-    const isNetworkSetup = true; //document.getElementById('showNetworkSetup').checked;
-    // const isNetworkSetup = showNetworkSetup.isNetworkSetup;
-    if (!isNetworkSetup) {
-        ////////////////////////////////////////////
-        // Add vertiports.
-        var scene = viewer.scene;
-        // scene.globe.depthTestAgainstTerrain = true;
-        if (!scene.pickPositionSupported) {
-            window.alert("This browser does not support pickPosition.");
-        }
-        if (!scene.sampleHeightSupported) {
-            window.alert("This browser does not support sampleHeight.");
-        }
-        // var scene = this.viewer.scene;
-        var ellipsoid = scene.globe.ellipsoid;
-        var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+    function handleNetworkSetup(isNetworkSetup) {
+        if (isNetworkSetup) {
+            // Pickup location 
+            // Mouse over the globe to see the cartographic position
+            // handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+            const labelEntity = viewer.entities.add({
+                label: {
+                    show: false,
+                    showBackground: true,
+                    font: "14px Latin Modern",
+                    horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+                    verticalOrigin: Cesium.VerticalOrigin.TOP,
+                    // pixelOffset: new Cesium.Cartesian2(15, 0),
+                },
+            });
 
+            handler.setInputAction(function (movement) {
+                let foundPosition = false;
 
-        // Pickup location 
-
-        // Mouse over the globe to see the cartographic position
-        // handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
-        const labelEntity = viewer.entities.add({
-            label: {
-                show: false,
-                showBackground: true,
-                font: "14px Latin Modern",
-                horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
-                verticalOrigin: Cesium.VerticalOrigin.TOP,
-                // pixelOffset: new Cesium.Cartesian2(15, 0),
-            },
-        });
-
-        handler.setInputAction(function (movement) {
-            let foundPosition = false;
-
-            const scene = viewer.scene;
-            if (scene.mode !== Cesium.SceneMode.MORPHING) {
-                if (scene.pickPositionSupported) {
-                    const cartesian = viewer.scene.pickPosition(
-                        movement.endPosition
-                    );
-
-                    if (Cesium.defined(cartesian)) {
-                        const cartographic = Cesium.Cartographic.fromCartesian(
-                            cartesian
-                        );
-                        const longitudeString = Cesium.Math.toDegrees(
-                            cartographic.longitude
-                        ).toFixed(2);
-                        const latitudeString = Cesium.Math.toDegrees(
-                            cartographic.latitude
-                        ).toFixed(2);
-                        const heightString = cartographic.height.toFixed(2);
-
-                        labelEntity.position = cartesian;
-                        labelEntity.label.show = true;
-                        labelEntity.label.text =
-                            `Lon: ${`   ${longitudeString}`.slice(-7)}\u00B0` +
-                            `\nLat: ${`   ${latitudeString}`.slice(-7)}\u00B0` +
-                            `\nAlt: ${`   ${heightString}`.slice(-7)}m`;
-
-                        labelEntity.label.eyeOffset = new Cesium.Cartesian3(
-                            0.0,
-                            0.0,
-                            -cartographic.height *
-                            (scene.mode === Cesium.SceneMode.SCENE2D ? 1.5 : 1.0)
+                const scene = viewer.scene;
+                if (scene.mode !== Cesium.SceneMode.MORPHING) {
+                    if (scene.pickPositionSupported) {
+                        const cartesian = viewer.scene.pickPosition(
+                            movement.endPosition
                         );
 
-                        foundPosition = true;
+                        if (Cesium.defined(cartesian)) {
+                            const cartographic = Cesium.Cartographic.fromCartesian(
+                                cartesian
+                            );
+                            const longitudeString = Cesium.Math.toDegrees(
+                                cartographic.longitude
+                            ).toFixed(2);
+                            const latitudeString = Cesium.Math.toDegrees(
+                                cartographic.latitude
+                            ).toFixed(2);
+                            const heightString = cartographic.height.toFixed(2);
+
+                            labelEntity.position = cartesian;
+                            labelEntity.label.show = true;
+                            labelEntity.label.text =
+                                `Lon: ${`   ${longitudeString}`.slice(-7)}\u00B0` +
+                                `\nLat: ${`   ${latitudeString}`.slice(-7)}\u00B0` +
+                                `\nAlt: ${`   ${heightString}`.slice(-7)}m`;
+
+                            labelEntity.label.eyeOffset = new Cesium.Cartesian3(
+                                0.0,
+                                0.0,
+                                -cartographic.height *
+                                (scene.mode === Cesium.SceneMode.SCENE2D ? 1.5 : 1.0)
+                            );
+
+                            foundPosition = true;
+                        }
                     }
+                }
+
+                if (!foundPosition) {
+                    labelEntity.label.show = false;
+                }
+            }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+            handler.setInputAction(function (event) {
+                var cartesian = scene.camera.pickEllipsoid(event.position, ellipsoid);
+                const lonLat = Cesium.Cartographic.fromCartesian(cartesian);
+                const longitudeDeg = Cesium.Math.toDegrees(lonLat.longitude);
+                const latitudeDeg = Cesium.Math.toDegrees(lonLat.latitude);
+                const cartographic = new Cesium.Cartographic();
+                const objectsToExclude = [];
+                cartographic.longitude = lonLat.longitude;
+                cartographic.latitude = lonLat.latitude;
+                let Checkheight;
+                if (scene.sampleHeightSupported) {
+                    Checkheight = scene.sampleHeight(cartographic, objectsToExclude);
+                }
+                if (Cesium.defined(Checkheight)) {
+                    cartographic.height = Checkheight;
+                }
+                const heightDeg = cartographic.height;
+                const adjustedCartesian = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, cartographic.height); // Adjust height
+                addObjectAndSaveData(adjustedCartesian, longitudeDeg, latitudeDeg, heightDeg, VertiportArray);
+
+            }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
+
+
+
+            // function addObjectAndSaveData(cartesian, longitudeDeg, latitudeDeg, heightDeg) {
+            //     try {
+            //         const VertiportLocation = cartesian;
+            //         const headingPositionRollVertiport = new Cesium.HeadingPitchRoll();
+            //         const fixedFrameTransformVertiport = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
+            //         AddVertiport(VertiportLocation, headingPositionRollVertiport, fixedFrameTransformVertiport)
+            //         // const point = viewer.entities.add({
+            //         //     name: ['Vertiport:' + longitudeDeg, latitudeDeg, heightDeg],
+            //         //     position: VertiportLocation,
+            //         //     point: {
+            //         //         color: Cesium.Color.RED,
+            //         //         pixelSize: 30,
+            //         //     },
+            //         // });
+            //         console.log('Added vertiport at ' + longitudeDeg, latitudeDeg, heightDeg)
+            //         // return modelVertipot;
+            //     } catch (error) {
+            //         console.error("Error loading model:", error);
+            //     }
+
+            // }
+
+            function calculateNEUDistances(center, vertiportLocation) {
+                const transformMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(center);
+                const inverseTransformMatrix = Cesium.Matrix4.inverse(transformMatrix, new Cesium.Matrix4());
+
+                const localPosition = new Cesium.Cartesian3();
+                Cesium.Matrix4.multiplyByPoint(inverseTransformMatrix, vertiportLocation, localPosition);
+
+                return {
+                    north: localPosition.y,
+                    east: localPosition.x,
+                    up: localPosition.z
+                };
+            }
+            const vertiportData = [];
+            var VertiportIndex = 0;
+
+            function addObjectAndSaveData(cartesian, longitudeDeg, latitudeDeg, heightDeg, VertiportArray) {
+                try {
+                    const VertiportLocation = cartesian;
+                    const headingPositionRollVertiport = new Cesium.HeadingPitchRoll();
+                    const fixedFrameTransformVertiport = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
+                    VertiportArray = AddVertiport(VertiportIndex, VertiportLocation, headingPositionRollVertiport, fixedFrameTransformVertiport, VertiportArray);
+                    const neuDistances = calculateNEUDistances(center, VertiportLocation);
+
+                    // Save vertiport data
+                    const vertiportInfo = {
+                        index: VertiportIndex,
+                        longitude: longitudeDeg,
+                        latitude: latitudeDeg,
+                        height: heightDeg,
+                        cartesian: {
+                            x: cartesian.x,
+                            y: cartesian.y,
+                            z: cartesian.z
+                        },
+                        orientation: VertiportArray[VertiportIndex].orientation,
+                        neuDistances: neuDistances,
+                    };
+                    vertiportData.push(vertiportInfo);
+                    console.log('Added vertiport at ' + longitudeDeg, latitudeDeg, heightDeg);
+                    console.log('Distance of vertiport from cetner ' + neuDistances.north, neuDistances.east, neuDistances.up);
+
+                    // Send vertiport data to the server
+                    saveVertiportData(vertiportData);
+                    VertiportIndex = VertiportIndex + 1;
+                    return VertiportArray;
+                } catch (error) {
+                    console.error("Error loading model:", error);
                 }
             }
 
-            if (!foundPosition) {
-                labelEntity.label.show = false;
-            }
-        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-
-        handler.setInputAction(function (event) {
-            var cartesian = scene.camera.pickEllipsoid(event.position, ellipsoid);
-            const lonLat = Cesium.Cartographic.fromCartesian(cartesian);
-            const longitudeDeg = Cesium.Math.toDegrees(lonLat.longitude);
-            const latitudeDeg = Cesium.Math.toDegrees(lonLat.latitude);
-            const cartographic = new Cesium.Cartographic();
-            const objectsToExclude = [];
-            cartographic.longitude = lonLat.longitude;
-            cartographic.latitude = lonLat.latitude;
-            let Checkheight;
-            if (scene.sampleHeightSupported) {
-                Checkheight = scene.sampleHeight(cartographic, objectsToExclude);
-            }
-            if (Cesium.defined(Checkheight)) {
-                cartographic.height = Checkheight;
-            }
-            const heightDeg = cartographic.height;
-            const adjustedCartesian = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, cartographic.height); // Adjust height
-            addObjectAndSaveData(adjustedCartesian, longitudeDeg, latitudeDeg, heightDeg);
-        }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-
-        // function addObjectAndSaveData(cartesian, longitudeDeg, latitudeDeg, heightDeg) {
-        //     try {
-        //         const VertiportLocation = cartesian;
-        //         const headingPositionRollVertiport = new Cesium.HeadingPitchRoll();
-        //         const fixedFrameTransformVertiport = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
-        //         AddVertiport(VertiportLocation, headingPositionRollVertiport, fixedFrameTransformVertiport)
-        //         // const point = viewer.entities.add({
-        //         //     name: ['Vertiport:' + longitudeDeg, latitudeDeg, heightDeg],
-        //         //     position: VertiportLocation,
-        //         //     point: {
-        //         //         color: Cesium.Color.RED,
-        //         //         pixelSize: 30,
-        //         //     },
-        //         // });
-        //         console.log('Added vertiport at ' + longitudeDeg, latitudeDeg, heightDeg)
-        //         // return modelVertipot;
-        //     } catch (error) {
-        //         console.error("Error loading model:", error);
-        //     }
-
-        // }
-
-        function calculateNEUDistances(center, vertiportLocation) {
-            const transformMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(center);
-            const inverseTransformMatrix = Cesium.Matrix4.inverse(transformMatrix, new Cesium.Matrix4());
-
-            const localPosition = new Cesium.Cartesian3();
-            Cesium.Matrix4.multiplyByPoint(inverseTransformMatrix, vertiportLocation, localPosition);
-
-            return {
-                north: localPosition.y,
-                east: localPosition.x,
-                up: localPosition.z
-            };
-        }
-        const vertiportData = [];
-        var VertiportIndex = 0;
-
-        function addObjectAndSaveData(cartesian, longitudeDeg, latitudeDeg, heightDeg) {
-            try {
-                const VertiportLocation = cartesian;
-                const headingPositionRollVertiport = new Cesium.HeadingPitchRoll();
-                const fixedFrameTransformVertiport = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
-                AddVertiport(VertiportLocation, headingPositionRollVertiport, fixedFrameTransformVertiport);
-                const neuDistances = calculateNEUDistances(center, VertiportLocation);
-
-                // Save vertiport data
-                const vertiportInfo = {
-                    index: VertiportIndex,
-                    longitude: longitudeDeg,
-                    latitude: latitudeDeg,
-                    height: heightDeg,
-                    cartesian: {
-                        x: cartesian.x,
-                        y: cartesian.y,
-                        z: cartesian.z
+            function saveVertiportData(data) {
+                fetch('/api/save_vertiports', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
                     },
-                    neuDistances: neuDistances,
-                };
-                vertiportData.push(vertiportInfo);
-                console.log('Added vertiport at ' + longitudeDeg, latitudeDeg, heightDeg);
-                console.log('Distance of vertiport from cetner ' + neuDistances);
-
-                // Send vertiport data to the server
-                saveVertiportData(vertiportData);
-                VertiportIndex = VertiportIndex + 1;
-
-            } catch (error) {
-                console.error("Error loading model:", error);
-            }
-        }
-
-        function saveVertiportData(data) {
-            fetch('/api/save_vertiports', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ vertiportData: data }),
-            })
-                .then(response => response.json())
-                .then(data => console.log('Server response:', data))
-                .catch(error => console.error('Error:', error));
-        }
-
-    } else {
-        if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
-            // Fetch and load fixed vertiport settings from JSON file
-            fetch('/FixedVertiportsSettings.json')
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(vertiport => {
-                        const FunVertiportLocation = Cesium.Cartesian3.fromDegrees(
-                            vertiport.longitude,
-                            vertiport.latitude,
-                            vertiport.height
-                        );
-                        const headingPositionRoll = new Cesium.HeadingPitchRoll();
-                        const fixedFrameTransform = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
-                        AddVertiport(FunVertiportLocation, headingPositionRoll, fixedFrameTransform);
-                    });
+                    body: JSON.stringify({ vertiportData: data }),
                 })
-                .catch(error => console.error('Error loading fixed vertiport settings:', error));
+                    .then(response => response.json())
+                    .then(data => console.log('Server response:', data))
+                    .catch(error => console.error('Error:', error));
+            }
+        } else {
+            // labelEntity.label.show = false;
+            handler.setInputAction(function (movement) {
+                // console.log('Network Setup is off')
+            }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+            handler.setInputAction(function (event) {
+                console.log('Network Setup is off')
+            }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
         }
-
     }
     // const VertiportLocationB = Cartesian3.fromDegrees(-73.98795424274152, 40.71316991516138, 30); // NYC Gotham Hospital
+
+    // Function to rotate a specific entity
+    function rotateEntity(entityRotated, angleOffset) {
+        console.log(entityRotated)
+        console.log('Rotating in' + angleOffset + 'degrees')
+        const currentOrientation = entityRotated.orientation.getValue(Cesium.JulianDate.now());
+
+        // Calculate new orientation
+        const rotation = Cesium.Matrix3.fromQuaternion(currentOrientation);
+        const rotationMatrix = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(angleOffset));
+        const newRotation = Cesium.Matrix3.multiply(rotation, rotationMatrix, new Cesium.Matrix3());
+
+        // Apply new orientation
+        entityRotated.orientation = Cesium.Quaternion.fromRotationMatrix(newRotation);
+        return entityRotated;
+    }
+    // Load setting if needed.
+    if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
+        // Fetch and load fixed vertiport settings from JSON file
+        fetch('/FixedVertiportsSettings.json')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(vertiport => {
+                    const FunVertiportLocation = Cesium.Cartesian3.fromDegrees(
+                        vertiport.longitude,
+                        vertiport.latitude,
+                        vertiport.height
+                    );
+                    const headingPositionRoll = new Cesium.HeadingPitchRoll();
+                    const fixedFrameTransform = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
+                    AddVertiport(vertiport.index, FunVertiportLocation, headingPositionRoll, fixedFrameTransform, VertiportArray);
+                });
+            })
+            .catch(error => console.error('Error loading fixed vertiport settings:', error));
+    }
+
     // End Vertiport setting
     ///////////////////////////////////////////////////////////////////////////////////////
 
