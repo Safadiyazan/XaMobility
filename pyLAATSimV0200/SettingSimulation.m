@@ -28,6 +28,10 @@ switch InflowSetting
         Sim.switchtime = [0;1;2;3;13;14;15;16;20].*0.5;%(min)
         Sim.switchvalue = Sim.InflowRate.*[0.2;0.5;0.8;1;0.8;0.5;0.2;0];%(aircraft/s)
         Sim.glowthrate = [zeros(size(Sim.switchvalue))];
+    case 15
+        Sim.switchtime = [[0:1:10]';11+9;[(9+12):1:(9+21)]';45]./3;%(min)
+        Sim.switchvalue = Sim.InflowRate.*[[0.1:0.1:1]';1;[1:-0.1:0.1]';0];%(aircraft/s)
+        Sim.glowthrate = [zeros(size(Sim.switchvalue))];
     case 20
         % Testing % ISTTT25
         Sim.switchtime = [0;1;2;3;13;14;15;16;20];%(min)

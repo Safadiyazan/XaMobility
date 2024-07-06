@@ -217,7 +217,7 @@ end
 function [Ri,Li] = SettingAirspaceRegionsVTOL2R(Airspace)
 Ri.xn = 3;
 Ri.yn = 3;
-Ri.zn = 4;
+Ri.zn = 3;
 Ri.Dx = Airspace.dx/Ri.xn;
 Ri.Dy = Airspace.dy/Ri.yn;
 Ri.Dz = (Airspace.dz)/(Ri.zn-1);

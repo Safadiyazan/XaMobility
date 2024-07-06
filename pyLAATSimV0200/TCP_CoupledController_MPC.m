@@ -181,14 +181,14 @@ if(any(TFC.CS(end).NbqijIn>0,'all'))
                         ObjAircraft(SimInfo.Mact(aaiSP)).HoveringTime = ObjAircraft(SimInfo.Mact(aaiSP)).ResumeTime - ObjAircraft(SimInfo.Mact(aaiSP)).StopTime;
                         ObjAircraft(SimInfo.Mact(aaiSP)).CurHoveringTime = ObjAircraft(SimInfo.Mact(aaiSP)).ResumeTime(end) - ObjAircraft(SimInfo.Mact(aaiSP)).StopTime(end);
                         %                 zWP1 = Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).center(3)+(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).ra;
-                        [~,tempRi1] = max(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri));
+                        [~,tempRi1] = max(ObjAircraft(SimInfo.Mact(aaiSP)).rit==cat(1,Settings.Airspace.Regions.B.ri));
                         zWP1 = Settings.Airspace.Regions.B(tempRi1).center(3)+(Settings.Airspace.Regions.B(tempRi1).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).ra;
                         % zWP1 = Settings.Airspace.dz2-ObjAircraft(SimInfo.Mact(aaiSP)).ra;
                         newWPdown = [ObjAircraft(SimInfo.Mact(aaiSP)).pt(1:2),zWP1]; % fptrd fpt pt
                         ObjAircraft(SimInfo.Mact(aaiSP)).wp = [ObjAircraft(SimInfo.Mact(aaiSP)).wp(1:ObjAircraft(SimInfo.Mact(aaiSP)).wpCR,:);newWPdown;ObjAircraft(SimInfo.Mact(aaiSP)).wp(ObjAircraft(SimInfo.Mact(aaiSP)).wpCR+1:end,:)];
                         ObjAircraft(SimInfo.Mact(aaiSP)).wpTR = ObjAircraft(SimInfo.Mact(aaiSP)).wpTR + 1;
                         %                 zWP2 = Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).center(3);%-(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).rs;
-                        [~,tempRi2] = max(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri));
+                        [~,tempRi2] = max(ObjAircraft(SimInfo.Mact(aaiSP)).rit==cat(1,Settings.Airspace.Regions.B.ri));
                         zWP2 = Settings.Airspace.Regions.B(tempRi2).center(3);%-(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).rs;
                         % zWP2 = Settings.Airspace.dz1+ObjAircraft(SimInfo.Mact(aaiSP)).ra;
                         newWPup = [ObjAircraft(SimInfo.Mact(aaiSP)).pt(1:2),zWP2];%ObjAircraft(SimInfo.Mact(aai)).pt(3)]; % fptrd fpt pt
@@ -254,14 +254,14 @@ if(any(TFC.CS(end).NbqijIn>0,'all'))
                         ObjAircraft(SimInfo.Mact(aaiSP)).HoveringTime = ObjAircraft(SimInfo.Mact(aaiSP)).ResumeTime - ObjAircraft(SimInfo.Mact(aaiSP)).StopTime;
                         ObjAircraft(SimInfo.Mact(aaiSP)).CurHoveringTime = ObjAircraft(SimInfo.Mact(aaiSP)).ResumeTime(end) - ObjAircraft(SimInfo.Mact(aaiSP)).StopTime(end);
                         %                 zWP1 = Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).center(3)+(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).ra;
-                        [~,tempRi1] = max(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri));
+                        [~,tempRi1] = max(ObjAircraft(SimInfo.Mact(aaiSP)).rit==cat(1,Settings.Airspace.Regions.B.ri));
                         zWP1 = Settings.Airspace.Regions.B(tempRi1).center(3)+(Settings.Airspace.Regions.B(tempRi1).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).ra;
                         % zWP1 = Settings.Airspace.dz2-ObjAircraft(SimInfo.Mact(aaiSP)).ra;
                         newWPdown = [ObjAircraft(SimInfo.Mact(aaiSP)).pt(1:2),zWP1]; % fptrd fpt pt
                         ObjAircraft(SimInfo.Mact(aaiSP)).wp = [ObjAircraft(SimInfo.Mact(aaiSP)).wp(1:ObjAircraft(SimInfo.Mact(aaiSP)).wpCR,:);newWPdown;ObjAircraft(SimInfo.Mact(aaiSP)).wp(ObjAircraft(SimInfo.Mact(aaiSP)).wpCR+1:end,:)];
                         ObjAircraft(SimInfo.Mact(aaiSP)).wpTR = ObjAircraft(SimInfo.Mact(aaiSP)).wpTR + 1;
                         %                 zWP2 = Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).center(3);%-(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).rs;
-                        [~,tempRi2] = max(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri));
+                        [~,tempRi2] = max(ObjAircraft(SimInfo.Mact(aaiSP)).rit==cat(1,Settings.Airspace.Regions.B.ri));
                         zWP2 = Settings.Airspace.Regions.B(tempRi2).center(3);%-(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).rs;
                         % zWP2 = Settings.Airspace.dz1+ObjAircraft(SimInfo.Mact(aaiSP)).ra;
                         newWPup = [ObjAircraft(SimInfo.Mact(aaiSP)).pt(1:2),zWP2];%ObjAircraft(SimInfo.Mact(aai)).pt(3)]; % fptrd fpt pt
@@ -327,14 +327,14 @@ if(any(TFC.CS(end).NbqijIn>0,'all'))
                         ObjAircraft(SimInfo.Mact(aaiSP)).HoveringTime = ObjAircraft(SimInfo.Mact(aaiSP)).ResumeTime - ObjAircraft(SimInfo.Mact(aaiSP)).StopTime;
                         ObjAircraft(SimInfo.Mact(aaiSP)).CurHoveringTime = ObjAircraft(SimInfo.Mact(aaiSP)).ResumeTime(end) - ObjAircraft(SimInfo.Mact(aaiSP)).StopTime(end);
                         %                 zWP1 = Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).center(3)+(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).ra;
-                        [~,tempRi1] = max(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri));
+                        [~,tempRi1] = max(ObjAircraft(SimInfo.Mact(aaiSP)).rit==cat(1,Settings.Airspace.Regions.B.ri));
                         zWP1 = Settings.Airspace.Regions.B(tempRi1).center(3)+(Settings.Airspace.Regions.B(tempRi1).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).ra;
                         % zWP1 = Settings.Airspace.dz2-ObjAircraft(SimInfo.Mact(aaiSP)).ra;
                         newWPdown = [ObjAircraft(SimInfo.Mact(aaiSP)).pt(1:2),zWP1]; % fptrd fpt pt
                         ObjAircraft(SimInfo.Mact(aaiSP)).wp = [ObjAircraft(SimInfo.Mact(aaiSP)).wp(1:ObjAircraft(SimInfo.Mact(aaiSP)).wpCR,:);newWPdown;ObjAircraft(SimInfo.Mact(aaiSP)).wp(ObjAircraft(SimInfo.Mact(aaiSP)).wpCR+1:end,:)];
                         ObjAircraft(SimInfo.Mact(aaiSP)).wpTR = ObjAircraft(SimInfo.Mact(aaiSP)).wpTR + 1;
                         %                 zWP2 = Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).center(3);%-(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).rs;
-                        [~,tempRi2] = max(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri));
+                        [~,tempRi2] = max(ObjAircraft(SimInfo.Mact(aaiSP)).rit==cat(1,Settings.Airspace.Regions.B.ri));
                         zWP2 = Settings.Airspace.Regions.B(tempRi2).center(3);%-(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).rs;
                         % zWP2 = Settings.Airspace.dz1+ObjAircraft(SimInfo.Mact(aaiSP)).ra;
                         newWPup = [ObjAircraft(SimInfo.Mact(aaiSP)).pt(1:2),zWP2];%ObjAircraft(SimInfo.Mact(aai)).pt(3)]; % fptrd fpt pt
@@ -400,14 +400,14 @@ if(any(TFC.CS(end).NbqijIn>0,'all'))
                         ObjAircraft(SimInfo.Mact(aaiSP)).HoveringTime = ObjAircraft(SimInfo.Mact(aaiSP)).ResumeTime - ObjAircraft(SimInfo.Mact(aaiSP)).StopTime;
                         ObjAircraft(SimInfo.Mact(aaiSP)).CurHoveringTime = ObjAircraft(SimInfo.Mact(aaiSP)).ResumeTime(end) - ObjAircraft(SimInfo.Mact(aaiSP)).StopTime(end);
                         %                 zWP1 = Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).center(3)+(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).ra;
-                        [~,tempRi1] = max(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri));
+                        [~,tempRi1] = max(ObjAircraft(SimInfo.Mact(aaiSP)).rit==cat(1,Settings.Airspace.Regions.B.ri));
                         zWP1 = Settings.Airspace.Regions.B(tempRi1).center(3)+(Settings.Airspace.Regions.B(tempRi1).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).ra;
                         % zWP1 = Settings.Airspace.dz2-ObjAircraft(SimInfo.Mact(aaiSP)).ra;
                         newWPdown = [ObjAircraft(SimInfo.Mact(aaiSP)).pt(1:2),zWP1]; % fptrd fpt pt
                         ObjAircraft(SimInfo.Mact(aaiSP)).wp = [ObjAircraft(SimInfo.Mact(aaiSP)).wp(1:ObjAircraft(SimInfo.Mact(aaiSP)).wpCR,:);newWPdown;ObjAircraft(SimInfo.Mact(aaiSP)).wp(ObjAircraft(SimInfo.Mact(aaiSP)).wpCR+1:end,:)];
                         ObjAircraft(SimInfo.Mact(aaiSP)).wpTR = ObjAircraft(SimInfo.Mact(aaiSP)).wpTR + 1;
                         %                 zWP2 = Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).center(3);%-(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).rs;
-                        [~,tempRi2] = max(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri));
+                        [~,tempRi2] = max(ObjAircraft(SimInfo.Mact(aaiSP)).rit==cat(1,Settings.Airspace.Regions.B.ri));
                         zWP2 = Settings.Airspace.Regions.B(tempRi2).center(3);%-(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).rs;
                         % zWP2 = Settings.Airspace.dz1+ObjAircraft(SimInfo.Mact(aaiSP)).ra;
                         newWPup = [ObjAircraft(SimInfo.Mact(aaiSP)).pt(1:2),zWP2];%ObjAircraft(SimInfo.Mact(aai)).pt(3)]; % fptrd fpt pt
@@ -471,14 +471,14 @@ if(any(TFC.CS(end).NbqijIn>0,'all'))
                         ObjAircraft(SimInfo.Mact(aai)).HoveringTime = ObjAircraft(SimInfo.Mact(aai)).ResumeTime - ObjAircraft(SimInfo.Mact(aai)).StopTime;
                         ObjAircraft(SimInfo.Mact(aai)).CurHoveringTime = ObjAircraft(SimInfo.Mact(aai)).ResumeTime(end) - ObjAircraft(SimInfo.Mact(aai)).StopTime(end);
                         %                 zWP1 = Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).center(3)+(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).ra;
-                        [~,tempRi1] = max(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri));
+                        [~,tempRi1] = max(ObjAircraft(SimInfo.Mact(aai)).rit==cat(1,Settings.Airspace.Regions.B.ri));
                         zWP1 = Settings.Airspace.Regions.B(tempRi1).center(3)+(Settings.Airspace.Regions.B(tempRi1).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).ra;
                         % zWP1 = Settings.Airspace.dz2-ObjAircraft(SimInfo.Mact(aai)).ra;
                         newWPdown = [ObjAircraft(SimInfo.Mact(aai)).pt(1:2),zWP1]; % fptrd fpt pt
                         ObjAircraft(SimInfo.Mact(aai)).wp = [ObjAircraft(SimInfo.Mact(aai)).wp(1:ObjAircraft(SimInfo.Mact(aai)).wpCR,:);newWPdown;ObjAircraft(SimInfo.Mact(aai)).wp(ObjAircraft(SimInfo.Mact(aai)).wpCR+1:end,:)];
                         ObjAircraft(SimInfo.Mact(aai)).wpTR = ObjAircraft(SimInfo.Mact(aai)).wpTR + 1;
                         %                 zWP2 = Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).center(3);%-(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).rs;
-                        [~,tempRi2] = max(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri));
+                        [~,tempRi2] = max(ObjAircraft(SimInfo.Mact(aai)).rit==cat(1,Settings.Airspace.Regions.B.ri));
                         zWP2 = Settings.Airspace.Regions.B(tempRi2).center(3);%-(Settings.Airspace.Regions.B(CurrentRegion==cat(1,Settings.Airspace.Regions.B.ri)).ssize(3)/2)+ObjAircraft(SimInfo.Mact(aai)).rs;
                         % zWP2 = Settings.Airspace.dz1+ObjAircraft(SimInfo.Mact(aai)).ra;
                         newWPup = [ObjAircraft(SimInfo.Mact(aai)).pt(1:2),zWP2];%ObjAircraft(SimInfo.Mact(aai)).pt(3)]; % fptrd fpt pt

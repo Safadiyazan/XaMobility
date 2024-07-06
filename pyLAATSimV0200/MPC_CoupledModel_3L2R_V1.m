@@ -337,10 +337,12 @@ main_loop_time = toc(main_loop);
 average_mpc_time = main_loop_time/(mpciter+1);
 u_opt = u_cl(:,:);
 % end
-ud_opt=u_opt(1,1:2);
-% ud_opt = [rand(),rand()];
-ub_opt=u_opt(1,3:6);
-% ub_opt = [rand(),rand(),rand(),rand()];
+% ud_opt=u_opt(1,1:2);
+% ud_opt = [0.5 + (1-0.5) * rand,0.5 + (1-0.5) * rand];
+ud_opt = [rand,rand];
+% ub_opt=u_opt(1,3:6);
+% ub_opt = [0.5 + (1-0.5) * rand,0.5 + (1-0.5) * rand,0.5 + (1-0.5) * rand,0.5 + (1-0.5) * rand];
+ub_opt = [rand,rand,rand,rand];
 %% Calulcate Objective function results
 % Q.*(xx(:,1)-[0,0,0,0,nc1,nc2,0,0,0,0]).^2 + R.*((u_cl(1,:)-1)^2);
 % MPCSim.Jk0 = sum(Q.*((xx(:,1)-[0,0,0,0,nc1,nc2,0,0,0,0]').^2),'all') + sum(R.*((u_cl(1,:)-1).^2),'all');

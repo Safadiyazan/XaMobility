@@ -24,7 +24,7 @@ const viewer = new Viewer('cesiumContainer', {
   baseLayerPicker: false,
   selectionIndicator: false,
 });
-// viewer.scene.pick = () => { return undefined; };
+viewer.scene.pick = () => { return undefined; };
 const tileset = viewer.scene.primitives.add(
   await Cesium3DTileset.fromIonAssetId(2275207)
 );

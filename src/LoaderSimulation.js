@@ -92,9 +92,13 @@ export async function LoadSimulation(viewer, data, city) {
         //     var dz0 = 80;
         //     var center = Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0); // NYC
     }
-
+    plotPoint(center);
     // var center = Cartesian3.fromDegrees(35.045628640781565, 32.77278697558125,  dz0); // NESHER
     // var center = Cartesian3.fromDegrees(35.01178943640926, 32.76765420453765,  dz0); // HAIFA
+    /// Colors
+    const cesiumRed = Color.fromCssColorString('#C0282D');
+    const cesiumBlue = Color.fromCssColorString('#076790');
+    const cesiumGold = Color.fromCssColorString('#D59F0F');
 
     ///////////////////////////////////////////////////////////////////////////////////////
     // Define handleCheckboxChange in the global scope
@@ -183,8 +187,8 @@ export async function LoadSimulation(viewer, data, city) {
                 viewer.trackedEntity = undefined;
             }
             if ((event.key === 'V')) {
-                randomNumberVerti = Math.floor(Math.random() * VertiportArray.length);
                 viewer.trackedEntity = VertiportArray[randomNumberVerti];
+                randomNumberVerti = randomNumberVerti + 1;
             }
             if ((event.key === '!')) {
                 randomNumberVerti = 0;
@@ -203,7 +207,9 @@ export async function LoadSimulation(viewer, data, city) {
                 viewer.trackedEntity = VertiportArray[randomNumberVerti];
             }
             if ((event.key === '+')) {
-                VertiportArray[randomNumberVerti] = rotateEntity(VertiportArray[randomNumberVerti],5);
+                VertiportArray[randomNumberVerti] = rotateEntity(VertiportArray[randomNumberVerti], 5);
+                // VertiportArray[randomNumberVerti] = rotateEntity(VertiportArray.Takeoffs[randomNumberVerti],5);
+                // VertiportArray[randomNumberVerti] = rotateEntity(VertiportArray.Landings[randomNumberVerti],5);
             }
             if ((event.key === 'r')) {
                 var randomNumber = Math.floor(Math.random() * entitiesArray.length);
@@ -1465,16 +1471,15 @@ export async function LoadSimulation(viewer, data, city) {
     }
 
     function PlotCube(CubeCC, CubeDx, CubeDy, CubeDz, CubeDz0, CubeDz1, nameStr, ColorStr, outlineColorStr) {
-        const centerPlotting = computeNewPoint(CubeCC, 0, 0, 0);
-        plotPoint(centerPlotting);
-        var newPointSE = computeNewPoint(centerPlotting, CubeDx / 2, -CubeDy / 2, 0); plotPoint(newPointSE);
-        var newPointNE = computeNewPoint(centerPlotting, CubeDx / 2, CubeDy / 2, 0); plotPoint(newPointNE);
-        var newPointSW = computeNewPoint(centerPlotting, -CubeDx / 2, -CubeDy / 2, 0); plotPoint(newPointSW);
-        var newPointNW = computeNewPoint(centerPlotting, -CubeDx / 2, CubeDy / 2, 0); plotPoint(newPointNW);
-        var newPointSEUP = computeNewPoint(centerPlotting, CubeDx / 2, -CubeDy / 2, CubeDz); plotPoint(newPointSEUP);
-        var newPointNEUP = computeNewPoint(centerPlotting, CubeDx / 2, CubeDy / 2, CubeDz); plotPoint(newPointNEUP);
-        var newPointSWUP = computeNewPoint(centerPlotting, -CubeDx / 2, -CubeDy / 2, CubeDz); plotPoint(newPointSWUP);
-        var newPointNWUP = computeNewPoint(centerPlotting, -CubeDx / 2, CubeDy / 2, CubeDz); plotPoint(newPointNWUP);
+        const centerPlotting = computeNewPoint(CubeCC, 0, 0, 0); // plotPoint(centerPlotting);
+        var newPointSE = computeNewPoint(centerPlotting, CubeDx / 2, -CubeDy / 2, 0); //plotPoint(newPointSE);
+        var newPointNE = computeNewPoint(centerPlotting, CubeDx / 2, CubeDy / 2, 0); //plotPoint(newPointNE);
+        var newPointSW = computeNewPoint(centerPlotting, -CubeDx / 2, -CubeDy / 2, 0); //plotPoint(newPointSW);
+        var newPointNW = computeNewPoint(centerPlotting, -CubeDx / 2, CubeDy / 2, 0); //plotPoint(newPointNW);
+        var newPointSEUP = computeNewPoint(centerPlotting, CubeDx / 2, -CubeDy / 2, CubeDz); //plotPoint(newPointSEUP);
+        var newPointNEUP = computeNewPoint(centerPlotting, CubeDx / 2, CubeDy / 2, CubeDz); //plotPoint(newPointNEUP);
+        var newPointSWUP = computeNewPoint(centerPlotting, -CubeDx / 2, -CubeDy / 2, CubeDz); //plotPoint(newPointSWUP);
+        var newPointNWUP = computeNewPoint(centerPlotting, -CubeDx / 2, CubeDy / 2, CubeDz); //plotPoint(newPointNWUP);
         const scene = viewer.scene;
         var ellipsoid = scene.globe.ellipsoid;
         var cartographicNW = Cartographic.fromCartesian(newPointNW, ellipsoid);
@@ -1584,6 +1589,7 @@ export async function LoadSimulation(viewer, data, city) {
         const stopAircraft = new JulianDate.addSeconds(startSim, taa, new JulianDate());
         const positionProperty = new SampledPositionProperty();
         const polylinePositions = [];
+        const positionsUpToCurrentTime = [];
         // Load and draw waypoints
         for (let i = 0; i < flightData.length; i++) {
             const dataPoint = flightData[i];
@@ -1591,6 +1597,7 @@ export async function LoadSimulation(viewer, data, city) {
             const position = Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height);
             positionProperty.addSample(time, position);
             polylinePositions.push(position);
+            positionsUpToCurrentTime.push(position);
             const validTime = JulianDate.lessThanOrEquals(time, stop);
             const waypointEntity = viewer.entities.add({
                 name: `Aircraft: ${AircraftIndex}, Waypoint: ${i}`,
@@ -1598,7 +1605,7 @@ export async function LoadSimulation(viewer, data, city) {
                 position: position,
                 point: {
                     pixelSize: 2,
-                    color: Color.BLACK,
+                    color: Color.DARKGRAY.withAlpha(0.5),
                     //markerSymbol: 'X'
                 },
                 availability: new TimeIntervalCollection([new TimeInterval({
@@ -1614,7 +1621,7 @@ export async function LoadSimulation(viewer, data, city) {
             name: `Aircraft: ${AircraftIndex}, Waypoint Path`,
             polyline: {
                 positions: polylinePositions,
-                material: Color.BLACK.withAlpha(0.3),
+                material: Color.DARKGRAY.withAlpha(0.4),
                 width: 1,
             },
             allowPicking: false,
@@ -1624,20 +1631,20 @@ export async function LoadSimulation(viewer, data, city) {
             stop: stopAircraft
         })]);
         // Draw shortest path
-        const pathShortEntity = viewer.entities.add({
-            name: `Aircraft: ${AircraftIndex}, Waypoint Path`,
-            polyline: {
-                positions: [Cartesian3.fromDegrees(flightData[0].longitude, flightData[0].latitude, flightData[0].height),
-                Cartesian3.fromDegrees(flightData[flightData.length - 1].longitude, flightData[flightData.length - 1].latitude, flightData[flightData.length - 1].height)],
-                material: Color.GREEN.withAlpha(0.5),
-                width: 1.5,
-            },
-            allowPicking: false,
-        });
-        pathShortEntity.availability = new TimeIntervalCollection([new TimeInterval({
-            start: startAircraft,
-            stop: stopAircraft
-        })]);
+        // const pathShortEntity = viewer.entities.add({
+        //     name: `Aircraft: ${AircraftIndex}, Waypoint Path`,
+        //     polyline: {
+        //         positions: [Cartesian3.fromDegrees(flightData[0].longitude, flightData[0].latitude, flightData[0].height),
+        //         Cartesian3.fromDegrees(flightData[flightData.length - 1].longitude, flightData[flightData.length - 1].latitude, flightData[flightData.length - 1].height)],
+        //         material: Color.GREEN.withAlpha(0.5),
+        //         width: 1.5,
+        //     },
+        //     allowPicking: false,
+        // });
+        // pathShortEntity.availability = new TimeIntervalCollection([new TimeInterval({
+        //     start: startAircraft,
+        //     stop: stopAircraft
+        // })]);
         // Add origin entity
         const oA = flightData[0];
         const oAEntity = viewer.entities.add({
@@ -1666,7 +1673,7 @@ export async function LoadSimulation(viewer, data, city) {
             },
             allowPicking: false,
         });
-        // Add travelled path until spefific time.
+        // Add travelled path until specific time
         const traveledPathEntity = viewer.entities.add({
             polyline: {
                 name: `Aircraft: ${AircraftIndex}, Path`,
@@ -1675,26 +1682,24 @@ export async function LoadSimulation(viewer, data, city) {
                     const currentTime = viewer.clock.currentTime;
                     const currentElapsedTime = JulianDate.secondsDifference(currentTime, startSim);
                     const currentIteration = Math.floor(currentElapsedTime / timeStepInSeconds);
-                    const positionsUpToCurrentTime = [];
-                    for (let i = 1; i <= currentIteration && i < flightData.length; i++) {
-                        const dataPoint1 = flightData[i - 1];
-                        const dataPoint2 = flightData[i];
-                        const timePoint1 = JulianDate.addSeconds(startSim, (i - 1) * timeStepInSeconds, new JulianDate());
-                        const timePoint2 = JulianDate.addSeconds(startSim, (i) * timeStepInSeconds, new JulianDate());
-                        positionsUpToCurrentTime.push(Cartesian3.fromDegrees(dataPoint2.longitude, dataPoint2.latitude, dataPoint2.height));
-                    }
 
-                    return positionsUpToCurrentTime;
+                    // Ensure the current iteration is within the bounds of the polylinePositions array
+                    if (currentIteration < 0 || currentIteration >= polylinePositions.length) {
+                        return [];
+                    }
+                    return polylinePositions.slice(0, currentIteration + 1);
                 }, false),
-                width: 1.5,
-                material: Color.MAGENTA.withAlpha(0.15),
+                width: 2,
+                material: Color.BLUE.withAlpha(0.4),
                 allowPicking: false,
             }
         });
+
         traveledPathEntity.availability = new TimeIntervalCollection([new TimeInterval({
             start: startAircraft,
             stop: stopAircraft
         })]);
+
         traveledPathEntity.distanceDisplayCondition = new DistanceDisplayCondition(
             0.0,
             45.5
@@ -1857,6 +1862,9 @@ export async function LoadSimulation(viewer, data, city) {
     ///////////////////////////////////////////////////////////////////////////////////////
     // Start Vertiport setting
     var VertiportArray = [];
+    // var VertiportArray.Vertiports = [];
+    // var VertiportArray.Takeoffs = [];
+    // var VertiportArray.Landings = [];
 
     async function AddVertiport(VertiportIndex, FunVertiportLocation, FunheadingPositionRoll, FunfixedFrameTransform, VertiportArray) {
         try {
@@ -1864,7 +1872,7 @@ export async function LoadSimulation(viewer, data, city) {
                 name: "Vertiport " + VertiportIndex,
                 position: FunVertiportLocation,
                 model: {
-                    uri: "/Vertiport.glb",
+                    uri: "/OneVertiport.glb",
                     scale: 0.5,
                     // minimumPixelSize: 128
                 },
@@ -1876,6 +1884,29 @@ export async function LoadSimulation(viewer, data, city) {
                 )
             });
             VertiportArray.push(entityVertiport);
+            const VertiPortSphereEntityB = viewer.entities.add({
+                name: 'Vertiport ' + VertiportIndex + ' - Safety Space',
+                description: ``,
+                position: computeNewPoint(FunVertiportLocation, 0, 0, 0),
+                ellipsoid: {
+                    radii: new Cartesian3(15, 15, 15),
+                    material: Color.RED.withAlpha(0.1),
+                    outline: true,
+                    outlineColor: Color.BLACK.withAlpha(0.2),
+                },
+                allowPicking: false,
+            });
+            const oVEntity = viewer.entities.add({
+                name: "Vertiport " + VertiportIndex,
+                position: FunVertiportLocation,
+                point: {
+                    pixelSize: 10,
+                    color: Color.RED.withAlpha(0.1),
+                    markerSymbol: 'X'
+                },
+                allowPicking: false,
+            });
+            // VertiportArray.Landings.push(VertiPortSphereEntityB);
             // const modelA = await Cesium.Model.fromGltfAsync({
             //     url: "/Vertiport.glb",
             //     scale: 0.5,
@@ -1902,6 +1933,7 @@ export async function LoadSimulation(viewer, data, city) {
             //     },
             //     allowPicking: false,
             // });
+            // VertiportArray.Takeoffs.push(VertiPortSphereEntityA);
             // const VertiPortSphereEntityB = viewer.entities.add({
             //     name: 'Vertiport:'  + VertiportIndex + 'b - Safety Space',
             //     description: ``,
@@ -1914,6 +1946,7 @@ export async function LoadSimulation(viewer, data, city) {
             //     },
             //     allowPicking: false,
             // });
+            // VertiportArray.Landings.push(VertiPortSphereEntityB);
             console.log(VertiportArray)
             console.log('Added vertiport to array')
             return VertiportArray;
@@ -2155,7 +2188,7 @@ export async function LoadSimulation(viewer, data, city) {
     // Load setting if needed.
     if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
         // Fetch and load fixed vertiport settings from JSON file
-        fetch('/FixedVertiportsSettings.json')
+        fetch('/FixedVertiportsSettings_V2.json')
             .then(response => response.json())
             .then(data => {
                 data.forEach(vertiport => {

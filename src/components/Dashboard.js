@@ -178,11 +178,7 @@ const Dashboard = () => {
                         Choose a sample for display
                     </option>
                     <option value="/Samples/Results_Qin2Subset_2by2_10apm.json">Subset</option>
-                    <option value="/Samples/Results_Qin1TestingFixedOD.json">Fixed OD</option>
-                    <option value="/Samples/Results_Qin1TestingFixedVertiports.json">Fixed Vertiports</option>
-                    
-                    {/* <option value="/Samples/SimOutput_Default.json">Default</option> */}
-                    <option value="/Samples/Results_Testing.json">Em</option>
+                    <option value="/Samples/Results_Qin2_DBC.json">DBC</option>
                 </select>
             </div>
             <br />
