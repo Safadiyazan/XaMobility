@@ -179,6 +179,7 @@ const Dashboard = () => {
                     </option>
                     <option value="/Samples/Results_Qin2Subset_2by2_10apm.json">Subset</option>
                     <option value="/Samples/Results_Qin2_DBC.json">DBC</option>
+                    <option value="/Samples/Results_Qin2_DBC_MED.json">MED</option>
                 </select>
             </div>
             <br />

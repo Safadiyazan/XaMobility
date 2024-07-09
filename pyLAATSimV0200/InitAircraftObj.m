@@ -4,7 +4,7 @@ Aircraft = Settings.Aircraft;
 Sim = Settings.Sim;
 Mina = SimInfo.Mina;
 %% Create Set Vector with Perc.
-ModelsTypes = [0,0,1/2,1/2];%[1/4,1/4,1/4,1/4]; %EPAV-1 EUAV-2 PAV-3 UAV-4 [0.3,0.3,0.3]
+ModelsTypes = [1/4,1/4,1/4,1/4];%[1/4,1/4,1/4,1/4]; %EPAV-1 EUAV-2 PAV-3 UAV-4 [0.3,0.3,0.3]
 ModelsVec = [1.*ones(ceil(Sim.M.*ModelsTypes(1)),1);2.*ones(ceil(Sim.M.*ModelsTypes(2)),1);3.*ones(ceil(Sim.M.*ModelsTypes(3)),1);4.*ones(ceil(Sim.M.*ModelsTypes(4)),1)]';
 % Model = ModelsVec(randi(size(ModelsVec,2)))
 %%
@@ -41,8 +41,8 @@ for aa = 1:Sim.M
     elseif (Airspace.VTOL)&&(Airspace.Vertiports)
         ObjAircraft(aa).VTOL = 1;
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODVertiports(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground Two Regions Uniformly
-        ObjAircraft(aa).wp  = AircraftRouteTL(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs); % waypoints
-        % ObjAircraft(aa).wp  = AircraftRouteTL_MultiLayer(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs,ObjAircraft(aa).AMI); % waypoints
+        % ObjAircraft(aa).wp  = AircraftRouteTL(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs); % waypoints
+        ObjAircraft(aa).wp  = AircraftRouteTL_MultiLayer(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs,ObjAircraft(aa).AMI); % waypoints
 
     elseif(Airspace.SubsetNetwork)
         ObjAircraft(aa).VTOL = 0;
