@@ -178,8 +178,10 @@ const Dashboard = () => {
                         Choose a sample for display
                     </option>
                     <option value="/Samples/Results_Qin2Subset_2by2_10apm.json">Subset</option>
-                    <option value="/Samples/Results_Qin2_DBC.json">DBC</option>
-                    <option value="/Samples/Results_Qin2_DBC_MED.json">MED</option>
+                    <option value="/Samples/Results_Qin2_DBC.json">DBC-NYC</option>
+                    <option value="/Samples/Results_Qin2_DBC_MED.json">MED-NYC</option>
+                    <option value="/Samples/Results_SF.json">SF</option>
+                    <option value="/Samples/Results_PAR.json">PAR</option>
                 </select>
             </div>
             <br />

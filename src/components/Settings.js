@@ -15,7 +15,7 @@ function Settings() {
         dx: 1500,
         dy: 1500,
         dz: 100,
-        as: 1,
+        asStr: 'Subset',
         VmaxMin: 10,
         VmaxMax: 30,
         RsMin: 10,
@@ -26,8 +26,18 @@ function Settings() {
 
     const handleChange = (event) => {
         const { id, value } = event.target;
-        const newValue = id === 'SceStr' ? value.replace(/\s/g, '') : parseFloat(value);
+        const newValue = ((id === 'SceStr') || (id === 'asStr')) ? value.replace(/\s/g, '') : parseFloat(value);
         setValues((prevValues) => ({ ...prevValues, [id]: newValue }));
+        setSaveSuccess(false);
+        savedButton.classList.remove('btn-success');
+        savedButton.classList.remove('btn-danger');
+        savedButton.classList.add('btn-primary');
+    };
+
+    const handleChangeString = (event) => {
+        const { name, value } = event.target; // Use 'name' here
+        const newValue = (name === 'SceStr' || name === 'asStr') ? value.replace(/\s/g, '') : parseFloat(value);
+        setValues((prevValues) => ({ ...prevValues, [name]: newValue }));
         setSaveSuccess(false);
         savedButton.classList.remove('btn-success');
         savedButton.classList.remove('btn-danger');
@@ -41,7 +51,7 @@ function Settings() {
                 dx: values.dx,
                 dy: values.dy,
                 dz: values.dz,
-                as: values.as
+                asStr: values.asStr
             },
             Aircraft: {
                 VmaxMin: values.VmaxMin,
@@ -153,16 +163,21 @@ function Settings() {
                                             </div>
                                         </div>
                                         <div className="col">
-                                                <Form.Group controlId="dropdown" className="mb-3">
-                                                    <Form.Label>Airspace structure:</Form.Label>
-                                                    <Form.Select
-                                                        value={values.as}
-                                                        onChange={handleChange}
-                                                    >
-                                                        <option value="AS1">Subset</option>
-                                                        {/* <option value="AS2">VTOL-2R</option> */}
-                                                    </Form.Select>
-                                                </Form.Group>
+                                            <Form.Group controlId="dropdown" className="mb-3">
+                                                <Form.Label>Airspace structure:</Form.Label>
+                                                <Form.Select
+                                                    name="asStr"
+                                                    value={values.asStr}
+                                                    onChange={handleChangeString}
+                                                >
+                                                    <option value="Subset">Subset</option>
+                                                    <option value="VTOL">VTOL</option>
+                                                    <option value="NYC">NYC</option>
+                                                    <option value="SF">SF</option>
+                                                    <option value="PAR">PAR</option>
+                                                    {/* <option value="AS2">VTOL-2R</option> */}
+                                                </Form.Select>
+                                            </Form.Group>
                                         </div>
                                     </Form>
                                 </Accordion.Body>

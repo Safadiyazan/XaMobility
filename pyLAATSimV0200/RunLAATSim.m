@@ -1,4 +1,4 @@
-function [] = RunLAATSim(InflowRate,SceStr)
+function [] = RunLAATSim(InflowRate,SceStr,asStr)
 %%
 clc; close all; dbstop if error;
 close all force; close all hidden;
@@ -14,10 +14,9 @@ if ~exist(SimInfo.SimOutputDirStr, 'dir')
 end
 %% Settings
 waitbar(0,fwaitbar,'Determining Setting');
-[Settings.Airspace] = SettingAirspace(1500,1500,90); % 20*60*30/3.6,20*60*30/3.6
-Settings.Airspace.as = 1;
-[Settings.Aircraft] = SettingAircraft([10,30],[10,30]);
-[Settings.Sim] = SettingSimulation(InflowRate,15);
+[Settings.Airspace] = SettingAirspace(1500,1500,90,asStr); % 20*60*30/3.6,20*60*30/3.6
+[Settings.Aircraft] = SettingAircraft([10,30],[50,100]);
+[Settings.Sim] = SettingSimulation(InflowRate,10);
 [Settings.TFC] = SettingTrafficControl(Settings);
 %% Init Objects
 SimInfo.Mina = []; SimInfo.Mque = []; SimInfo.Mact = []; SimInfo.Marr = []; SimInfo.MactBQ = [];
@@ -93,7 +92,7 @@ save([SimInfo.SimOutputDirStr 'Trajectories' SimFilename],'-v7.3'); clear SimFil
 % ExportJSON(SimInfo,ObjAircraft,TFC,TFC.EC,Settings);
 fwaitbar = waitbar(1,'Finishing Simulation');
 % % Export Video
-PlotMotionPicture(15,SimInfo,ObjAircraft,TFC,Settings);
+PlotMotionPicture(60,SimInfo,ObjAircraft,TFC,Settings);
 % PlotMotionPicture_MFD(60,SimInfo,ObjAircraft,TFC,Settings);
 waitbar(1,fwaitbar,'Done');
 pause(0.1)

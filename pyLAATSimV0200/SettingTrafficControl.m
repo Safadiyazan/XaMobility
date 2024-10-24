@@ -1,5 +1,5 @@
 function [TFC] = SettingTrafficControl(Settings)
-TFC.TCmode = 1;
+TFC.TCmode = 0;
 TFC.dtC = 60;
 if(TFC.TCmode)
     TFC.TCPolicy = 1;

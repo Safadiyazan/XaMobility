@@ -1,11 +1,17 @@
-function [Airspace] = SettingAirspace(dx,dy,dz)
-Airspace.Vertiports = 1;
+function [Airspace] = SettingAirspace(dx,dy,dz,asStr)
+Airspace.asStr = asStr;
+if ismember(asStr, {'Subset', 'VTOL'})
+    Airspace.Vertiports = 0;
+else
+    Airspace.Vertiports = 1;
+end
+
 if Airspace.Vertiports
-    [VertiportOD,MaxXY] = LoadVertiports();
+    [VertiportOD,MaxXY,minDz1] = LoadVertiports(asStr);
     Airspace.dx = MaxXY*2; % width [m]
     Airspace.dy = MaxXY*2; % length [m]
     Airspace.dz = dz;%Airspace.dz2-Airspace.dz1;  % height [m]
-    Airspace.dz1 = 400;  % start at height [m]
+    Airspace.dz1 = minDz1;  % start at height [m]
 else
     Airspace.dx = dx; % width [m]
     Airspace.dy = dy; % length [m]
@@ -16,15 +22,22 @@ Airspace.dz2 = dz+Airspace.dz1; % end at height [m]
 Airspace.xyz = [[-Airspace.dx;Airspace.dx]/2,[-Airspace.dy;Airspace.dy]/2,[[Airspace.dz1;Airspace.dz1]+[0;Airspace.dz]]];
 Airspace.Space = Airspace.dx*Airspace.dy*Airspace.dz;
 %% Pads heights
-Airspace.VTOL = 1;
+if ismember(asStr, {'Subset'})
+    Airspace.VTOL = 0;
+    Airspace.SubsetNetwork = 1;
+else
+    Airspace.VTOL = 1;
+    Airspace.SubsetNetwork = 0;
+end
 if Airspace.VTOL
     Airspace.z01 = 0; % for takeoff and landing [m]
     Airspace.z02 = Airspace.dz1; % for takeoff and landing [m]
     Airspace.VTOLxyz = [[-Airspace.dx;Airspace.dx]/2,[-Airspace.dy;Airspace.dy]/2,[Airspace.z01;Airspace.z02]];
+else
+    Airspace.z01 = 0; % for takeoff and landing [m]
+    Airspace.z02 = Airspace.dz1; % for takeoff and landing [m]
+    Airspace.VTOLxyz = [[-Airspace.dx;Airspace.dx]/2,[-Airspace.dy;Airspace.dy]/2,[Airspace.z01;Airspace.z02]];
 end
-%% Subset
-Airspace.SubsetNetwork = 0;
-
 %% TODO: TLOF
 %% function for regions boundaries
 Airspace.RMode='2R';
@@ -51,7 +64,7 @@ end
 function [Ri,Li] = SettingAirspaceRegions(Airspace)
 Ri.xn = 3;
 Ri.yn = 3;
-Ri.zn = 1;
+Ri.zn = 2;
 Ri.Dx = Airspace.dx/Ri.xn;
 Ri.Dy = Airspace.dy/Ri.yn;
 Ri.Dz = (Airspace.dz)/Ri.zn;

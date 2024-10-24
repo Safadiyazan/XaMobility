@@ -14,16 +14,13 @@ SimInfo.SimOutputDirStr = ['.\Outputs\SimOutput_' datestr(now,'yyyymmdd_hhMMss')
 %% Settings
 disp(['Determining Setting']);
 if (~isempty(NewSettings))
-    [Settings.Airspace] = SettingAirspace(double(NewSettings.Airspace.dx),double(NewSettings.Airspace.dy),double(NewSettings.Airspace.dz));
-    Settings.Airspace.as = NewSettings.Airspace.as;
-    [Settings.Aircraft] = SettingAircraft([double(NewSettings.Aircraft.VmaxMin);double(NewSettings.Aircraft.VmaxMax)],[double(NewSettings.Aircraft.RsMin);double(NewSettings.Aircraft.RsMax)]);
+    [Settings.Airspace] = SettingAirspace(double(NewSettings.Airspace.dx),double(NewSettings.Airspace.dy),double(NewSettings.Airspace.dz),NewSettings.Airspace.asStr);    [Settings.Aircraft] = SettingAircraft([double(NewSettings.Aircraft.VmaxMin);double(NewSettings.Aircraft.VmaxMax)],[double(NewSettings.Aircraft.RsMin);double(NewSettings.Aircraft.RsMax)]);
     [Settings.Sim] = SettingSimulation(double(NewSettings.Sim.Qin)/60,10);
     disp(['Inflow aircraft/s:' double(NewSettings.Sim.Qin)/60])
 else
-    [Settings.Airspace] = SettingAirspace(1500,1500,90);
-    Settings.Airspace.as = 1;
+    [Settings.Airspace] = SettingAirspace(1500,1500,90,'NYC');
     [Settings.Aircraft] = SettingAircraft([10,30],[10,30]);
-    [Settings.Sim] = SettingSimulation(0.1,10);
+    [Settings.Sim] = SettingSimulation(InflowRate,10);
 end
 %% Init Objects
 SimInfo.Mina = []; SimInfo.Mque = []; SimInfo.Mact = []; SimInfo.Marr = []; SimInfo.MactBQ = [];
@@ -83,6 +80,6 @@ scenarioName = ExportJSON(['./public/Outputs/' 'SimOutput_' SceStr],SimInfo,ObjA
 disp(scenarioName)
 disp(['Finishing Simulation'])
 % % Export Video
-% PlotMotionPicture(30,SimInfo,ObjAircraft,TFC,Settings);
+% PlotMotionPicture(10,SimInfo,ObjAircraft,TFC,Settings);
 TTS_Final = TFC.N.cumTTS(end)/3600;
 end

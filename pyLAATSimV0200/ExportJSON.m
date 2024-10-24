@@ -27,7 +27,7 @@ Data.SimInfo.dtM = SimInfo.dtM;
 Data.Settings.dx = Settings.Airspace.dx; % Airspace x-axis size [m]
 Data.Settings.dy = Settings.Airspace.dy; % Airspace y-axis size [m]
 Data.Settings.dz = Settings.Airspace.dz; % Airspace z-axis size [m]
-Data.Settings.as = Settings.Airspace.as; % Airspace config
+Data.Settings.asStr = Settings.Airspace.asStr; % Airspace config
 Data.Settings.Airspace = Settings.Airspace; % Airspace x-axis size [m]
 
 Data.ObjAircraft = ObjAircraftData;

@@ -148,9 +148,9 @@ fs.writeFile(filePath, JSON.stringify([], null, 2), (err) => {
 });
 
 app.post('/api/save_vertiports', (req, res) => {
-    const vertiportData = req.body.vertiportData;
+    const VertiportData = req.body.VertiportData;
 
-    fs.writeFile(filePath, JSON.stringify(vertiportData, null, 2), (err) => {
+    fs.writeFile(filePath, JSON.stringify(VertiportData, null, 2), (err) => {
         if (err) {
             console.error('Error saving vertiport data:', err);
             res.status(500).json({ message: 'Failed to save vertiport data.' });

@@ -214,7 +214,7 @@ function [o, d] = AircraftODVertiports(AirspaceS,rs,rd)
 % -73.99687660760746 40.724604427122294 28.434851429241917;
 % ];
 if AirspaceS.Vertiports
-    [VertiportOD,MaxXY] = LoadVertiports();
+    [VertiportOD,MaxXY,minDz1] = LoadVertiports(AirspaceS.asStr);
     ODMat = VertiportOD;
 else
     ODMat = 0.99.*[

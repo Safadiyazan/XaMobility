@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import * as Cesium from "cesium";
-import { Model, IonResource, ClockStep, ClockRange, HeadingPitchRoll, VelocityOrientationProperty, PathGraphics, DistanceDisplayCondition, CallbackProperty, TimeInterval, TimeIntervalCollection, SampledPositionProperty, JulianDate, Cartographic, Sun, ShadowMode, Color, Ellipsoid, Matrix4, Transforms, Cesium3DTileset, Cartesian3, createOsmBuildingsAsync, Ion, Math as CesiumMath, Terrain, Viewer } from 'cesium';
+import { Model, IonResource, ClockStep, ClockRange, HeadingPitchRoll, Quaternion, VelocityOrientationProperty, PathGraphics, DistanceDisplayCondition, CallbackProperty, TimeInterval, TimeIntervalCollection, SampledPositionProperty, JulianDate, Cartographic, Sun, ShadowMode, Color, Ellipsoid, Matrix4, Transforms, Cesium3DTileset, Cartesian3, createOsmBuildingsAsync, Ion, Math as CesiumMath, Terrain, Viewer } from 'cesium';
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import ViewerToolBar from './components/ViewerToolBar';
 import NetworkSetup from './components/NetworkSetup.js';
@@ -61,7 +61,11 @@ export async function LoadSimulation(viewer, data, city) {
             var center = Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0); // NYC
             break;
         case "SF":
-            var dz0 = 80;
+            if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
+                var dz0 = 0;
+            } else {
+                var dz0 = 0;
+            }
             var center = Cartesian3.fromDegrees(-122.3816, 37.6191, dz0); // SF
             break;
         case "ZH":
@@ -87,6 +91,18 @@ export async function LoadSimulation(viewer, data, city) {
         case "UOM":
             var dz0 = 580;
             var center = Cartesian3.fromDegrees(-83.73826609087581, 42.28074004295685, dz0); // Dubai
+            break;
+        case "PAR":
+            if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
+                var dz0 = 0;
+            } else {
+                var dz0 = 580;
+            }
+            var center = Cartesian3.fromDegrees(2.294670305890747, 48.85821322426023, dz0);
+            break;
+        case "HER":
+            var dz0 = 300;
+            var center = Cartesian3.fromDegrees(25.129820168413037, 35.333686242682596, dz0);
             break;
         // default:
         //     var dz0 = 80;
@@ -147,7 +163,7 @@ export async function LoadSimulation(viewer, data, city) {
         // Add the light source to the scene
         // viewer.scene.sun = sunLight;
         // Fly the camera to San Francisco at the given longitude, latitude, and height.
-        var initialPosition = computeNewPoint(center, 0, -1250, 2000);
+        var initialPosition = computeNewPoint(center, 0, -10000, 20000);
         var initialOrientation = {
             heading: CesiumMath.toRadians(0.0),
             pitch: CesiumMath.toRadians(-60.0),
@@ -159,7 +175,7 @@ export async function LoadSimulation(viewer, data, city) {
                 heading: initialOrientation.heading,
                 pitch: initialOrientation.pitch,
             },
-            duration: 20,
+            duration: 1,
         });
         var camera = viewer.camera;
 
@@ -1512,7 +1528,7 @@ export async function LoadSimulation(viewer, data, city) {
         });
         //viewer.zoomTo(airspace);
     }
-    // PlotCube(center, dx, dy, dz, dz0, dz1, 'Airspace', Color.BLACK.withAlpha(0.1), Color.BLACK);
+    PlotCube(center, dx, dy, dz, dz0, dz1, 'Airspace', Color.BLACK.withAlpha(0.1), Color.BLACK);
     // if (data.Settings.Airspace.VTOL === 1) {
     //     PlotCube(center, dx, dy, dz1, dz0, 0, 'VTOLLayer', Color.RED.withAlpha(0.05), Color.RED);
     // }
@@ -1709,6 +1725,23 @@ export async function LoadSimulation(viewer, data, city) {
             45.5
         );
         // Add Aircraft safety radius
+        // const SafetySphereEntity = viewer.entities.add({
+        //     name: `Aircraft: ${AircraftIndex}, Safety Space`,
+        //     description: ``,
+        //     position: positionProperty,
+        //     ellipsoid: {
+        //         radii: new Cesium.CallbackProperty(function (time, result) {
+        //             const randomScaleFactor = 2 * Math.random();  // Adjusts the scale randomly between 0 and 2
+        //             return new Cesium.Cartesian3(rs * randomScaleFactor, rs * randomScaleFactor, rs * randomScaleFactor);
+        //         }, false), // 'false' means it is not constant and should be recalculated over time
+        //         material: Cesium.Color.RED.withAlpha(0.1),
+        //         outline: true,
+        //         outlineColor: Cesium.Color.BLACK.withAlpha(0.2),
+        //     },
+        //     allowPicking: false,
+        // });
+
+        // Add Aircraft safety radius
         const SafetySphereEntity = viewer.entities.add({
             name: `Aircraft: ${AircraftIndex}, Safety Space`,
             description: ``,
@@ -1792,8 +1825,8 @@ export async function LoadSimulation(viewer, data, city) {
                     scale: AircraftURLScale
                 },
                 path: new PathGraphics({ width: 0.2 }),
-                // orientation: vertical === 0 ? new VelocityOrientationProperty(positionProperty) : undefined,
-                orientation: calculateOrientation(positionProperty), // Use a callback for orientation
+                orientation: calculateOrientation(positionProperty, dz1), // Use a callback for orientation
+                // orientation: new VelocityOrientationProperty(positionProperty),
                 allowPicking: false,
             });
             airplaneEntity.availability = new TimeIntervalCollection([new TimeInterval({
@@ -1809,57 +1842,267 @@ export async function LoadSimulation(viewer, data, city) {
             return entitiesArray, positionPropertyArray;
         }
 
+        // function calculateOrientation(positionProperty, takeoffAltitudeThreshold) {
+        //     const velocityOrientation = new Cesium.VelocityOrientationProperty(positionProperty);
+
+        //     return new Cesium.CallbackProperty(function (time, result) {
+        //         // Get the current position and velocity
+        //         try {
+        //             const currentPosition = positionProperty.getValue(time);
+        //             const cartographic = Cartographic.fromCartesian(positionProperty.getValue(time));
+        //             const altitude = cartographic.height;
+        //             console.log('dz1' + takeoffAltitudeThreshold)
+        //             console.log('Altitude' + altitude)
+        //         }
+        //         catch (err) {
+        //             return new VelocityOrientationProperty(positionProperty);
+        //         }
+
+        //         // if (altitude < takeoffAltitudeThreshold) {
+        //         //     console.log('dz1' + takeoffAltitudeThreshold)
+        //         //     console.log('Altitude' + altitude)
+        //         //     if (!currentPosition) {
+        //         //         return result;
+        //         //     }
+
+        //         //     // Use velocity orientation for normal flight
+        //         //     const currentOrientation = velocityOrientation.getValue(time);
+        //         //     if (!currentOrientation) {
+        //         //         return result;
+        //         //     }
+
+        //         //     // Convert the quaternion to HeadingPitchRoll (HPR)
+        //         //     const hpr = Cesium.HeadingPitchRoll.fromQuaternion(currentOrientation);
+
+        //         //     // Handle special case for takeoff and landing when aircraft is near the ground (altitude threshold)
+
+        //         //     // Force aircraft to have a steep pitch for vertical takeoff/landing
+        //         //     hpr.pitch = Cesium.Math.toRadians(0);  // Adjust to straight up or down
+        //         //     hpr.roll = 0;  // Keep roll zero to avoid weird banking during takeoff/landing
+
+
+        //         //     // Convert the adjusted HPR back to a quaternion
+        //         //     return Cesium.Transforms.headingPitchRollQuaternion(
+        //         //         currentPosition,
+        //         //         hpr,
+        //         //     );
+        //         // }
+        //         // else {
+        //         return new VelocityOrientationProperty(positionProperty);
+        //         // }
+        //     }, false);
+        // }
+
+
+
+
+
+
+        // WORKING FOR NYC!!!!!!!!!!!!!!!!!!!
+        function calculateOrientation(positionProperty) {
+            const velocityOrientation = new VelocityOrientationProperty(positionProperty, Ellipsoid.WGS84);
+
+            return new CallbackProperty(function (time, result) {
+                // Get the velocity-based orientation (which is a quaternion)
+                const currentOrientation = velocityOrientation.getValue(time);
+                if (!currentOrientation) {
+                    return result;
+                }
+
+                // Convert the current orientation from quaternion to HeadingPitchRoll (HPR)
+                const hpr = HeadingPitchRoll.fromQuaternion(currentOrientation);
+
+                // Set limits for pitch, heading, and roll
+                const maxPitch = CesiumMath.toRadians(10);  // Limit max pitch (e.g., vertical takeoff/landing)
+                const minPitch = CesiumMath.toRadians(-10); // Limit min pitch (downward during landing)
+                const maxRoll = CesiumMath.toRadians(2);   // Limit max roll (e.g., banking during turns)
+                const minRoll = CesiumMath.toRadians(-2);   // Limit max roll (e.g., banking during turns)
+
+                // Constrain the pitch
+                hpr.pitch = CesiumMath.clamp(hpr.pitch, minPitch, maxPitch);
+
+                // Constrain the roll
+                hpr.roll = CesiumMath.clamp(hpr.roll, minRoll, maxRoll);
+
+                // const fixedFrameTransform = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
+                // Convert the constrained HPR back into a quaternion
+                return Transforms.headingPitchRollQuaternion(
+                    positionProperty.getValue(time),
+                    hpr,
+                    Ellipsoid.WGS84,
+                );
+            }, false);
+        }
+
+
+
+
+
+
         entitiesArray, positionPropertyArray = loadModel(positionProperty, entitiesArray, positionPropertyArray, AMI);
 
-        function calculateOrientation(positionProperty) {
+        // function calculateOrientation(positionProperty) {
 
-            const customOrientationProperty = new CallbackProperty((time, result) => {
-                try {
-                    // Maximum Values
-                    const maxPitch = CesiumMath.toRadians(5); // Max pitch in radians
-                    const maxRoll = CesiumMath.toRadians(5);  // Max roll in radians
-                    // Extract Cuurent Orientation
-                    const velocityOrientation = new VelocityOrientationProperty(positionProperty);
-                    const CurrentvelocityOrientation = velocityOrientation.getValue(time);
-                    // Extract pitch, roll, and yaw angles from the orientationQuaternion
-                    const pitchRollYaw = new HeadingPitchRoll.fromQuaternion(CurrentvelocityOrientation);
-                    // Store the initial orientation values
-                    const initialOrientation = {
-                        heading: pitchRollYaw.heading,
-                        pitch: pitchRollYaw.pitch,
-                        roll: pitchRollYaw.roll,
-                        yaw: pitchRollYaw.yaw
-                    };
+        //     const customOrientationProperty = new CallbackProperty((time, result) => {
+        //         try {
+        //             // Maximum Values
+        //             const maxPitch = CesiumMath.toRadians(5); // Max pitch in radians
+        //             const maxRoll = CesiumMath.toRadians(5);  // Max roll in radians
+        //             // Extract Cuurent Orientation
+        //             const velocityOrientation = new VelocityOrientationProperty(positionProperty, ellipsoid);
+        //             const CurrentvelocityOrientation = velocityOrientation.getValue(time);
+        //             // Extract pitch, roll, and yaw angles from the orientationQuaternion
+        //             const pitchRollYaw = new HeadingPitchRoll.fromQuaternion(CurrentvelocityOrientation);
+        //             // Store the initial orientation values
+        //             const initialOrientation = {
+        //                 heading: pitchRollYaw.heading,
+        //                 pitch: pitchRollYaw.pitch,
+        //                 roll: pitchRollYaw.roll,
+        //                 yaw: pitchRollYaw.yaw
+        //             };
 
-                    // Apply pitch limits
-                    const center = positionProperty.getValue(time);
-                    const heading = pitchRollYaw.heading; //
-                    const pitch = CesiumMath.clamp(pitchRollYaw.pitch, -maxPitch, maxPitch);; // pitchRollYaw.pitch; //
-                    const roll = CesiumMath.clamp(pitchRollYaw.roll, -maxRoll, maxRoll);//  pitchRollYaw.roll; //
-                    const hpr = new HeadingPitchRoll(heading, pitch, roll);
-                    const modifiedOrientationQuaternion = Transforms.headingPitchRollQuaternion(center, hpr);
-                    // console.log(modifiedOrientationQuaternion)
-                    //return modifiedOrientationQuaternion;
-                    //return orientationProperty;
+        //             if ((pitchRollYaw.pitch>maxPitch) || (pitchRollYaw.pitch<-maxPitch) || (pitchRollYaw.roll>maxRoll) || (pitchRollYaw.yaw<-maxRoll) || (pitchRollYaw.yaw>maxRoll) || (pitchRollYaw.yaw<-maxRoll))  {
+        //                 return undefined;
+        //             } else {
+        //                 return new VelocityOrientationProperty(positionProperty, ellipsoid);
+        //             }
 
-                    // Check if values changed and log them
-                    /*if (hpr.heading !== initialOrientation.heading || hpr.pitch !== initialOrientation.pitch ||
-                    hpr.roll !== initialOrientation.roll) {
-                      console.log('Orientation values changed:');
-                      console.log('Initial:', initialOrientation);
-                      console.log('Modified:', hpr);
-                    }*/
+        //             // Apply pitch limits
+        //             // const center = positionProperty.getValue(time);
+        //             // const heading = pitchRollYaw.heading; //
+        //             // const pitch = CesiumMath.clamp(pitchRollYaw.pitch, -maxPitch, maxPitch);; // pitchRollYaw.pitch; //
+        //             // const roll = CesiumMath.clamp(pitchRollYaw.roll, -maxRoll, maxRoll);//  pitchRollYaw.roll; //
+        //             // const hpr = new HeadingPitchRoll(heading, pitch, roll);
+        //             // const modifiedOrientationQuaternion = Transforms.headingPitchRollQuaternion(center, hpr, ellipsoid);
+        //             // console.log(modifiedOrientationQuaternion)
+        //             //return modifiedOrientationQuaternion;
+        //             //return orientationProperty;
 
-                    return modifiedOrientationQuaternion;
-                } catch (error) {
-                    return undefined;//VelocityOrientationProperty(positionProperty);
-                }
-            }, false);
+        //             // Check if values changed and log them
+        //             /*if (hpr.heading !== initialOrientation.heading || hpr.pitch !== initialOrientation.pitch ||
+        //             hpr.roll !== initialOrientation.roll) {
+        //               console.log('Orientation values changed:');
+        //               console.log('Initial:', initialOrientation);
+        //               console.log('Modified:', hpr);
+        //             }*/
 
-            return customOrientationProperty;
+        //             return modifiedOrientationQuaternion;
+        //         } catch (error) {
+        //             console.log('error in calculating orientation')
+        //             return undefined;//VelocityOrientationProperty(positionProperty, ellipsoid);
+        //         }
+        //     }, false);
+
+        //     return customOrientationProperty;
 
 
-        }
+        // }
+
+
+        // function calculateOrientation(position, velocity) {
+        //     // Normalize velocity vector
+        //     const normalizedVelocity = Cesium.Cartesian3.normalize(velocity, new Cesium.Cartesian3());
+
+        //     // Calculate heading, pitch, and roll based on velocity and other factors (e.g., altitude, acceleration)
+        //     const heading = CesiumMath.toDegrees(Math.atan2(normalizedVelocity.y, normalizedVelocity.x));
+        //     const pitch = calculatePitch(position, velocity); // Implement pitch calculation logic
+        //     const roll = 0; // Assuming no roll for simplicity
+
+        //     // Create quaternion from heading, pitch, and roll
+        //     const orientation = Cesium.Quaternion.fromHeadingPitchRoll(CesiumMath.toRadians(heading), CesiumMath.toRadians(pitch), CesiumMath.toRadians(roll));
+
+        //     return orientation;
+        // }
+        // function calculateOrientation(positionProperty) {
+        //     try {
+        //         return new Cesium.CallbackProperty(function (time, result) {
+        //             const position = positionProperty.getValue(time, result);
+        //             if (!position) {
+        //                 console.error('Invalid position:', position);
+        //                 return Cesium.Quaternion.IDENTITY;
+        //             }
+
+        //             const matrix = Cesium.Transforms.eastNorthUpToFixedFrame(position);
+        //             const baseOrientation = Cesium.Matrix4.getRotation(matrix, new Cesium.Matrix3());
+
+        //             // Pitch first, then roll
+        //             const pitchAdjustment = CesiumMath.toRadians(-10); // Example pitch adjustment
+        //             const rollAdjustment = CesiumMath.toRadians(0);    // Example roll adjustment
+
+        //             const pitchQuat = Cesium.Quaternion.fromAxisAngle(Cesium.Cartesian3.UNIT_Y, pitchAdjustment);
+        //             const rollQuat = Cesium.Quaternion.fromAxisAngle(Cesium.Cartesian3.UNIT_X, rollAdjustment);
+
+        //             // Normalize quaternions
+        //             Cesium.Quaternion.normalize(pitchQuat, pitchQuat);
+        //             Cesium.Quaternion.normalize(rollQuat, rollQuat);
+
+        //             // Combine quaternions in the correct order
+        //             const combinedQuat = Cesium.Quaternion.multiply(pitchQuat, rollQuat, new Cesium.Quaternion());
+
+        //             // Apply the combined orientation to the base orientation
+        //             const finalOrientation = Cesium.Quaternion.multiply(baseOrientation, combinedQuat, result);
+
+        //             // Normalize the final orientation
+        //             Cesium.Quaternion.normalize(finalOrientation, finalOrientation);
+
+        //             return finalOrientation;
+        //         }, false);
+        //     } catch { error } {
+        //         return undefined; // new VelocityOrientationProperty(positionProperty);
+        //     }
+
+        // }
+
+
+        //     function calculateOrientation(positionProperty) {
+
+        //         const customOrientationProperty = new CallbackProperty((time, result) => {
+        //             // const center = positionProperty.getValue(time);
+        //             // const cartographicPosition = Cartographic.fromCartesian(center, ellipsoid);
+        //             const altitude = 450;//cartographicPosition.height;
+        //             if (altitude > 400) {
+        //                 console.log('cursing')
+        //                 // return new VelocityOrientationProperty(positionProperty, ellipsoid);
+        //             } else {
+        //                 console.log('takeoff/landing')
+        //                 // return undefined;
+        //             }
+        //             return new VelocityOrientationProperty(positionProperty, ellipsoid);
+        //             // try {
+        //             //     // const maxPitch = CesiumMath.toRadians(5);
+        //             //     // const maxRoll = CesiumMath.toRadians(5);
+        //             //     // const velocityOrientation = VelocityOrientationProperty(positionProperty);
+        //             //     // const CurrentvelocityOrientation = velocityOrientation.getValue(time);
+        //             //     // const pitchRollYaw = HeadingPitchRoll.fromQuaternion(CurrentvelocityOrientation);
+        //             //     // const initialOrientation = {
+        //             //     //     heading: pitchRollYaw.heading,
+        //             //     //     pitch: pitchRollYaw.pitch,
+        //             //     //     roll: pitchRollYaw.roll,
+        //             //     //     yaw: pitchRollYaw.yaw
+        //             //     // };
+        //             //     // const center = positionProperty.getValue(time);
+        //             //     // const cartographicPosition = Cartographic.fromCartesian(center, ellipsoid);
+        //             //     // const altitude = cartographicPosition.height;
+        //             //     // if (altitude > 400) {
+        //             //     // const modifiedOrientationQuaternion = new VelocityOrientationProperty(positionProperty, ellipsoid);
+        //             //     // } else {
+        //             //     // const heading = pitchRollYaw.heading;
+        //             //     // const pitch = CesiumMath.clamp(pitchRollYaw.pitch, -maxPitch, maxPitch);
+        //             //     // const roll = CesiumMath.clamp(pitchRollYaw.roll, -maxRoll, maxRoll);
+        //             //     // const hpr = HeadingPitchRoll(heading, pitch, roll);
+        //             //     // const modifiedOrientationQuaternion = Transforms.headingPitchRollQuaternion(center, hpr); // Ellipsoid.WGS84, Transforms.localFrameToFixedFrameGenerator("north", "west")
+        //             //     // }
+        //             //     return undefined;
+        //             // } catch (error) {
+        //             //     // console.log(error)
+        //             //     return new VelocityOrientationProperty(positionProperty, ellipsoid);
+        //             // }
+        //         }, false);
+
+        //         return customOrientationProperty;
+
+
+        //     }
     }
 
     ///////////////////////////////////////////
@@ -1883,7 +2126,7 @@ export async function LoadSimulation(viewer, data, city) {
                 orientation: Cesium.Transforms.headingPitchRollQuaternion(
                     FunVertiportLocation,
                     FunheadingPositionRoll,
-                    Cesium.Ellipsoid.WGS84,
+                    Ellipsoid.WGS84,
                     FunfixedFrameTransform
                 )
             });
@@ -1966,7 +2209,7 @@ export async function LoadSimulation(viewer, data, city) {
 
     //     // Calculate new orientation (modify existing matrix)
     //     const rotation = Cesium.Matrix3.fromQuaternion(currentOrientation);
-    //     const rotationMatrix = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(angleOffset));
+    //     const rotationMatrix = Cesium.Matrix3.fromRotationZ(CesiumMath.toRadians(angleOffset));
     //     Cesium.Matrix3.multiply(rotation, rotationMatrix, rotation); // Modify rotation in-place
 
     //     // Apply new orientation
@@ -2022,10 +2265,10 @@ export async function LoadSimulation(viewer, data, city) {
                             const cartographic = Cesium.Cartographic.fromCartesian(
                                 cartesian
                             );
-                            const longitudeString = Cesium.Math.toDegrees(
+                            const longitudeString = CesiumMath.toDegrees(
                                 cartographic.longitude
                             ).toFixed(2);
-                            const latitudeString = Cesium.Math.toDegrees(
+                            const latitudeString = CesiumMath.toDegrees(
                                 cartographic.latitude
                             ).toFixed(2);
                             const heightString = cartographic.height.toFixed(2);
@@ -2057,8 +2300,8 @@ export async function LoadSimulation(viewer, data, city) {
             handler.setInputAction(function (event) {
                 var cartesian = scene.camera.pickEllipsoid(event.position, ellipsoid);
                 const lonLat = Cesium.Cartographic.fromCartesian(cartesian);
-                const longitudeDeg = Cesium.Math.toDegrees(lonLat.longitude);
-                const latitudeDeg = Cesium.Math.toDegrees(lonLat.latitude);
+                const longitudeDeg = CesiumMath.toDegrees(lonLat.longitude);
+                const latitudeDeg = CesiumMath.toDegrees(lonLat.latitude);
                 const cartographic = new Cesium.Cartographic();
                 const objectsToExclude = [];
                 cartographic.longitude = lonLat.longitude;
@@ -2152,7 +2395,7 @@ export async function LoadSimulation(viewer, data, city) {
             }
 
             function saveVertiportData(data) {
-                fetch('/api/save_Vertiports', {
+                fetch('/api/save_vertiports', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2183,7 +2426,7 @@ export async function LoadSimulation(viewer, data, city) {
 
         // Calculate new orientation
         const rotation = Cesium.Matrix3.fromQuaternion(currentOrientation);
-        const rotationMatrix = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(angleOffset));
+        const rotationMatrix = Cesium.Matrix3.fromRotationZ(CesiumMath.toRadians(angleOffset));
         const newRotation = Cesium.Matrix3.multiply(rotation, rotationMatrix, new Cesium.Matrix3());
 
         // Apply new orientation
@@ -2193,7 +2436,20 @@ export async function LoadSimulation(viewer, data, city) {
     // Load setting if needed.
     if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
         // Fetch and load fixed Vertiport settings from JSON file
-        fetch('/FixedVertiportsSettings_V2.json')
+        var FetchVertiportFileName = '/FixedVertiportsSettings_V2_NYC.json';
+        switch (city) {
+            case "NYC":
+                var FetchVertiportFileName = '/FixedVertiportsSettings_V2_NYC.json';
+                break;
+            case "PAR":
+                var FetchVertiportFileName = '/FixedVertiportsSettings_V1_PAR.json';
+                break;
+            case "SF":
+                var FetchVertiportFileName = '/FixedVertiportsSettings_V1_SF.json';
+                break;
+        }
+
+        fetch(FetchVertiportFileName)
             .then(response => response.json())
             .then(data => {
                 data.forEach(Vertiport => {
@@ -2229,7 +2485,7 @@ export async function LoadSimulation(viewer, data, city) {
                 orientation: Cesium.Transforms.headingPitchRollQuaternion(
                     FunPedestrianLocation,
                     FunPheadingPositionRoll,
-                    Cesium.Ellipsoid.WGS84,
+                    Ellipsoid.WGS84,
                     FunfixedFrameTransform
                 )
             });
@@ -2295,10 +2551,10 @@ export async function LoadSimulation(viewer, data, city) {
                             const cartographic = Cesium.Cartographic.fromCartesian(
                                 cartesian
                             );
-                            const longitudeString = Cesium.Math.toDegrees(
+                            const longitudeString = CesiumMath.toDegrees(
                                 cartographic.longitude
                             ).toFixed(2);
-                            const latitudeString = Cesium.Math.toDegrees(
+                            const latitudeString = CesiumMath.toDegrees(
                                 cartographic.latitude
                             ).toFixed(2);
                             const heightString = cartographic.height.toFixed(2);
@@ -2330,8 +2586,8 @@ export async function LoadSimulation(viewer, data, city) {
             handler.setInputAction(function (event) {
                 var cartesian = scene.camera.pickEllipsoid(event.position, ellipsoid);
                 const lonLat = Cesium.Cartographic.fromCartesian(cartesian);
-                const longitudeDeg = Cesium.Math.toDegrees(lonLat.longitude);
-                const latitudeDeg = Cesium.Math.toDegrees(lonLat.latitude);
+                const longitudeDeg = CesiumMath.toDegrees(lonLat.longitude);
+                const latitudeDeg = CesiumMath.toDegrees(lonLat.latitude);
                 const cartographic = new Cesium.Cartographic();
                 const objectsToExclude = [];
                 cartographic.longitude = lonLat.longitude;
@@ -2424,6 +2680,40 @@ export async function LoadSimulation(viewer, data, city) {
     // End Pedestrian setting
     ///////////////////////////////////////////////////////////////////////////////////////
 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    // Start cloud setting
+
+
+    async function AddCloud(centerCloud, startSim, stopSim) {
+        // Initialize the cloud collection
+        var cloudCollection = viewer.scene.primitives.add(new Cesium.CloudCollection());
+
+        // Define the center point for your environment
+        var center = Cesium.Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, 600);
+
+        // Add a cloud near the center point
+        cloudCollection.add({
+            position: center,  // Position of the cloud
+            maximumSize: new Cesium.Cartesian2(1000.0, 800.0),  // Max size of the cloud in meters
+            maximumBrightness: 1,  // Brightness of the cloud (0.0 - 1.0)
+            slice: 1 // Optional: Controls the thickness of the cloud layer (range: 0 to 1)
+        });
+
+        // Move the camera to view the cloud
+        viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0 + 500),
+            orientation: {
+                heading: Cesium.Math.toRadians(0.0),
+                pitch: Cesium.Math.toRadians(-45.0),
+                roll: 0.0
+            }
+        });
+
+    }
+    // End cloud setting
+    ///////////////////////////////////////////////////////////////////////////////////////
+
+
     //async function main() {
     // Add Aircraft Data from the simulation
     const dtS = data.SimInfo.dtS;
@@ -2431,7 +2721,7 @@ export async function LoadSimulation(viewer, data, city) {
     const timeStepInSeconds = 10 * dtS; // for objects dt Plotting, every 00 seconds.
     const dt = timeStepInSeconds / dtS; // for importing.
     const totalSeconds = data.SimInfo.tf;//timeStepInSeconds * (tf - 1);
-    const startSim = JulianDate.fromIso8601("2024-07-16T09:30:00-04:00");
+    const startSim = JulianDate.fromIso8601("2024-10-14T09:30:00-04:00");
     const stopSim = JulianDate.addSeconds(startSim, totalSeconds, new JulianDate());
     viewer.clock.startTime = startSim.clone();
     viewer.clock.stopTime = stopSim.clone();
@@ -2448,7 +2738,7 @@ export async function LoadSimulation(viewer, data, city) {
     var positionPropertyArray = [];
 
     data.ObjAircraft.forEach((ObjAircraft, index) => {
-        if ((index > 0) & (index < 150)) {
+        if ((index > 0) & (index < 200)) {
             //const startAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.tda, new JulianDate());
             //const stopAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.taa, new JulianDate());
             const trajectoryPositions = [];
@@ -2463,6 +2753,8 @@ export async function LoadSimulation(viewer, data, city) {
             AddAircraftMotion(startSim, stopSim, timeStepInSeconds, index + 1, trajectoryPositions, ObjAircraft.AMI, ObjAircraft.status, ObjAircraft.tda, ObjAircraft.taa, ObjAircraft.rs, ObjAircraft.rd, 0, entitiesArray, positionPropertyArray);
         }
     });
+
+    // AddCloud(center, startSim, stopSim);
 
     // // const url = "/Cesium_Man.glb";
     // const url = "/CesiumMilkTruck.glb";
