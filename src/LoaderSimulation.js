@@ -104,6 +104,12 @@ export async function LoadSimulation(viewer, data, city) {
             var dz0 = 300;
             var center = Cartesian3.fromDegrees(25.129820168413037, 35.333686242682596, dz0);
             break;
+        case "ZHAW":
+            var dz0 = 580;
+            var center = Cartesian3.fromDegrees(8.726615248323863, 47.49776171780695, dz0);
+        case "HK":
+            var dz0 = 580;
+            var center = Cartesian3.fromDegrees(114.173355, 22.296389, dz0); // Hong Kong
         // default:
         //     var dz0 = 80;
         //     var center = Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0); // NYC
@@ -186,6 +192,13 @@ export async function LoadSimulation(viewer, data, city) {
                 event.preventDefault(); // Prevent scrolling when arrow keys are pressed
             }
             if ((event.key === 'N')) {
+                try {
+                    viewer.entities.removeAll();
+                } catch (error) {
+                    console.log(`Error loading
+                  ${error}`);
+                }
+                // resetVertiportData();
                 isNetworkSetup = !isNetworkSetup; // Toggle the variable
                 handleNetworkSetup(isNetworkSetup);
             }
@@ -2234,6 +2247,18 @@ export async function LoadSimulation(viewer, data, city) {
     var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
 
     var isNetworkSetup = false; //document.getElementById('showNetworkSetup').checked;
+    // function resetVertiportData() {
+    //     fetch('/api/reset_vertiports', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: null,
+    //     })
+    //         .then(response => response.json())
+    //         .then(data => console.log('Server response:', data))
+    //         .catch(error => console.error('Error:', error));
+    // }
 
     function handleNetworkSetup(isNetworkSetup) {
         if (isNetworkSetup) {
@@ -2393,7 +2418,7 @@ export async function LoadSimulation(viewer, data, city) {
                     console.error("Error loading model:", error);
                 }
             }
-
+            
             function saveVertiportData(data) {
                 fetch('/api/save_vertiports', {
                     method: 'POST',
@@ -2416,6 +2441,7 @@ export async function LoadSimulation(viewer, data, city) {
             }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
         }
     }
+
     // const VertiportLocationB = Cartesian3.fromDegrees(-73.98795424274152, 40.71316991516138, 30); // NYC Gotham Hospital
 
     // Function to rotate a specific entity
@@ -2446,6 +2472,9 @@ export async function LoadSimulation(viewer, data, city) {
                 break;
             case "SF":
                 var FetchVertiportFileName = '/FixedVertiportsSettings_V1_SF.json';
+                break;
+            case "HK":
+                var FetchVertiportFileName = '/FixedVertiportsSettings_V1_HK.json';
                 break;
         }
 

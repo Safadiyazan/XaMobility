@@ -175,6 +175,7 @@ function Settings() {
                                                     <option value="NYC">NYC</option>
                                                     <option value="SF">SF</option>
                                                     <option value="PAR">PAR</option>
+                                                    <option value="HK">HK</option>
                                                     {/* <option value="AS2">VTOL-2R</option> */}
                                                 </Form.Select>
                                             </Form.Group>

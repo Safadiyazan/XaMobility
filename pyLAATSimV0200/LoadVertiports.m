@@ -1,4 +1,5 @@
 function [VertiportOD,MaxXY,minDz1] = LoadVertiports(asStr)
+
 switch asStr
     case 'NYC'
         jsonFilePath = '../public/FixedVertiportsSettings_V2_NYC.json';
@@ -8,6 +9,12 @@ switch asStr
         minDz1 = 0;
     case 'PAR'
         jsonFilePath = '../public/FixedVertiportsSettings_V1_PAR.json';
+        minDz1 = 0;
+    case 'HK'
+        jsonFilePath = '../public/FixedVertiportsSettings_V1_HK.json';
+        minDz1 = 0;
+    case 'LI'
+        jsonFilePath = '../public/FixedVertiportsSettings_V1_LI.json';
         minDz1 = 0;
     otherwise
         error('error in loading vertiport json')

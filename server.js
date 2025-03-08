@@ -146,6 +146,16 @@ fs.writeFile(filePath, JSON.stringify([], null, 2), (err) => {
         console.log('Vertiport data reset to empty array.');
     }
 });
+app.post('/api/reset_vertiports', (req, res) => {
+    // Reset the file to an empty array when the server starts
+    fs.writeFile(filePath, JSON.stringify([], null, 2), (err) => {
+        if (err) {
+            console.error('Error resetting vertiport data:', err);
+        } else {
+            console.log('Vertiport data reset to empty array.');
+        }
+    });
+});
 
 app.post('/api/save_vertiports', (req, res) => {
     const VertiportData = req.body.VertiportData;
@@ -165,16 +175,16 @@ app.post('/api/save_vertiports', (req, res) => {
 const folderPath = path.join(__dirname, 'public/Outputs'); // Update the path accordingly
 app.get('/api/getJsonFiles', (req, res) => {
     fs.readdir(folderPath, (err, files) => {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Internal Server Error' });
-        return;
-      }
-  
-      const jsonFiles = files.filter(file => file.endsWith('.json'));
-      res.json({ files: jsonFiles });
+        if (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+            return;
+        }
+
+        const jsonFiles = files.filter(file => file.endsWith('.json'));
+        res.json({ files: jsonFiles });
     });
-  });
+});
 // export { NewJSONDir };
 // END  ==================================================================================
 // =======================================================================================

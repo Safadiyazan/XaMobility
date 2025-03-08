@@ -3,7 +3,7 @@
     "dx": 1500,
     "dy": 1500,
     "dz": 100,
-    "asStr": "SF"
+    "asStr": "HK"
   },
   "Aircraft": {
     "VmaxMin": 10,
@@ -13,6 +13,6 @@
   },
   "Sim": {
     "Qin": 6,
-    "SceStr": "SF"
+    "SceStr": ""
   }
 }

@@ -18,7 +18,7 @@ if (~isempty(NewSettings))
     [Settings.Sim] = SettingSimulation(double(NewSettings.Sim.Qin)/60,10);
     disp(['Inflow aircraft/s:' double(NewSettings.Sim.Qin)/60])
 else
-    [Settings.Airspace] = SettingAirspace(1500,1500,90,'NYC');
+    [Settings.Airspace] = SettingAirspace(1500,1500,90,'HK');
     [Settings.Aircraft] = SettingAircraft([10,30],[10,30]);
     [Settings.Sim] = SettingSimulation(InflowRate,10);
 end

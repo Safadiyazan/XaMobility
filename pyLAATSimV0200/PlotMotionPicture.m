@@ -102,7 +102,7 @@ if (AirspaceS.VTOL) % Vertical Takeoff and Landing
     axis([-AxisSize/2 AxisSize/2 -AxisSize/2 AxisSize/2 -AxisSize/2 AxisSize/2])
     xticks([-AirspaceS.dx/2,0,AirspaceS.dx/2])
     yticks([-AirspaceS.dx/2,0,AirspaceS.dx/2])
-    zticks(([0 AirspaceS.dz1 AirspaceS.dz2]))
+    % zticks(([0 AirspaceS.dz1 AirspaceS.dz2]))
 else % Subset of airspace
     PlotCube(AirspaceS.xyz,'none',0.01,'black',1,1,'-','none',1,'flat')
     %     PlotCube(AirspaceS.VTOLxyz,'none',0.01,'black',1,1,'--','none',1,'flat')
