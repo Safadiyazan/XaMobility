@@ -8,13 +8,13 @@ const Header = ({ isAuthenticated, onLoginButtonClick, username, onLogout }) => 
     <Navbar bg="dark" variant="dark" expand="lg">
       <Navbar.Brand href="/">
         <img
-          alt="Logo TSMART"
+          alt="Logo XaMobility"
           src="/ALSim_Logo.png"
           width="30"
           height="40"
           className="d-inline-block align-center"
         />{' '}
-        LAAT Flow Simulation
+        XaMobility
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Nav className="ml-auto">

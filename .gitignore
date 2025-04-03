@@ -5,6 +5,7 @@ mis/
 public/Outputs/*
 public/Samples/*
 *.json
+*.asv
 *.csv
 *.kml
 *.pkl
