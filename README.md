@@ -17,6 +17,25 @@ By accessing or using this repository, you agree not to redistribute the content
 
 ---
 
+## Acknowledgments
+
+This project was developed as part of a doctoral research thesis at the **Faculty of Civil and Environmental Engineering, Technion**, under the supervision of **Assoc. Prof. Jack Haddad** (Technion) and co-supervision of **Prof. Nikolas Geroliminis** (EPFL).
+
+The author affirms that the research — including data collection, processing, analysis, and reporting — was conducted with integrity and in accordance with the ethical standards of scientific research.
+
+The generous support of the following institutions is gratefully acknowledged:
+
+- **Chil and Berta Weissmann Doctoral Fellowship**  
+- **ISTRC**  
+- **EuroTech Alliance**  
+- **Technion - CEE - T-SMART**
+- **EPFL - LUTS**
+- **Beihang University - BUAA**
+- **Cesium**
+
+
+---
+
 For questions, feedback, or support, please contact:  
 **Yazan Safadi** — [safadiyazan@gmail.com](mailto:safadiyazan@gmail.com)
 
