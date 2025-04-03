@@ -1,1 +1,0 @@
-ngrok http --domain=flexible-dolphin-mentally.ngrok-free.app 1110
