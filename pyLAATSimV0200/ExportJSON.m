@@ -35,7 +35,7 @@ Data.ObjAircraft = ObjAircraftData;
 
 json_str = jsonencode(Data);
 TimestampNow = now;
-scenarioName = [SceStr ' '  datestr(TimestampNow,'yyyy-mm-dd HH:MM')];
+scenarioName = [SceStr '_'  datestr(TimestampNow,'yyyy-mm-dd HH:MM')];
 file_name = [SceStr '_'  datestr(TimestampNow,'yyyymmdd_hhMM') '.json']; % datestr(now,'yyyymmdd_hhMMss')
 fid = fopen(file_name, 'w');
 if fid > 0

@@ -16,7 +16,7 @@ InflowSetting = 1;%tfStr; %30; %[min]
 switch InflowSetting
     case 1 % VIDEO
         Sim.switchtime = [0;10];%(min) ;20;30;40;50;60
-        Sim.switchvalue = 18.*[12]./60./60;%(aircraft/hr) per OD 4;6;12;30;60
+        Sim.switchvalue = Sim.InflowRate.*[1];%(aircraft/s) %18.*[InflowRate]./60./60;%(aircraft/hr) per OD 4;6;12;30;60
         Sim.glowthrate = [zeros(size(Sim.switchvalue))];
     case 2
         % Test

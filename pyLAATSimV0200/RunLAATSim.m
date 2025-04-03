@@ -7,15 +7,15 @@ SimInfo.RT.TCP_PostRunningTime = [];
 SimInfo.RT.TFCRunningTime = [];
 SimInfo.RT.SimStartTime = datetime;
 disp(['Simuation started: Time=' datestr(SimInfo.RT.SimStartTime,'yyyy-mm-dd HH:MM:SS.FFF')])
-SimFilename = ['_Qin' sprintf('%0.0f',InflowRate*10) SceStr];
-SimInfo.SimOutputDirStr = ['.\Outputs\SimOutput_' datestr(now,'yyyymmdd_hhMMss') SimFilename '\'];
+SimFilename = [SceStr];
+SimInfo.SimOutputDirStr = ['.\Outputs\SimOutput_' datestr(now,'yyyymmdd_hhMMss') '_' SimFilename '\'];
 if ~exist(SimInfo.SimOutputDirStr, 'dir')
     mkdir(SimInfo.SimOutputDirStr)
 end
 %% Settings
 waitbar(0,fwaitbar,'Determining Setting');
 [Settings.Airspace] = SettingAirspace(1500,1500,90,asStr); % 20*60*30/3.6,20*60*30/3.6
-[Settings.Aircraft] = SettingAircraft([10,30],[50,100]);
+[Settings.Aircraft] = SettingAircraft([20,20],[10,10]);
 [Settings.Sim] = SettingSimulation(InflowRate,10);
 [Settings.TFC] = SettingTrafficControl(Settings);
 %% Init Objects
@@ -87,8 +87,8 @@ waitbar(1,fwaitbar,'Exporting Data');
 % Export Workspace
 close(fwaitbar)
 % save([SimInfo.SimOutputDirStr 'Results' SimFilename],'TFC','TFC.EC','-v7.3');
-ExportJSON([SimInfo.SimOutputDirStr 'Results' SimFilename],SimInfo,ObjAircraft,TFC,Settings)
-save([SimInfo.SimOutputDirStr 'Trajectories' SimFilename],'-v7.3'); clear SimFilename;
+ExportJSON([SimInfo.SimOutputDirStr 'Results' '_' SimFilename],SimInfo,ObjAircraft,TFC,Settings)
+save([SimInfo.SimOutputDirStr 'Trajectories' '_' SimFilename],'-v7.3'); clear SimFilename;
 % ExportJSON(SimInfo,ObjAircraft,TFC,TFC.EC,Settings);
 fwaitbar = waitbar(1,'Finishing Simulation');
 % % Export Video

@@ -4,6 +4,7 @@ if ismember(asStr, {'Subset', 'VTOL'})
     Airspace.Vertiports = 0;
 else
     Airspace.Vertiports = 1;
+    Airspace.FixedWaypoints = 0;
 end
 
 if Airspace.Vertiports
@@ -17,6 +18,9 @@ else
     Airspace.dy = dy; % length [m]
     Airspace.dz = dz;%Airspace.dz2-Airspace.dz1;  % height [m]
     Airspace.dz1 = 30;  % start at height [m]
+end
+if Airspace.FixedWaypoints
+    [Airspace.WaypointPaths] = LoadWaypoints(asStr);
 end
 Airspace.dz2 = dz+Airspace.dz1; % end at height [m]
 Airspace.xyz = [[-Airspace.dx;Airspace.dx]/2,[-Airspace.dy;Airspace.dy]/2,[[Airspace.dz1;Airspace.dz1]+[0;Airspace.dz]]];
@@ -230,7 +234,7 @@ end
 function [Ri,Li] = SettingAirspaceRegionsVTOL2R(Airspace)
 Ri.xn = 3;
 Ri.yn = 3;
-Ri.zn = 4;
+Ri.zn = 2;
 Ri.Dx = Airspace.dx/Ri.xn;
 Ri.Dy = Airspace.dy/Ri.yn;
 Ri.Dz = (Airspace.dz)/(Ri.zn-1);

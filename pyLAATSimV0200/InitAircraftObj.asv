@@ -124,11 +124,7 @@ switch AMI
             rs = mean(range);
         end
     case 3 % PAV
-         if ((range(2)-range(1))>0)
-            rs = range(1) + ((range(2)-range(1))/2) + randi((range(2)-range(1))/2);
-        else
-            rs = mean(range);
-        end
+        rs = range(1) + ((range(2)-range(1))/2) + randi((range(2)-range(1))/2);
     case 2 % EUAV
         if ((range(2)-range(1))>0)
             rs = range(1) + randi((range(2)-range(1))/2);
@@ -142,7 +138,7 @@ switch AMI
             rs = mean(range);
         end
     otherwise
-        rs = mean(range);
+        rs = range(1) + randi((range(2)-range(1)));
 end
 end
 %%
@@ -288,13 +284,10 @@ switch AMI
 end
 wp = [o;TakeOff;Landing;d];
 end
-
-%% Waypoints
 function [o,d,wp]  = AircraftFixedPath(AirspaceS,rs)
 [VertiportOD,MaxXY,minDz1] = LoadVertiports(AirspaceS.asStr);
 [WaypointPaths] = LoadWaypoints(AirspaceS.asStr);
 Pathi = randperm(size(WaypointPaths,2),1);
-%TODO: Add OD Matrix
 o = WaypointPaths{Pathi}(1,:);
 d = WaypointPaths{Pathi}(end,:);
 wp = WaypointPaths{Pathi};
