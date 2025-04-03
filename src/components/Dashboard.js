@@ -10,7 +10,7 @@ import CityDropdown from './CityDropdown';
 import ImageToolbar from './ImageToolbar';
 import ViewerToolBar from './ViewerToolBar';
 import NetworkSetup from './NetworkSetup.js';
-import '.././css/main.css'; // Ensure this import is here
+import '.././css/main.css';
 
 const Dashboard = () => {
     // =======================================================================================
@@ -25,7 +25,7 @@ const Dashboard = () => {
 
         try {
             setRunningSuccess(true);
-            loadingContainer.style.display = 'block'; // Show loading indicator
+            loadingContainer.style.display = 'block';
             runButton.classList.remove('btn-primary');
             runButton.classList.remove('btn-success');
             runButton.classList.add('btn-danger');
@@ -43,7 +43,6 @@ const Dashboard = () => {
 
             const data = await response.json();
             console.log('MATLAB Result:', data.result);
-            // Update the DOM with the result
             resultContainer.innerHTML = 'Scenario completed. ' + 'Last run: ' + data.result;
             runButton.classList.remove('btn-danger');
             runButton.classList.add('btn-secondary');
@@ -51,10 +50,8 @@ const Dashboard = () => {
             await fetchJsonFiles();
         } catch (error) {
             console.error('Error:', error);
-            // Update the DOM with the error
             resultContainer.innerHTML = 'Error: ' + error.message;
         } finally {
-            // Hide the loading indicator after completion
             loadingContainer.style.display = 'none';
             runButton.classList.remove('btn-danger');
         }
@@ -88,13 +85,6 @@ const Dashboard = () => {
         console.log(`Selected City option 1: ${selectedCityOption}`);
         setSelectedCity(selectedCityOption);
     };
-
-    // const runButtonRef = useRef(null);
-
-    // const updateButtonClass = (newClass) => {
-    //     runButtonRef.classList.add(newClass);
-    // };
-    // Define handleCheckboxChange in the global scope
     const [navigationOn, setNavigationOn] = useState(false);
 
     const handleCheckboxChange = () => {
@@ -102,7 +92,6 @@ const Dashboard = () => {
         setNavigationOn(isChecked);
         NavigationOn = 1;
         console.log('Checkbox Checked:', isChecked);
-        // Add any additional logic here
     };
     // =======================================================================================
     // Run and Load Simulation Handles =======================================================
@@ -110,50 +99,35 @@ const Dashboard = () => {
     const [analyticsData, setAnalyticsData] = useState(null);
 
     useEffect(() => {
-        // Fetch initial data when the component mounts
         const initialSelectedFile = selectedFile;
         const initialSelectedCity = selectedCity;
         fetch(initialSelectedFile)
             .then(response => response.json())
             .then(data => {
-                // Call your function with the fetched data
                 console.log(`Selected Data name: ${initialSelectedFile}`);
                 console.log(`Selected Data city name: ${initialSelectedCity}`);
                 LoadSimulation(viewer, data, initialSelectedCity);
-                // ShowAnalytics(data);
-                setAnalyticsData(data); // Assuming a state variable for analytics data
+                setAnalyticsData(data);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
-    }, [selectedFile]);  // Dependency array ensures this effect runs when selectedFile changes
+    }, [selectedFile]);
 
     const [selectedCity, setSelectedCity] = useState("LI");
     useEffect(() => {
-        // LoadSimulation(viewer, selectedFile, selectedCity);
-        // Fetch initial data when the component mounts
         const initialSelectedCity = selectedCity;
         const initialSelectedFile = selectedFile;
         fetch(initialSelectedFile)
             .then(response => response.json())
             .then(data => {
-                // Call your function with the fetched data
                 LoadSimulation(viewer, data, initialSelectedCity);
-                // ShowAnalytics(data);
-                setAnalyticsData(data); // Assuming a state variable for analytics data
+                setAnalyticsData(data);
             })
             .catch(error => {
                 console.error('Error fetching city:', error);
             });
-    }, [selectedCity]);  // Dependency array ensures this effect runs when selectedCity changes
-
-
-    // const [toolbarData, setToolbarData] = useState(null);
-
-    // const handleToolbarDataUpdate = (data) => {
-    //     setToolbarData(data);
-    // };
-
+    }, [selectedCity]);
 
     // =======================================================================================
     // Groups ================================================================================
@@ -178,10 +152,6 @@ const Dashboard = () => {
                         Choose a sample for display
                     </option>
                     <option value="/Samples/Results_Qin2Subset_2by2_10apm.json">Subset</option>
-                    <option value="/Samples/Results_Qin2_DBC.json">DBC-NYC</option>
-                    <option value="/Samples/Results_Qin2_DBC_MED.json">MED-NYC</option>
-                    <option value="/Samples/Results_SF.json">SF</option>
-                    <option value="/Samples/Results_PAR.json">PAR</option>
                 </select>
             </div>
             <br />

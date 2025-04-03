@@ -11,6 +11,11 @@ pyLAATSimV0200/Archive/
 *.json
 !package.json
 !package-lock.json
+!Results_Qin2Subset_2by2_10apm.json
+!FixedVertiportsSettings_V2_NYC.json
+!FixedVertiportsSettings_V1_SF.json
+!FixedVertiportsSettings_V1_PAR.json
+!FixedVertiportsSettings_V1_HK.json
 *.asv
 *.csv
 *.kml

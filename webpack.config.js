@@ -14,7 +14,7 @@ module.exports = {
     output: {
         filename: 'app.js',
         path: path.resolve(__dirname, 'dist'),
-        publicPath: '/',  // Add this line
+        publicPath: '/',
         sourcePrefix: ''
     },
     devServer: {
@@ -22,7 +22,7 @@ module.exports = {
         historyApiFallback: true,
         port: 1111,
         proxy: {
-            '/api': 'http://localhost:1110', // Proxy requests with '/api' to your Express backend
+            '/api': 'http://localhost:1110',
           }
     },
     resolve: {
@@ -48,7 +48,6 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: 'src/index.html'
         }),
-        // Copy Cesium Assets, Widgets, and Workers to a static directory
         new CopyWebpackPlugin({
             patterns: [
                 { from: path.join(cesiumSource, cesiumWorkers), to: 'Workers' },
@@ -58,12 +57,11 @@ module.exports = {
             ]
         }),
         new webpack.DefinePlugin({
-            // Define relative base path in cesium for loading assets
             CESIUM_BASE_URL: JSON.stringify('./')
         }),
         new CopyWebpackPlugin({
             patterns: [
-                { from: 'public', to: '' }, // Copy the entire 'public' folder to the root of the output directory
+                { from: 'public', to: '' },
             ],
         }),
     ],

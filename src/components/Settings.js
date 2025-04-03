@@ -65,11 +65,8 @@ function Settings() {
             },
         };
 
-        // You can now send the 'NewSettings' object back to the server
         console.log('Saving settings to server:', NewSettings);
 
-        // Perform the actual API call to send 'NewSettings' to the server
-        // Example:
         try {
             savedButton.classList.remove('btn-success');
             savedButton.classList.remove('btn-primary');
@@ -84,10 +81,8 @@ function Settings() {
                 .then(response => response.json())
                 .then(data => console.log('Server response:', data))
                 .catch(error => console.error('Error:', error));
-            // Set the last saved timestamp
             const timestamp = new Date().toLocaleString();
             setLastSavedTimestamp(timestamp);
-            // Indicate save success
             setSaveSuccess(true);
             runButton.classList.add('btn-success');
 
@@ -265,9 +260,9 @@ function Settings() {
                                                 type="number"
                                                 value={values.Qin}
                                                 onChange={handleChange}
-                                                min={1}        // Set the minimum value
-                                                max={2}      // Set the maximum value
-                                                step={1}     // Set the step value  
+                                                min={1}
+                                                max={2}
+                                                step={1}
                                             />
                                         </Form.Group>
                                         <Form.Group controlId="SceStr">

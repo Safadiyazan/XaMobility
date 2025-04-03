@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '.././css/main.css'; // Ensure this import is here
+import '.././css/main.css';
 
 const CityDropdown = ({ handleDropdownCityChange, selectedCity }) => {
   return (

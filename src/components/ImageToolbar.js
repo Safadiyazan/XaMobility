@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import '.././css/main.css'; // Ensure this import is here
+import '.././css/main.css';
 
 const ImageToolbar = () => {
-  const [isChecked, setIsChecked] = useState(false); // Initially unchecked
+  const [isChecked, setIsChecked] = useState(false);
 
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
@@ -13,7 +13,7 @@ const ImageToolbar = () => {
       <input
         type="checkbox"
         id="showImage"
-        checked={isChecked} // Set checkbox state
+        checked={isChecked}
         onChange={handleCheckboxChange}
       />
       <label htmlFor="showImage"> Show Keyboard Setting</label>

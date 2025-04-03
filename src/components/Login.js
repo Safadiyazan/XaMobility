@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import '.././css/main.css'; // Ensure this import is here
+import { useNavigate } from 'react-router-dom';
+import '.././css/main.css';
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
 
-  const navigate = useNavigate(); // Initialize useNavigate outside the function
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -27,7 +27,7 @@ const Login = ({ onLogin }) => {
         setError(null);
         onLogin(data.username);
         console.log(data.username);
-        navigate('/dashboard'); // Redirect to the dashboard
+        navigate('/dashboard');
       } else {
         const data = await response.json();
         setError(data.message || 'Login failed');
