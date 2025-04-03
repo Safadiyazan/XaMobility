@@ -4,7 +4,10 @@ dist/
 mis/
 public/Outputs/*
 public/Samples/*
+public/Vertiports/*
+public/Waypoints/*
 pyLAATSimV0200/Outputs/*
+pyLAATSimV0200/Archive/
 *.json
 *.asv
 *.csv

@@ -9,7 +9,7 @@ const Header = ({ isAuthenticated, onLoginButtonClick, username, onLogout }) => 
       <Navbar.Brand href="/">
         <img
           alt="Logo XaMobility"
-          src="/ALSim_Logo.png"
+          src="/logo.png"
           width="30"
           height="40"
           className="d-inline-block align-center"

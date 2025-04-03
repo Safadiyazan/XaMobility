@@ -17,12 +17,11 @@ waitbar(0,fwaitbar,'Determining Setting');
 [Settings.Airspace] = SettingAirspace(1500,1500,90,asStr); % 20*60*30/3.6,20*60*30/3.6
 [Settings.Aircraft] = SettingAircraft([20,20],[10,10]);
 [Settings.Sim] = SettingSimulation(InflowRate,10);
-[Settings.TFC] = SettingTrafficControl(Settings);
 %% Init Objects
 SimInfo.Mina = []; SimInfo.Mque = []; SimInfo.Mact = []; SimInfo.Marr = []; SimInfo.MactBQ = [];
 SimInfo.M = 1:1:Settings.Sim.M; SimInfo.cc = 0;
-dtS = Settings.Sim.dtsim; dtM = Settings.Sim.dtMFD; dtC = Settings.TFC.dtC; tf = Settings.Sim.tf;
-SimInfo.dtS = dtS; SimInfo.dtM = dtM; SimInfo.dtC = dtC; SimInfo.tf = tf;
+dtS = Settings.Sim.dtsim; dtM = Settings.Sim.dtMFD; tf = Settings.Sim.tf;
+SimInfo.dtS = dtS; SimInfo.dtM = dtM; SimInfo.tf = tf;
 SimInfo.pdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,3*size(SimInfo.M,2))); SimInfo.vdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,3*size(SimInfo.M,2))); SimInfo.statusdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2))); SimInfo.ridt = (zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2)));
 TFC = []; TFC.CS = []; TFC.EC = []; 
 TFC.EC.ECdt = zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2)); TFC.EC.sumECtdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.sumECqdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.avgECtdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.avgECqdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.sumECdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1);
@@ -31,7 +30,6 @@ waitbar(0,fwaitbar,'Initalizing Aircraft');
 [SimInfo,ObjAircraft] = InitAircraftObj(SimInfo,Settings);
 %% Export Settings
 close(fwaitbar)
-% save([SimInfo.SimOutputDirStr 'Settings' SimFilename],'-v7.3');
 fwaitbar = waitbar(0,'Initalizing Aircraft');
 %% Simulation
 % Start Simulation
@@ -40,17 +38,12 @@ for t=0:dtS:tf
     SimInfo.t = t;
     %% Departures
     [SimInfo,ObjAircraft] = AircraftDepartures(SimInfo,ObjAircraft);
-    %% TCP Pre-controller
-    %     if (t~=0)&&(mod(t,dtC)==0)&&(~isempty(TFC))
-    %         [TFC,ObjAircraft] = TCPPre(SimInfo,ObjAircraft,Settings,TFC,t);
-    %     end
     %% Controller + Motion
     [SimInfo,ObjAircraft] = AircraftController(SimInfo,ObjAircraft,Settings);
     %     [SimInfo,ObjAircraft] = AircraftMotion(aa,SimInfo,ObjAircraft,Settings);
     %% Arrival
     [SimInfo,ObjAircraft] = AircraftArrivals(SimInfo,ObjAircraft);
     %% Update SimInfo
-    % Q - Maybe we can store this in the ObjAircraft?
     [SimInfo] = UpdateSimInfo(SimInfo,ObjAircraft);
     %% Energy Conspution
     if (t~=0)
@@ -63,15 +56,6 @@ for t=0:dtS:tf
         [TFC] = CalTFC_Ri(TFC,SimInfo,ObjAircraft,Settings);
         SimInfo.RT.TFCEndTime = datetime;
         SimInfo.RT.TFCRunningTime(end+1) = seconds(SimInfo.RT.TFCEndTime-SimInfo.RT.TFCStartTime);
-    end
-    %% TCP Post-controller
-    if (Settings.TFC.TCmode==1)%(t~=0)&&(mod(t,dtC)==0)&&(~isempty(TFC))
-    SimInfo.RT.TCP_PostStartTime = datetime;
-    [TFC,ObjAircraft,SimInfo] = TCP_Post(SimInfo,ObjAircraft,Settings,TFC,t);
-    SimInfo.RT.TCP_PostEndTime = datetime;
-    SimInfo.RT.TCP_PostRunningTime(end+1) = seconds(SimInfo.RT.TCP_PostEndTime-SimInfo.RT.TCP_PostStartTime);
-    % TODO: Make Plotting during for the current k
-    % PlotMotionPictureMFD(0,t,SimInfo,ObjAircraft,TFC,Settings)
     end
 end
 waitbar(1,fwaitbar,'Finishing Simulation');
@@ -86,17 +70,13 @@ waitbar(1,fwaitbar,'Exporting Data');
 %% Exporting and Plotting
 % Export Workspace
 close(fwaitbar)
-% save([SimInfo.SimOutputDirStr 'Results' SimFilename],'TFC','TFC.EC','-v7.3');
 ExportJSON([SimInfo.SimOutputDirStr 'Results' '_' SimFilename],SimInfo,ObjAircraft,TFC,Settings)
 save([SimInfo.SimOutputDirStr 'Trajectories' '_' SimFilename],'-v7.3'); clear SimFilename;
-% ExportJSON(SimInfo,ObjAircraft,TFC,TFC.EC,Settings);
 fwaitbar = waitbar(1,'Finishing Simulation');
 % % Export Video
 PlotMotionPicture(60,SimInfo,ObjAircraft,TFC,Settings);
-% PlotMotionPicture_MFD(60,SimInfo,ObjAircraft,TFC,Settings);
 waitbar(1,fwaitbar,'Done');
 pause(0.1)
 close(fwaitbar)
 clear fwaitbar;
-% % TODO: Export MFD Plots
 end
