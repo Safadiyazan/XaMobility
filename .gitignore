@@ -9,6 +9,8 @@ public/Waypoints/*
 pyLAATSimV0200/Outputs/*
 pyLAATSimV0200/Archive/
 *.json
+!package.json
+!package-lock.json
 *.asv
 *.csv
 *.kml

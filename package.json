@@ -1,0 +1,53 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "start": "npm-run-all --parallel start-frontend start-backend start-LAATSim",
+    "start-frontend": "webpack serve --config webpack.config.js --open",
+    "start-backend": "node server.js",
+    "start-LAATSim": "python LAATSimMATLAB.py"
+  },
+  "proxy": "http://localhost:1111",
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.23.5",
+    "@babel/preset-react": "^7.23.3",
+    "axios": "^1.6.2",
+    "babel-loader": "^9.1.3",
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "bootstrap": "^5.3.2",
+    "cesium": "^1.118.2",
+    "connect-history-api-fallback": "^2.0.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "cors": "^2.8.5",
+    "css-loader": "^6.8.1",
+    "d3": "^7.8.5",
+    "express": "^4.18.2",
+    "express-subdomain": "^1.0.5",
+    "fs": "^0.0.1-security",
+    "fs-extra": "^11.2.0",
+    "html-webpack-plugin": "^5.5.3",
+    "npm-run-all": "^4.1.5",
+    "path": "^0.12.7",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.9.1",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.1",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.6",
+    "style-loader": "^3.3.3",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.3",
+    "chartjs": "^0.3.24"
+  }
+}
