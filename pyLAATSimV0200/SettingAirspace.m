@@ -4,7 +4,7 @@ if ismember(asStr, {'Subset', 'VTOL'})
     Airspace.Vertiports = 0;
 else
     Airspace.Vertiports = 1;
-    Airspace.FixedWaypoints = 0;
+    Airspace.FixedWaypoints = 1;
 end
 
 if Airspace.Vertiports

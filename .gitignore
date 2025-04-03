@@ -10,6 +10,6 @@ public/Samples/*
 *.kml
 *.pkl
 *.mat
-pyLAATSimV0200/DataMAT
-pyLAATSimV0200/Outputs
-pyLAATSimV0200/LAATSimV0200Ped
+pyLAATSimV0200/DataMAT/
+pyLAATSimV0200/Outputs/
+pyLAATSimV0200/LAATSimV0200Ped/
