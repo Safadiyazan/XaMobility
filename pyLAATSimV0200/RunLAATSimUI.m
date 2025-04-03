@@ -8,9 +8,6 @@ SimInfo.RT.SimStartTime = datetime;
 disp(['Simuation started: Time=' datestr(SimInfo.RT.SimStartTime,'yyyy-mm-dd HH:MM:SS.FFF')])
 SimFilename = ['_Qin' sprintf('%0.0f',InflowRate) SceStr];
 SimInfo.SimOutputDirStr = ['.\Outputs\SimOutput_' datestr(now,'yyyymmdd_hhMMss') SimFilename '\'];
-% if ~exist(SimInfo.SimOutputDirStr, 'dir')
-%    mkdir(SimInfo.SimOutputDirStr)
-% end
 %% Settings
 disp(['Determining Setting']);
 if (~isempty(NewSettings))
@@ -74,12 +71,9 @@ disp(['TCP_Post RunningTime: Time=' num2str(sum(SimInfo.RT.TCP_PostRunningTime))
 disp(['Exporting Data'])
 %% Exporting and Plotting
 % Export Workspace
-% save([SimInfo.SimOutputDirStr 'Results' SimFilename],'TFC','EC','-v7.3');
-% save([SimInfo.SimOutputDirStr 'Trajectories' SimFilename],'-v7.3'); clear SimFilename;
 scenarioName = ExportJSON(['./public/Outputs/' 'SimOutput_' SceStr],SimInfo,ObjAircraft,TFC,Settings);
 disp(scenarioName)
 disp(['Finishing Simulation'])
 % % Export Video
-% PlotMotionPicture(10,SimInfo,ObjAircraft,TFC,Settings);
 TTS_Final = TFC.N.cumTTS(end)/3600;
 end

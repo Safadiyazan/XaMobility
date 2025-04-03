@@ -53,178 +53,11 @@ for dt=1:dstt:(1+SimS.tf/SimS.dtsim)
     titleTTSTxt = ['$\mathrm{TTS}=' sprintf('%0.4f',titleTTS) '~[\mathrm{aircraft} \cdot \mathrm{hr}]$'];
     titleEle = sgtitle([titleTxt;titleTTSTxt],'interpreter','latex','FontUnits','points','FontSize',0.9*FigFontSize,'FontName','Times');
     %% Micro - Top View
-    % subplot(numofsubplotH,numofsubplotV,[1,2,7,8]); cla;
-    %     hold off
-    %     PlotAirspaceDesign(AirspaceS,FigFontSize);
-    %     PlotTrajectories(tt,dt,SimInfo,ObjAircraft,FigFontSize);
-    %     view(2)
-    %     subplot(numofsubplotH,numofsubplotV,2)
-    %     hold off
-    %     PlotAirspaceDesign(AirspaceS,FigFontSize);
-    %     PlotTrajectories(tt,dt,SimInfo,ObjAircraft,FigFontSize);
-    %     view([90,0])
-    %     subplot(numofsubplotH,numofsubplotV,3)
-    %     hold off
-    %     PlotAirspaceDesign(AirspaceS,FigFontSize);
-    %     PlotTrajectories(tt,dt,SimInfo,ObjAircraft,FigFontSize);
-    %     view([0,0])
-    %     subplot(numofsubplotH,numofsubplotV,4)
-    %     hold off
-    % PlotAirspaceDesign(AirspaceS,FigFontSize);
-    % PlotTrajectories(tt,dt,SimInfo,ObjAircraft,FigFontSize);
-    % view([45,5])
-
     subplot(numofsubplotH,numofsubplotV,1); cla;
-    %     hold off
-    %     PlotAirspaceDesign(AirspaceS,FigFontSize);
-    %     PlotTrajectories(tt,dt,SimInfo,ObjAircraft,FigFontSize);
-    %     view(2)
-    %     subplot(numofsubplotH,numofsubplotV,2)
-    %     hold off
-    %     PlotAirspaceDesign(AirspaceS,FigFontSize);
-    %     PlotTrajectories(tt,dt,SimInfo,ObjAircraft,FigFontSize);
-    %     view([90,0])
-    %     subplot(numofsubplotH,numofsubplotV,3)
-    %     hold off
-    %     PlotAirspaceDesign(AirspaceS,FigFontSize);
-    %     PlotTrajectories(tt,dt,SimInfo,ObjAircraft,FigFontSize);
-    %     view([0,0])
-    %     subplot(numofsubplotH,numofsubplotV,4)
-    %     hold off
     PlotAirspaceDesign(AirspaceS,FigFontSize);
     PlotTrajectories(tt,dt,SimInfo,ObjAircraft,FigFontSize);
     view([VectorView(((dt-1)./dstt + 1),1),VectorView(((dt-1)./dstt + 1),2)])
-    % view([90,0])
-    % %% Macro
-    % k = tt/SimS.dtMFD;
-    % if(mod(tt,SimS.dtMFD)==0)
-    %     %% Run MFD-Gn Figure
-    %     subplot(numofsubplotH,numofsubplotV,9); cla;
-    %     if(Settings.TFC.TCmode==1)
-    %         PlotCriticalAccV(Settings.TFC.nc,limNmax,limGmax,'',GNColor,FigFontSize)
-    %     end
-    %     if(k==0)
-    %         titletextGndt = PlotTFCXY_GN(0,0,'','(n(t),G(t))',GNColor,FigFontSize,1,5);
-    %     else
-    %         titletextGndt = PlotTFCXY_GN(TFC.N.n(1:(k)),TFC.N.G(1:(k)),'','(n(t),G(t))',GNColor,FigFontSize,1,5);
-    %     end
-    %     ArrangeFigure(['Network' titletextGndt],'Accumulation $n~[\mathrm{aircraft}]$','Outflow $G~[\mathrm{aircraft}/\mathrm{s}]$',[0, ceil(1.2*max(cat(1,TFC.N.n)))],[0, ceil(1.2*max(cat(1,TFC.N.G)))],0,0,FigFontSize)
-    %     % xlim([0 limNmax]) % ylim([0 limGmax])
-    %     % ax.XTick = [0 limNmax/4 limNmax*2/4 limNmax*3/4 limNmax]; % ax.YTick = [0 limGmax/6 limGmax*2/6 limGmax*3/6 limGmax*4/6 limGmax*5/6 limGmax];
-    %     %% Run MFD-ndt Figure
-    %     subplot(numofsubplotH,numofsubplotV,4); cla;
-    %     for ri=1:size(TFC.Ri,2)
-    %         if(Settings.TFC.TCmode==1)
-    %                         ttMPC = ((dt-1)*SimS.dtsim) + Settings.TFC.NMPC;
-    %             PlotCriticalAccH(Settings.Sim.tf,Settings.TFC.nci(ri),limNimax,[',' num2str(TFC.Ri(ri).ri)],GiNiColor(ri,:),FigFontSize)
-    %         end
-    %         if(k==0)
-    %             titletextGndt = PlotTFCTS_ndt(0,0,['_{i=' num2str(TFC.Ri(ri).ri) '}'],'',GiNiColor(ri,:),FigFontSize,1,5,'*','o');
-    %         else
-    %             titletextGndt = PlotTFCTS_ndt([0:SimS.dtMFD:tt],[0, TFC.Ri(ri).ni(1:(k))],['_{i=' num2str(TFC.Ri(ri).ri) '}'],'',GiNiColor(ri,:),FigFontSize,1,5,'*','o');
-    %         end
-    %     end
-    %     % Control Model
-    %     if(k~=0)&&(Settings.TFC.TCmode==1)
-    %         titletextGndt = PlotTFCTS_ndt([tt:Settings.TFC.dtMPC:ttMPC],[TFC.MPCSim(k).n1],['_{i*=11}'],'',GiNiColor(3,:),FigFontSize,0.5,3,'.','');
-    %         titletextGndt = PlotTFCTS_ndt([tt:Settings.TFC.dtMPC:ttMPC],[TFC.MPCSim(k).n2],['_{i*=12}'],'',GiNiColor(4,:),FigFontSize,0.5,3,'.','');
-    %     end
-    %     ArrangeFigure('','Time $t~[\mathrm{s}]$','Accumulation $n_{i}~[\mathrm{aircraft}]$',[0, Settings.Sim.tf],[0, ceil(1.2*max(cat(1,TFC.Ri(:).ni),[],'all'))],0,0,FigFontSize)
-    %     % ax.XTick = [0 tf/3 tf*2/3 tf];
-    %     %% Run MFD-Gini Figure
-    %     subplot(numofsubplotH,numofsubplotV,10); cla;
-    %     for ri=1:size(TFC.Ri,2)
-    %         if(Settings.TFC.TCmode==1)
-    %             PlotCriticalAccV(Settings.TFC.nci(ri),limNimax,limGimax,[',' num2str(TFC.Ri(ri).ri)],GiNiColor(ri,:),FigFontSize)
-    %         end
-    %         if(k==0)
-    %             titletextGndt = PlotTFCXY_GN(0,0,['_{i=' num2str(TFC.Ri(ri).ri) '}'],'',GiNiColor(ri,:),FigFontSize,1,5);
-    %         else
-    %             titletextGndt = PlotTFCXY_GN(TFC.Ri(ri).ni(1:(k)),TFC.Ri(ri).G(1:(k)),['_{i=' num2str(TFC.Ri(ri).ri) '}'],'',GiNiColor(ri,:),FigFontSize,1,5);
-    %         end
-    %     end
-    %     ArrangeFigure('','Accumulation $n_{i}~[\mathrm{aircraft}]$','Outflow $G_{i}~[\mathrm{aircraft}/\mathrm{s}]$',[0, ceil(1.2*max(cat(1,TFC.Ri(:).ni),[],'all'))],[0, ceil(1.2*max(cat(1,TFC.Ri(:).G),[],'all'))],0,0,FigFontSize)
-    %     %% Run MFD-Dep-Control Figure
-    %     subplot(numofsubplotH,numofsubplotV,5); cla;
-    %     if(Settings.TFC.TCmode==1)
-    %         udidt_matrix = cat(1,TFC.CS(1:k).udidt);
-    %         for ri=[1,2]%size(TFC.Ri,2):-1:1
-    %             if(k==0)
-    %                 titletextGndt = PlotTFCTS_udt([0,0],[0,0],['_{i=' num2str(TFC.Ri(ri).ri) '}'],'',GiNiColor(ri,:),FigFontSize,1,5,'*','o');
-    %             else
-    %                 titletextGndt = PlotTFCTS_udt([0:SimS.dtMFD:tt],[1,udidt_matrix(:,ri)'],['_{i=' num2str(TFC.Ri(ri).ri) '}'],'',GiNiColor(ri,:),FigFontSize,1,5,'*','o');
-    %             end
-    %         end
-    %         % Control Model
-    %         if(k~=0)&&(Settings.TFC.TCmode==1)
-    %             titletextGndt = PlotTFCTS_ndt([tt:Settings.TFC.dtMPC:ttMPC],[TFC.MPCSim(k).ud1(1), TFC.MPCSim(k).ud1'],['_{i*=11}'],'',GiNiColor(1,:),FigFontSize,0.5,3,'.','');
-    %             titletextGndt = PlotTFCTS_ndt([tt:Settings.TFC.dtMPC:ttMPC],[TFC.MPCSim(k).ud2(1), TFC.MPCSim(k).ud2'],['_{i*=12}'],'',GiNiColor(2,:),FigFontSize,0.5,3,'.','');
-    %         end
-    %         ArrangeFigure('','Time $t~[\mathrm{s}]$','Depature control input $u_{\mathrm{d},i}~[\mathrm{s}]$',[0, Settings.Sim.tf],[0, 1],0,0,FigFontSize)
-    %     else; ArrangeFigure('','Time $t~[\mathrm{s}]$','Depature control input $u_{\mathrm{d},i}~[\mathrm{s}]$',[0, Settings.Sim.tf],0,0,0,FigFontSize)
-    %     end
-    %     % ax.XTick = [0 tf/3 tf*2/3 tf];
-    %     % Title intro $\Delta t_{\mathrm{d},1}(t)=$
-    %     %% Run MFD-ndqdt Figure
-    %     subplot(numofsubplotH,numofsubplotV,11); cla;
-    %     for ri=1:size(TFC.Ri,2)
-    %         %             PlotCriticalAccH(Settings.Sim.tf,Settings.TFC.nci(ri),[',' num2str(TFC.Ri(ri).ri)],GiNiColor(ri,:),FigFontSize)
-    %         if(k==0)
-    %             titletextGndt = PlotTFCTS_ndt(0,0,['_{i=' num2str(TFC.Ri(ri).ri) '}'],'',GiNiColor(ri,:),FigFontSize,1,5,'*','o');
-    %         else
-    %             titletextGndt = PlotTFCTS_ndt([0:SimS.dtMFD:tt],[0, TFC.Ri(ri).ndqi(1:(k))],['_{i=' num2str(TFC.Ri(ri).ri) '}'],'',GiNiColor(ri,:),FigFontSize,1,5,'*','o');
-    %         end
-    %     end
-    %     % Control Model
-    %     if(k~=0)&&(Settings.TFC.TCmode==1)
-    %         titletextGndt = PlotTFCTS_ndt([tt:Settings.TFC.dtMPC:ttMPC],[TFC.MPCSim(k).ndq1],['_{i*=11}'],'',GiNiColor(1,:),FigFontSize,0.5,3,'.','');
-    %         titletextGndt = PlotTFCTS_ndt([tt:Settings.TFC.dtMPC:ttMPC],[TFC.MPCSim(k).ndq2],['_{i*=12}'],'',GiNiColor(2,:),FigFontSize,0.5,3,'.','');
-    %     end
-    %     ArrangeFigure('','Time $t~[\mathrm{s}]$','Departure Queue $n_{\mathrm{dq},i}~[\mathrm{aircraft}]$',[0, Settings.Sim.tf],[0, ceil(1.2*max(cat(1,TFC.Ri(:).ndqi),[],'all'))],0,0,FigFontSize)
-    %     % ax.XTick = [0 tf/3 tf*2/3 tf];
-    %     %% Run MFD-Boundary-Control Figure
-    %     subplot(numofsubplotH,numofsubplotV,6); cla;
-    %     if(Settings.TFC.TCmode==1)
-    %         ubijIOdt = cat(1,TFC.CS(1:k).ubijIOdt);
-    %         if(k==0)
-    %             titletextGndt = PlotTFCTS_udt([0,0],[0,0],[''],'',GiNiColor(ri,:),FigFontSize,1,5,'*','o');
-    %         else
-    %             titletextGndt = PlotTFCTS_udt([0:SimS.dtMFD:tt],[1,ubijIOdt(:,1)'],['_{ij=11-21,\mathrm{I}}'],'',GiNiColor(5,:),FigFontSize,1,5,'*','o');
-    %             titletextGndt = PlotTFCTS_udt([0:SimS.dtMFD:tt],[1,ubijIOdt(:,2)'],['_{ij=12-22,\mathrm{I}}'],'',GiNiColor(6,:),FigFontSize,1,5,'*','o');
-    %             titletextGndt = PlotTFCTS_udt([0:SimS.dtMFD:tt],[1,ubijIOdt(:,3)'],['_{ij=21-12,\mathrm{O}}'],'',GiNiColor(4,:),FigFontSize,1,5,'*','o');
-    %             titletextGndt = PlotTFCTS_udt([0:SimS.dtMFD:tt],[1,ubijIOdt(:,4)'],['_{ij=22-11,\mathrm{O}}'],'',GiNiColor(3,:),FigFontSize,1,5,'*','o');
-    %             % Control Model
-    %             titletextGndt = PlotTFCTS_ndt([tt:Settings.TFC.dtMPC:ttMPC],[TFC.MPCSim(k).ub12I(1),TFC.MPCSim(k).ub12I'],['_{i*=11}'],'',GiNiColor(5,:),FigFontSize,0.5,3,'.','');
-    %             titletextGndt = PlotTFCTS_ndt([tt:Settings.TFC.dtMPC:ttMPC],[TFC.MPCSim(k).ub21I(1),TFC.MPCSim(k).ub21I'],['_{i*=12}'],'',GiNiColor(6,:),FigFontSize,0.5,3,'.','');
-    %             titletextGndt = PlotTFCTS_ndt([tt:Settings.TFC.dtMPC:ttMPC],[TFC.MPCSim(k).ub12O(1),TFC.MPCSim(k).ub12O'],['_{i*=11}'],'',GiNiColor(4,:),FigFontSize,0.5,3,'.','');
-    %             titletextGndt = PlotTFCTS_ndt([tt:Settings.TFC.dtMPC:ttMPC],[TFC.MPCSim(k).ub21O(1),TFC.MPCSim(k).ub21O'],['_{i*=12}'],'',GiNiColor(3,:),FigFontSize,0.5,3,'.','');
-    % 
-    %         end
-    %         ArrangeFigure('','Time $t~[\mathrm{s}]$','Boundary control input $u_{\mathrm{bq},ij}^{\mathrm{I/O}}~[\mathrm{s}]$',[0, Settings.Sim.tf],[0, 1],0,0,FigFontSize)
-    %     else; ArrangeFigure('','Time $t~[\mathrm{s}]$','Boundary control input $u_{\mathrm{bq},ij}^{\mathrm{I/O}}~[\mathrm{s}]$',[0, Settings.Sim.tf],0,0,0,FigFontSize)
-    %     end
-    %     % ax.XTick = [0 tf/3 tf*2/3 tf];
-    %     % Title intro $\Delta t_{\mathrm{bq},12}(t)=$
-    %     %% Run MFD-nbqdt Figure
-    %     subplot(numofsubplotH,numofsubplotV,12); cla;
-    %     for ri=1:size(TFC.Ri,2)
-    %         %             PlotCriticalAccH(Settings.Sim.tf,Settings.TFC.nci(ri),[',' num2str(TFC.Ri(ri).ri)],GiNiColor(ri,:),FigFontSize)
-    %         if(k==0)
-    %             titletextGndt = PlotTFCTS_ndt(0,0,['_{i=' num2str(TFC.Ri(ri).ri) '}'],'',GiNiColor(ri,:),FigFontSize,1,5,'*','o');
-    %         else
-    %             titletextGndt = PlotTFCTS_ndt([0:SimS.dtMFD:tt],[0, TFC.Ri(ri).nbqi(1:(k))],['_{i=' num2str(TFC.Ri(ri).ri) '}'],'',GiNiColor(ri,:),FigFontSize,1,5,'*','o');
-    %         end
-    %     end
-    %     % Control Model
-    %     if(k~=0)&&(Settings.TFC.TCmode==1)
-    %         titletextGndt = PlotTFCTS_ndt([tt:Settings.TFC.dtMPC:ttMPC],[TFC.MPCSim(k).nbq12],['_{i*=21}'],'',GiNiColor(5,:),FigFontSize,0.5,3,'.','');
-    %         titletextGndt = PlotTFCTS_ndt([tt:Settings.TFC.dtMPC:ttMPC],[TFC.MPCSim(k).nbq21],['_{i*=22}'],'',GiNiColor(6,:),FigFontSize,0.5,3,'.','');
-    %     end
-    %     ArrangeFigure('','Time $t~[\mathrm{s}]$','Boundary Queue $n_{\mathrm{bq},i}~[\mathrm{aircraft}]$',[0, Settings.Sim.tf],[0, ceil(1.2*max(cat(1,TFC.Ri(:).nbqi),[],'all'))],0,0,FigFontSize)
-    %     % ax.XTick = [0 tf/3 tf*2/3 tf];
-    % end
     %% Save frame
-    % pause(1);
     FRAMEI = max(1,((dt-1)/dstt)+1);
     F(FRAMEI) = getframe(gcf) ;
     drawnow
@@ -232,7 +65,6 @@ for dt=1:dstt:(1+SimS.tf/SimS.dtsim)
     if(SaveSnapshots=='Y')
         print('-vector',[SimInfo.SimOutputDirStr '\Snapshots\tk' num2str(tt)],'-dpdf','-bestfit')
     end
-    %     clf;
 end
 %% Save Video
 DIRstrAVI = [SimInfo.SimOutputDirStr '\MotionPicture' '_' datestr(now,'yyyymmdd_hhMMss') '.avi'];

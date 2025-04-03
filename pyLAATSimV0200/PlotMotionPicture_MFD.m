@@ -1,4 +1,5 @@
 function [] = PlotMotionPicture_MFD(SES,SimInfo,ObjAircraft,TFC,Settings)
+error("need to be updated without control strategy");
 close all;
 AirspaceS = Settings.Airspace;
 SimS = Settings.Sim;

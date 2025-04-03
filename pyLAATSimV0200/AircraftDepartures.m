@@ -5,8 +5,6 @@ Mact = SimInfo.Mact;
 dtS = SimInfo.dtS;
 dtM = SimInfo.dtM;
 t = SimInfo.t;
-% %% Pre traffic control policy
-% [TFC,ObjAircraft] = TCPPre(SimInfo,ObjAircraft,Settings,TFC,t);
 %%
 epsilon = 1.0000e-03;
 aa = 1;
@@ -54,10 +52,8 @@ while aa<=LMque
 end
 clear aa
 aa = 1;
-% warning('TODO: change Mina to only in the next minute')
 InActiveAircraftID = Mina(all([( (t+dtS) < (cat(1,ObjAircraft(Mina).tda)) ) , ( (cat(1,ObjAircraft(Mina).tda)) < (t+dtM+dtS) )],2));
 LMina = size(InActiveAircraftID,2);
-% LMina = length(Mina);
 while aa<=LMina
     if (ObjAircraft(Mina(aa)).tda - t) < epsilon
         ObjAircraft(Mina(aa)).ctd = 1;

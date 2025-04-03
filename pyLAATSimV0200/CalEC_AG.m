@@ -1,14 +1,4 @@
 function [EC,ObjAircraft] = CalEC_AG(EC,SimInfo,ObjAircraft)
-%{
-Input Values:
-Trajectory (n,3) - First column - X axis [m]; Second column - y axis [m]; Third Column - z axis [m]
-Speed Vector (n-1,1) - A vector defining the norm of a 3D speed between two points through the given trajectory [m/s] 
-Output Values:
-P_Total_Consumed (1,1) - A scalar defining the amount of energy consumed by the UAV during the entire trip [Wh]
-Accumulated_Energy_Consumption (n,1) - A vector tracking the accumulation of the energy consumed during the trip [Wh]
-Energy_Consumption (n,1) - A vector tracking the amount of energy consumed during each increment of the trip [Wh]
-n - Number of time increments during the trip
-%}
 %%
 t=SimInfo.t;
 dtS=SimInfo.dtS;
@@ -16,7 +6,6 @@ dtM=SimInfo.dtM;
 ActiveAircraft=SimInfo.Mact;
 %%
 for aai=1:size(ActiveAircraft,2)
-    %Trajectory = SimInfo.pdt((t/dtS):1:(t/dtS)+1,[3*ActiveAircraft(aai)-2,3*ActiveAircraft(aai)-1,3*ActiveAircraft(aai)]);
     Speed_Vector = SimInfo.vdt((t/dtS),[3*ActiveAircraft(aai)-2,3*ActiveAircraft(aai)-1,3*ActiveAircraft(aai)]);
     %%
     Energy_Consumption = 0; %Total Energy Spend during the trip [Wh]

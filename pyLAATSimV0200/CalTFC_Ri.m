@@ -94,13 +94,11 @@ for i=1:size(uniRi,1)
     if any(ExcCond)
         ExcludedAircraft = ExcCond;
         NexitAircraft(ExcludedAircraft) = 0;
-        %TravelTimeAircraft(ExcludedAircraft) = 0;
         TravelDistanceAircraft(ExcludedAircraft) = 0;
         AverageSpeedAircraft(ExcludedAircraft) = 0;
     else
         ExcludedAircraft = zeros(size(AverageSpeedAircraft));
     end
-    %if (sum(NexitAircraft)~=nexit); warning('detected short trip'); end
     TripLengthAircraft = TravelDistanceAircraft(NexitAircraft);
     %% Departure Queue in region
     Current_RiDepQueueAircraftdt = double(RegionDepQueuedt == uniRi(i));
@@ -121,7 +119,6 @@ for i=1:size(uniRi,1)
     DQTimeAircraft = DQExitAircraft-DQEnterAircraft;
     TFC.Ri(i).TDQT(t/dtM) = sum(DQTimeAircraft);
     %% Boundary Queue in region
-    % TODO: Double check neighboring and values.
     Current_RiBouQueueAircraftdt = double(RegionBouQueuedt == uniRi(i));
     BouQueueAircraftRi = unique([1:size(SimInfo.statusdt,2)].*Current_RiBouQueueAircraftdt)';
     BouQueueAircraftRi(BouQueueAircraftRi==0) = [];
@@ -264,44 +261,6 @@ for i=1:size(uniRi,1)
     TFC.EC.Ri(i).ECt_TTT(t/dtM) = TFC.EC.Ri(i).ECt(t/dtM)/TFC.Ri(i).TTT(t/dtM);
     TFC.EC.Ri(i).ECt_N(t/dtM) = TFC.EC.Ri(i).ECt(t/dtM)./TFC.Ri(i).ni(t/dtM);
     TFC.EC.Ri(i).ECt_G(t/dtM) = TFC.EC.Ri(i).ECt(t/dtM)./TFC.Ri(i).G(t/dtM);
-    %% Calculate lij(t)
-    %% Calculate m_ij
-    %% Calculate n_ihj^q
-    %% Calculate o_ihj, o_ii
-    %% Calculate theta_ihj, alpha_ii
-    %% Calculate o_ihj^q, o_ih^q
-    %% Calculate n_ihj^q, n_ih^q
 end
-%             if (TravelDistanceUAV(mm)<=4*UavTeam.Uav(UAVFlyingNdtUnique(mm)).ra)&&((TravelTimeUAV(mm))<5 || ((TravelDistanceUAV(mm)/TravelTimeUAV(mm))<5))
-%                 NexitUAV(mm) = 0;
-%                 TravelDistanceUAV(mm) = 0;
-%                 %UAVnotincluded(ii) = UAVnotincluded(ii) + 1;
-%             end
-% %     end
-%     if (tf == dtSim*Tsf)
-%         %% Planned travel time
-%         UAVTravelTimePlanned = zeros(M,1);
-%         UAVTravelTime = zeros(M,1);
-%         UAVDelay = zeros(M,1);
-%         for ii=1:M
-%             UAVTravelTimePlanned(ii) = norm(UavTeam.Uav(ii).HomePos - UavTeam.Uav(ii).DesPos)/UavTeam.Uav(ii).vmax;
-%             UAVTravelTime(ii) = UavTeam.Uav(ii).ArriveTime - UavTeam.Uav(ii).DepartTimePlanned + dtSim;
-%             UAVDelay(ii) = UAVTravelTime(ii)-UAVTravelTimePlanned(ii);
-%         end
-%         clear ii
-%         TFC.Ri(i).Delay =  UAVDelay;
-%         TFC.Ri(i).MeanDelay =  mean(UAVDelay);
-%         TFC.Ri(i).StdDelay =  std(UAVDelay);
-%         TFC.Ri(i).TotalDelay =  sum(UAVDelay);
-%     end
-% end
-% if (tf == dtSim*Tsf)
-%     global SimOutputDirStr
-%     SimOutputMFDDirStr = [SimOutputDirStr 'Regions\'];
-%     if ~exist(SimOutputMFDDirStr, 'dir')
-%         mkdir(SimOutputMFDDirStr)
-%     end
-%     save([SimOutputMFDDirStr 'MFD_M' num2str(M) '_Network'],'-v7.3');
-% end
 end
 

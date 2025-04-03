@@ -43,28 +43,10 @@ for dt=1:dstt:(1+SimS.tf/SimS.dtsim)
     titleEle = sgtitle([titleTxt;titleTTSTxt],'interpreter','latex','FontUnits','points','FontSize',0.9*FigFontSize,'FontName','Times');
     %% Micro - Top View
     subplot(numofsubplotH,numofsubplotV,1)
-%     hold off
-%     PlotAirspaceDesign(AirspaceS,FigFontSize);
-%     PlotTrajectories(tt,dt,SimInfo,ObjAircraft,FigFontSize);
-%     view(2)
-%     subplot(numofsubplotH,numofsubplotV,2)
-%     hold off
-%     PlotAirspaceDesign(AirspaceS,FigFontSize);
-%     PlotTrajectories(tt,dt,SimInfo,ObjAircraft,FigFontSize);
-%     view([90,0])
-%     subplot(numofsubplotH,numofsubplotV,3)
-%     hold off
-%     PlotAirspaceDesign(AirspaceS,FigFontSize);
-%     PlotTrajectories(tt,dt,SimInfo,ObjAircraft,FigFontSize);
-%     view([0,0])
-%     subplot(numofsubplotH,numofsubplotV,4)
-%     hold off
     PlotAirspaceDesign(AirspaceS,FigFontSize);
     PlotTrajectories(tt,dt,SimInfo,ObjAircraft,FigFontSize);
     view([45,45])
-    % view(2);
     %% Save frame
-    %     pause(0.1);
     FRAMEI = max(1,((dt-1)/dstt)+1);
     F(FRAMEI) = getframe(gcf) ;
     drawnow

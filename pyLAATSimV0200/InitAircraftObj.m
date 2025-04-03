@@ -5,9 +5,8 @@ Aircraft = Settings.Aircraft;
 Sim = Settings.Sim;
 Mina = SimInfo.Mina;
 %% Create Set Vector with Perc.
-ModelsTypes = [0,0,0,1];%[1/4,1/4,1/4,1/4]; %EPAV-1 EUAV-2 PAV-3 UAV-4 [0.3,0.3,0.3]
+ModelsTypes = [0,0,0,1];%[1/4,1/4,1/4,1/4]; %EPAV-1 EUAV-2 PAV-3 UAV-4
 ModelsVec = [1.*ones(ceil(Sim.M.*ModelsTypes(1)),1);2.*ones(ceil(Sim.M.*ModelsTypes(2)),1);3.*ones(ceil(Sim.M.*ModelsTypes(3)),1);4.*ones(ceil(Sim.M.*ModelsTypes(4)),1)]';
-% Model = ModelsVec(randi(size(ModelsVec,2)))
 %%
 for aa = 1:Sim.M
     %% Aircraft Model UAV/PAV/EAV
@@ -22,12 +21,10 @@ for aa = 1:Sim.M
     ObjAircraft(aa).vt = [0,0,0]; % current velocity
     ObjAircraft(aa).vct = [0,0,0]; % current  velocity command
     ObjAircraft(aa).vnt = norm(ObjAircraft(aa).vt); % speed
-    %     warning('double check the control gain')
-    gain = [5,5,5]; %AircraftS.gain_range(1,:)+rand*(AircraftS.gain_range(2,:)-AircraftS.gain_range(1,:)); % aircraft motion control gain (can be scalar as well)
+    gain = [5,5,5];
     ObjAircraft(aa).gain = (eye(length((gain))).*(gain));
     ObjAircraft(aa).lgain = (eye(length((gain)))./(gain));
     %% Radius
-    % ObjAircraft(aa).rs = Aircraft.rs_range(1)+rand*(Aircraft.rs_range(2)-Aircraft.rs_range(1)); % safety radius
     ObjAircraft(aa).rs = funcRS(Aircraft.rs_range, ObjAircraft(aa).AMI); % safety radius function
     ObjAircraft(aa).ra = 1.5*ObjAircraft(aa).rs; % avoidance radius
     ObjAircraft(aa).rv = ObjAircraft(aa).vm*norm(ObjAircraft(aa).lgain); % rv
@@ -38,10 +35,8 @@ for aa = 1:Sim.M
         [ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).wp]  = AircraftFixedPath(Airspace,ObjAircraft(aa).rs); % waypoints
     elseif (Airspace.VTOL)&&(~Airspace.Vertiports)
         ObjAircraft(aa).VTOL = 1;
-        %         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODGround(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODGround2R(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground Two Regions Uniformly
         ObjAircraft(aa).wp  = AircraftRouteTL(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs); % waypoints
-        % ObjAircraft(aa).wp  = AircraftRouteTL_MultiLayer(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs,ObjAircraft(aa).AMI); % waypoints
     elseif (Airspace.VTOL)&&(Airspace.Vertiports)
         ObjAircraft(aa).VTOL = 1;
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODVertiports(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground Two Regions Uniformly
@@ -69,11 +64,6 @@ for aa = 1:Sim.M
     ObjAircraft(aa).rio = RegionIndexXYZ(Airspace,ObjAircraft(aa).o); % origin region
     ObjAircraft(aa).rid = RegionIndexXYZ(Airspace,ObjAircraft(aa).d); % des. region
     ObjAircraft(aa).rit = RegionIndexXYZ(Airspace,ObjAircraft(aa).pt); % current region
-    %     %%
-    %     ObjAircraft(aa).ptdt = [ObjAircraft(aa).pt];
-    %     ObjAircraft(aa).vtdt = [ObjAircraft(aa).vt];
-    %     ObjAircraft(aa).statusdt = [ObjAircraft(aa).status];
-    %     ObjAircraft(aa).ridt = [ObjAircraft(aa).rit];
     %% Times and Distances
     ObjAircraft(aa).tt = [inf]; % travel time
     ObjAircraft(aa).tte = [inf];%ObjAircraft(aa).tle/ObjAircraft(aa).vm; % expected travel time
@@ -187,7 +177,6 @@ end
 end
 
 function [o, d] = AircraftODGround(AirspaceS,rs,rd)
-% ('Optional Take off and landing from builiding on the ground.')
 z0o = 0;%max(0,min(AirspaceS.z02,rs + rand*(AirspaceS.z02 - rs - AirspaceS.z01)));
 z0d = 0;%max(0,min(AirspaceS.z02,rs + rand*(AirspaceS.z02 - rs - AirspaceS.z01)));
 o = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, z0o];
@@ -195,12 +184,10 @@ d = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, z0d];
 while norm(o-d)<rd % verify the o and d is not close enough
     d = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, 0];
 end
-% TODO: warning('Optional Fixed-OD - Similiar to TLOF,')
 end
 %%
 
 function [o, d] = AircraftODGround2R(AirspaceS,rs,rd)
-% ('Optional Take off and landing from builiding on the ground.')
 z0o = 0;%max(0,min(AirspaceS.z02,rs + rand*(AirspaceS.z02 - rs - AirspaceS.z01)));
 z0d = 0;%max(0,min(AirspaceS.z02,rs + rand*(AirspaceS.z02 - rs - AirspaceS.z01)));
 ODRi = randperm(4,1); % 11, 12, 21, 22
@@ -223,16 +210,9 @@ end
 while norm(o-d)<rd % verify the o and d is not close enough
     d = [2*(rand-0.5)*AirspaceS.dx/2, 2*(rand-0.5)*AirspaceS.dy/2, 0];
 end
-% TODO: warning('Optional Fixed-OD - Similiar to TLOF,')
 end
 
 function [o, d] = AircraftODVertiports(AirspaceS,rs,rd)
-% Vertiports = [
-% -73.98440300426283 40.77275113399261 20.89627363010538;
-% -73.96773955133848 40.75007173649506 4.318934694714676;
-% -73.98427004394215 40.72990870353391 -15.521595383896994;
-% -73.99687660760746 40.724604427122294 28.434851429241917;
-% ];
 if AirspaceS.Vertiports
     [VertiportOD,MaxXY,minDz1] = LoadVertiports(AirspaceS.asStr);
     ODMat = VertiportOD;
@@ -294,7 +274,6 @@ function [o,d,wp]  = AircraftFixedPath(AirspaceS,rs)
 [VertiportOD,MaxXY,minDz1] = LoadVertiports(AirspaceS.asStr);
 [WaypointPaths] = LoadWaypoints(AirspaceS.asStr);
 Pathi = randperm(size(WaypointPaths,2),1);
-%TODO: Add OD Matrix
 o = WaypointPaths{Pathi}(1,:);
 d = WaypointPaths{Pathi}(end,:);
 wp = WaypointPaths{Pathi};
@@ -303,21 +282,9 @@ end
 function ri = RegionIndexXYZ(AirspaceS,xyz)
 % regions clasification
 ri =  max(0,AirspaceS.Regions.B(all((abs(repmat(xyz,AirspaceS.Regions.n,1) - cat(1,AirspaceS.Regions.B.center))) <= cat(1,AirspaceS.Regions.B.ssize)./2,2)).ri);
-% regions
-% rn = AirspaceS.Regions.n;
-% for ri=1:rn
-%     p1 = AirspaceS.Regions.B(ri).xyz(1,:);
-%     p2 = AirspaceS.Regions.B(ri).xyz(2,:);
-%     center = (p1 + p2) / 2;
-%     ssize = abs(p2 - p1);
-%     if all(abs(xyz - center) <= ssize/2)
-%         break;
-%     end
-% end
 end
 %%
 function tdp = AircraftDepartTime(aa,Sim)
-% TODO: warning('change to unirformly distrubtion.')
 if aa ~= Sim.M
     tt = Sim.dtsim:Sim.dtsim:Sim.tf;
     II = Sim.AircraftCumNumdtSim; % Tables of indexes

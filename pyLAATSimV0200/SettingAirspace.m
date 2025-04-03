@@ -37,13 +37,7 @@ if Airspace.VTOL
     Airspace.z01 = 0; % for takeoff and landing [m]
     Airspace.z02 = Airspace.dz1; % for takeoff and landing [m]
     Airspace.VTOLxyz = [[-Airspace.dx;Airspace.dx]/2,[-Airspace.dy;Airspace.dy]/2,[Airspace.z01;Airspace.z02]];
-else
-    Airspace.z01 = 0; % for takeoff and landing [m]
-    Airspace.z02 = Airspace.dz1; % for takeoff and landing [m]
-    Airspace.VTOLxyz = [[-Airspace.dx;Airspace.dx]/2,[-Airspace.dy;Airspace.dy]/2,[Airspace.z01;Airspace.z02]];
 end
-%% TODO: TLOF
-%% function for regions boundaries
 Airspace.RMode='2R';
 if Airspace.VTOL
     if Airspace.RMode=='2R'
@@ -58,11 +52,6 @@ else
         [Airspace.Regions,Airspace.Layers] = SettingAirspaceRegions(Airspace);
     end
 end
-warning('TODO: add multi-layer 5L with emergcnacy layer!')
-%% TODO: Wind settings
-%% TODO: Obstacles settings
-%% TODO: Highway settings
-
 end
 
 function [Ri,Li] = SettingAirspaceRegions(Airspace)
@@ -75,7 +64,6 @@ Ri.Dz = (Airspace.dz)/Ri.zn;
 Ri.n = Ri.xn*Ri.yn*Ri.zn;
 Ri.nxy = Ri.xn*Ri.yn;
 Ri.dzri = 10; while (Ri.dzri<=Ri.xn*Ri.yn);  Ri.dzri=Ri.dzri*10; end
-% Ri.dzri = 0; while (Ri.dzri<=Ri.xn*Ri.yn);  Ri.dzri=Ri.dzri*10; end
 ri = 0;
 xyz = [];
 for zi=1:Ri.zn
@@ -85,9 +73,7 @@ for zi=1:Ri.zn
             ri = ri + 1;
             xyz = [-Airspace.dx/2 + Ri.Dx*(xi-1); -Airspace.dx/2 + Ri.Dx*xi];
             xyz = [xyz,[-Airspace.dy/2 + Ri.Dy*(yi-1); -Airspace.dy/2 + Ri.Dy*yi]];
-            %             xyz = [xyz,2.*[AirspaceS.dz1;AirspaceS.dz1]+[-AirspaceS.dz/2 + Ri.Dz*(zi-1);-AirspaceS.dz/2 + Ri.Dz*zi]];
             xyz = [xyz,[Airspace.dz1;Airspace.dz1]+[(Ri.Dz)*(zi-1);(Ri.Dz)*zi]];
-            %             Ri.B(ri).ri = ri;
             if (ri==1); Ri.B(ri).ri = ri + zi*Ri.dzri; else; Ri.B(ri).ri =  mod(mod(Ri.B(ri-1).ri,Ri.dzri),Ri.xn*Ri.yn) + zi*Ri.dzri + 1; end
             Ri.B(ri).xyz = xyz;
             Ri.B(ri).center = (xyz(1,:) + xyz(2,:)) / 2;
@@ -133,7 +119,6 @@ for zi=1:Ri.zn
             ri = ri + 1;
             xyz = [-Airspace.dx/2 + Ri.Dx*(xi-1); -Airspace.dx/2 + Ri.Dx*xi];
             xyz = [xyz,[-Airspace.dy/2 + Ri.Dy*(yi-1); -Airspace.dy/2 + Ri.Dy*yi]];
-            %             xyz = [xyz,2.*[AirspaceS.dz1;AirspaceS.dz1]+[-AirspaceS.dz/2 + Ri.Dz*(zi-1);-AirspaceS.dz/2 + Ri.Dz*zi]];
             xyz = [xyz,[Airspace.dz1;Airspace.dz1]+[(Ri.Dz)*(zi-1);(Ri.Dz)*zi]];
             if (ri==1); Ri.B(ri).ri = ri + zi*Ri.dzri; else; Ri.B(ri).ri =  mod(mod(Ri.B(ri-1).ri,Ri.dzri),Ri.xn*Ri.yn) + zi*Ri.dzri + 1; end
             Ri.B(ri).xyz = xyz;
@@ -185,7 +170,6 @@ for zi=1:Ri.zn-1
             ri = ri + 1;
             xyz = [-Airspace.dx/2 + Ri.Dx*(xi-1); -Airspace.dx/2 + Ri.Dx*xi];
             xyz = [xyz,[-Airspace.dy/2 + Ri.Dy*(yi-1); -Airspace.dy/2 + Ri.Dy*yi]];
-            %             xyz = [xyz,2.*[AirspaceS.dz1;AirspaceS.dz1]+[-AirspaceS.dz/2 + Ri.Dz*(zi-1);-AirspaceS.dz/2 + Ri.Dz*zi]];
             xyz = [xyz,[Airspace.dz1;Airspace.dz1]+[(Ri.Dz)*(zi-1);(Ri.Dz)*zi]];
             if (ri==1); Ri.B(ri).ri = ri + zi*Ri.dzri; else; Ri.B(ri).ri =  mod(mod(Ri.B(ri-1).ri,Ri.dzri),Ri.xn*Ri.yn) + zi*Ri.dzri + 1; end
             Ri.B(ri).xyz = xyz;
@@ -252,17 +236,11 @@ for zi=1:Ri.zn-1
             ri = ri + 1;
             xyz = [-Airspace.dx/2 + Ri.Dx*(xi-1); -Airspace.dx/2 + Ri.Dx*xi];
             xyz = [xyz,[-Airspace.dy/2 + Ri.Dy*(yi-1); -Airspace.dy/2 + Ri.Dy*yi]];
-            %             xyz = [xyz,2.*[AirspaceS.dz1;AirspaceS.dz1]+[-AirspaceS.dz/2 + Ri.Dz*(zi-1);-AirspaceS.dz/2 + Ri.Dz*zi]];
             xyz = [xyz,[Airspace.dz1;Airspace.dz1]+[(Ri.Dz)*(zi-1);(Ri.Dz)*zi]];
             if (ri==1); Ri.B(ri).ri = ri + zi*Ri.dzri; else; Ri.B(ri).ri =  mod(mod(Ri.B(ri-1).ri,Ri.dzri),Ri.xn*Ri.yn) + zi*Ri.dzri + 1; end
             Ri.B(ri).xyz = xyz;
             Ri.B(ri).center = (xyz(1,:) + xyz(2,:)) / 2;
             Ri.B(ri).dx = Ri.Dx; Ri.B(ri).dy = Ri.Dy; Ri.B(ri).dz = Ri.Dz;
-            % if (mod(zi,2)==0)
-            %     Ri.B(ri).center = (xyz(1,:) + xyz(2,:)) / 2;
-            % else
-            %     Ri.B(ri).center = (xyz(1,:) + xyz(2,:)) / 2 + 1e-4;
-            % end
             Ri.B(ri).ssize = abs(xyz(1,:) - xyz(2,:));
             Ri.B(ri).space = Ri.B(ri).ssize(1)*Ri.B(ri).ssize(2)*Ri.B(ri).ssize(3);
             Ri.B(ri).layer = Layer;

@@ -8,26 +8,14 @@ t = SimInfo.t;
 %%
 vm_matrix=zeros(3*length(MactCA),length(MactCA));
 for aa=1:length(MactCA)
-    % TODO: Only aircraft in detection radius
     if((ObjAircraft(MactCA(aa)).AMI == 3)||(ObjAircraft(MactCA(aa)).AMI == 4))
         Diffaaxyz = (ObjAircraft(MactCA(aa)).fpt.*ones(length(MactCA),1) - cat(1,ObjAircraft(MactCA).fpt));
         Distanceaa =  vecnorm(Diffaaxyz')';
         Vectorrd = cat(1,(ObjAircraft(MactCA).rd)) + (ObjAircraft(MactCA(aa)).rd).*ones(length(MactCA),1);
         BolInrd = all([(0<Distanceaa),(Distanceaa<=Vectorrd)],2)';
         MactDetaa = cat(1,ObjAircraft(MactCA(BolInrd)).id);
-        %     MactDetaa = MactCA;
         for aaj=1:length(MactDetaa)
             if MactCA(aa)~=MactDetaa(aaj)
-                %Verification
-                % Q- What is the problem?
-                if norm((ObjAircraft(MactCA(aa)).pt) - (ObjAircraft(MactDetaa(aaj)).pt)) - (ObjAircraft(MactCA(aa)).rs + ObjAircraft(MactDetaa(aaj)).rs) < 0
-                    SimInfo.cc = SimInfo.cc + 1;
-                    SimInfo.Objcc(SimInfo.cc).t = t;
-                    SimInfo.Objcc(SimInfo.cc).ids = [MactCA(aa),MactDetaa(aaj)];
-                    SimInfo.Objcc(SimInfo.cc).dis = norm((ObjAircraft(MactCA(aa)).pt) - (ObjAircraft(MactDetaa(aaj)).pt));
-                    SimInfo.Objcc(SimInfo.cc).desireddis = (ObjAircraft(MactCA(aa)).rs + ObjAircraft(MactDetaa(aaj)).rs);
-                end
-                %             %-------V3----------
                 ksiaa = ObjAircraft(MactCA(aa)).fpt;
                 ksiaaj = ObjAircraft(MactDetaa(aaj)).fpt;
                 ksimil = ksiaa-ksiaaj;
@@ -45,7 +33,7 @@ for aa=1:length(MactCA)
                     VmijUp = k2*sigma_ij;
                     VmijDown = (1+e)*nksimil - (rsi+rsj)*s_ij;
                     dVmijUp = k2*dsigma_ij;
-                    dVmijDown = (1+e) - ds_ij;%(1+e) - (rsi+rsj)*ds_ij;
+                    dVmijDown = (1+e) - ds_ij;
                     b_ij = ( (dVmijUp/VmijDown) + VmijUp*(-dVmijDown)/(VmijDown^2) )*(1/norm(ksimil));
                     vm_matrix(3*aa-2:3*aa,MactDetaa(aaj)==MactCA) = - b_ij*ksimil;
                 end

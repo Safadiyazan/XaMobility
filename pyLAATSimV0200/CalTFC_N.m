@@ -155,44 +155,5 @@ TFC.EC.N.ECt_TTT(t/dtM) = TFC.EC.N.ECt(t/dtM)/TFC.N.TTT(t/dtM);
 TFC.EC.N.ECt_N(t/dtM) = TFC.EC.N.ECt(t/dtM)./TFC.N.n(t/dtM);
 TFC.EC.N.ECt_G(t/dtM) = TFC.EC.N.ECt(t/dtM)./TFC.N.G(t/dtM);
 clear StatusDepQueueddt StatusBouQueueddt
-% TFC.EC.N.ECq(t/dtM) = sum(TFC.EC.ECdt(tk0:tk1,DepQueueAircraft),'all');
-% TFC.EC.N.EC(t/dtM) = sum(TFC.EC.ECdt(tk0:tk1,ActiveAircraft),'all');
-% [TFC.EC.EC_Std,TFC.EC.EC_Mean,TFC.EC.EC_Var] = CalStd(TFC.EC.ECdt,dtM,dtS);
-% TFC.EC.N.EC_Std(t/dtM) = TFC.EC.N.EC_Std(ts:te);
-% TFC.EC.N.EC_Mean(t/dtM) = TFC.EC.N.EC_Mean(ts:te);
-% TFC.EC.N.EC_Var(t/dtM) = TFC.EC.N.EC_Var(ts:te);
-% ========================================================================
-% MIS
-%             if (TravelDistanceUAV(mm)<=4*UavTeam.Uav(UAVFlyingNdtUnique(mm)).ra)&&((TravelTimeUAV(mm))<5 || ((TravelDistanceUAV(mm)/TravelTimeUAV(mm))<5))
-%                 NexitUAV(mm) = 0;
-%                 TravelDistanceUAV(mm) = 0;
-%                 %UAVnotincluded(ii) = UAVnotincluded(ii) + 1;
-%             end
-% %     end
-%     if (tf == dtSim*Tsf)
-%         %% Planned travel time
-%         UAVTravelTimePlanned = zeros(M,1);
-%         UAVTravelTime = zeros(M,1);
-%         UAVDelay = zeros(M,1);
-%         for ii=1:M
-%             UAVTravelTimePlanned(ii) = norm(UavTeam.Uav(ii).HomePos - UavTeam.Uav(ii).DesPos)/UavTeam.Uav(ii).vmax;
-%             UAVTravelTime(ii) = UavTeam.Uav(ii).ArriveTime - UavTeam.Uav(ii).DepartTimePlanned + dtSim;
-%             UAVDelay(ii) = UAVTravelTime(ii)-UAVTravelTimePlanned(ii);
-%         end
-%         clear ii
-%         TFC.N.Delay =  UAVDelay;
-%         TFC.N.MeanDelay =  mean(UAVDelay);
-%         TFC.N.StdDelay =  std(UAVDelay);
-%         TFC.N.TotalDelay =  sum(UAVDelay);
-%     end
-% end
-% if (tf == dtSim*Tsf)
-%     global SimOutputDirStr
-%     SimOutputMFDDirStr = [SimOutputDirStr 'Regions\'];
-%     if ~exist(SimOutputMFDDirStr, 'dir')
-%         mkdir(SimOutputMFDDirStr)
-%     end
-%     save([SimOutputMFDDirStr 'MFD_M' num2str(M) '_Network'],'-v7.3');
-% end
 end
 
