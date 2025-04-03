@@ -114,7 +114,7 @@ const Dashboard = () => {
             });
     }, [selectedFile]);
 
-    const [selectedCity, setSelectedCity] = useState("LI");
+    const [selectedCity, setSelectedCity] = useState("NYC");
     useEffect(() => {
         const initialSelectedCity = selectedCity;
         const initialSelectedFile = selectedFile;

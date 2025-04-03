@@ -28,9 +28,6 @@ viewer.scene.pick = () => { return undefined; };
 const tileset = viewer.scene.primitives.add(
   await Cesium3DTileset.fromIonAssetId(2275207)
 );
-// const tileset = viewer.scene.primitives.add(
-//   await Cesium.Cesium3DTileset.fromIonAssetId(75343),
-// );
 
 
 // =======================================================================================
@@ -39,13 +36,6 @@ function App() {
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
-  // useEffect(() => {
-  //   const storedUsername = localStorage.getItem('username');
-  //   if (storedUsername) {
-  //     setUsername(storedUsername);
-  //     setIsAuthenticated(true);
-  //   }
-  // }, []);
 
   const handleLogin = async (username) => {
     try {
@@ -65,7 +55,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Include credentials for server-side session handling
+        credentials: 'include', 
       });
 
       if (response.ok) {

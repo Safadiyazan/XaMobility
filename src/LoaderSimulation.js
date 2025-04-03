@@ -4,7 +4,7 @@ import { Model, IonResource, ClockStep, ClockRange, HeadingPitchRoll, Quaternion
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import ViewerToolBar from './components/ViewerToolBar';
 import NetworkSetup from './components/NetworkSetup.js';
-import './css/main.css'; // Ensure this import is here
+import './css/main.css';
 
 // =================================================================================================================================================
 // Cesium Simulation
@@ -19,19 +19,12 @@ export async function LoadSimulation(viewer, data, city) {
     }
     var NavigationOn = true;
 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    // Functions
-    // Function to calculate a new point given offsets in meters
     function computeNewPoint(center, dx, dy, dz) {
-        // Create a matrix that represents the east, north, up AGL offset
         var offsetMatrix = Transforms.eastNorthUpToFixedFrame(center, Ellipsoid.WGS84, new Matrix4());
-        // Offset the point by the specified distances
         var offsetPoint = Matrix4.multiplyByPoint(offsetMatrix, new Cartesian3(dx, dy, dz), new Cartesian3());
         return offsetPoint;
     }
-    // Function to plot Point as black dot circle
     function plotPoint(newPoint) {
-        // Create a point entity at the new position
         const scene = viewer.scene;
         var ellipsoid = scene.globe.ellipsoid;
         var PointCatroStr = Cartographic.fromCartesian(newPoint, ellipsoid)
@@ -113,65 +106,21 @@ export async function LoadSimulation(viewer, data, city) {
         case "LI":
             var dz0 = 0.0;
             var center = Cartesian3.fromDegrees(114.162559945072, 22.3158202017388, dz0); // Liechtenstein
-        // default:
-        //     var dz0 = 80;
-        //     var center = Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0); // NYC
     }
     plotPoint(center);
-    // var center = Cartesian3.fromDegrees(35.045628640781565, 32.77278697558125,  dz0); // NESHER
-    // var center = Cartesian3.fromDegrees(35.01178943640926, 32.76765420453765,  dz0); // HAIFA
-    /// Colors
     const cesiumRed = Color.fromCssColorString('#C0282D');
     const cesiumBlue = Color.fromCssColorString('#076790');
     const cesiumGold = Color.fromCssColorString('#D59F0F');
 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    // Define handleCheckboxChange in the global scope
-    // window.handleCheckboxChange = function () {
-    //     var isChecked = document.getElementById('customCheckbox').checked;
-    //     var NavigationOn = isChecked;
-    //     console.log(NavigationOn)
-    //     ViewSetting(center, NavigationOn);
-    //     console.log('Checkbox Checked:', isChecked);
-    // };
-
-    // function createCustomControls(viewer) {
-    //     var customControlsDiv = document.createElement('div');
-    //     customControlsDiv.id = 'customControls';
-    //     customControlsDiv.style.position = 'absolute';
-    //     customControlsDiv.style.top = '50px';
-    //     customControlsDiv.style.right = '10px';
-    //     customControlsDiv.style.zIndex = '1000';
-    //     customControlsDiv.innerHTML = `
-    //       <input type="checkbox" id="customCheckbox" onchange="handleCheckboxChange()">
-    //       <label for="customCheckbox"> Navigation Keyboard On</label>
-    //     `;
-
-    //     viewer.container.appendChild(customControlsDiv);
-    // }
-    // createCustomControls(viewer);
+    
     var randomNumberVerti = 0;
     ///////////////////////////////////////////////////////////////////////////////////////
     ViewSetting(center, NavigationOn);
     function ViewSetting(center, NavigationOn) {
-        viewer.scene.globe.enableLighting = true; // Enable lighting for the sun and shadows
-        viewer.shadows = true; // Enable shadows
-
-        // Set shadow mode (for example, to have both terrain and 3D models cast and receive shadows):
+        viewer.scene.globe.enableLighting = true; 
+        viewer.shadows = true;
         viewer.scene.shadowMode = ShadowMode.ENABLED;
-
-        // You can also specify how detailed the shadows should be (higher quality may impact performance):
-        viewer.shadowMap.maximumDistance = 5000.0; // Maximum shadow distance in meters
-
-        // Create a light source for the sun
-        // var sunLight = new Sun();
-
-        // Set the light source direction (optional, the default is the sun's position)
-        // sunLight.direction = Cartesian3.normalize(new Cartesian3(0.5, 0.5, 0.5), new Cartesian3());
-
-        // Add the light source to the scene
-        // viewer.scene.sun = sunLight;
-        // Fly the camera to San Francisco at the given longitude, latitude, and height.
+        viewer.shadowMap.maximumDistance = 5000.0;
         var initialPosition = computeNewPoint(center, 0, -10000, 20000);
         var initialOrientation = {
             heading: CesiumMath.toRadians(0.0),
@@ -188,11 +137,10 @@ export async function LoadSimulation(viewer, data, city) {
         });
         var camera = viewer.camera;
 
-        // Add event listeners to track key state
         function onKeyDown(event) {
             keyState[event.key] = true;
             if ((event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'PageUp' || event.key === 'PageDown')) {
-                event.preventDefault(); // Prevent scrolling when arrow keys are pressed
+                event.preventDefault();
             }
             if ((event.key === 'N')) {
                 try {
@@ -201,16 +149,14 @@ export async function LoadSimulation(viewer, data, city) {
                     console.log(`Error loading
                   ${error}`);
                 }
-                // resetVertiportData();
-                isNetworkSetup = !isNetworkSetup; // Toggle the variable
+                isNetworkSetup = !isNetworkSetup;
                 handleNetworkSetup(isNetworkSetup);
             }
             if ((event.key === 'P')) {
-                isPedestrianSetup = !isPedestrianSetup; // Toggle the variable
+                isPedestrianSetup = !isPedestrianSetup;
                 handlePedestrianSetup(isPedestrianSetup);
             }
             if ((event.key === 'h')) {
-                // Reset camera to initial position and orientation
                 pitch = initialOrientation.pitch;
                 roll = initialOrientation.roll;
                 yaw = initialOrientation.heading;
@@ -219,7 +165,6 @@ export async function LoadSimulation(viewer, data, city) {
                     destination: initialPosition,
                     orientation: initialOrientation,
                 });
-                // viewer.zoomTo(airspace)
                 viewer.trackedEntity = undefined;
             }
             if ((event.key === 'V')) {
@@ -244,8 +189,6 @@ export async function LoadSimulation(viewer, data, city) {
             }
             if ((event.key === '+')) {
                 VertiportArray[randomNumberVerti] = rotateEntity(VertiportArray[randomNumberVerti], 5);
-                // VertiportArray[randomNumberVerti] = rotateEntity(VertiportArray.Takeoffs[randomNumberVerti],5);
-                // VertiportArray[randomNumberVerti] = rotateEntity(VertiportArray.Landings[randomNumberVerti],5);
             }
             if ((event.key === 'r')) {
                 var randomNumber = Math.floor(Math.random() * entitiesArray.length);
@@ -1491,7 +1434,6 @@ export async function LoadSimulation(viewer, data, city) {
             handleMovement();
         }
     }
-    // (Optional) Add event listeners for interactive elements (checkboxes, etc.)
     // End view settings
     ///////////////////////////////////////////////////////////////////////////////////////
     // Start Layers and Region Settings.
@@ -1507,15 +1449,15 @@ export async function LoadSimulation(viewer, data, city) {
     }
 
     function PlotCube(CubeCC, CubeDx, CubeDy, CubeDz, CubeDz0, CubeDz1, nameStr, ColorStr, outlineColorStr) {
-        const centerPlotting = computeNewPoint(CubeCC, 0, 0, 0); // plotPoint(centerPlotting);
-        var newPointSE = computeNewPoint(centerPlotting, CubeDx / 2, -CubeDy / 2, 0); //plotPoint(newPointSE);
-        var newPointNE = computeNewPoint(centerPlotting, CubeDx / 2, CubeDy / 2, 0); //plotPoint(newPointNE);
-        var newPointSW = computeNewPoint(centerPlotting, -CubeDx / 2, -CubeDy / 2, 0); //plotPoint(newPointSW);
-        var newPointNW = computeNewPoint(centerPlotting, -CubeDx / 2, CubeDy / 2, 0); //plotPoint(newPointNW);
-        var newPointSEUP = computeNewPoint(centerPlotting, CubeDx / 2, -CubeDy / 2, CubeDz); //plotPoint(newPointSEUP);
-        var newPointNEUP = computeNewPoint(centerPlotting, CubeDx / 2, CubeDy / 2, CubeDz); //plotPoint(newPointNEUP);
-        var newPointSWUP = computeNewPoint(centerPlotting, -CubeDx / 2, -CubeDy / 2, CubeDz); //plotPoint(newPointSWUP);
-        var newPointNWUP = computeNewPoint(centerPlotting, -CubeDx / 2, CubeDy / 2, CubeDz); //plotPoint(newPointNWUP);
+        const centerPlotting = computeNewPoint(CubeCC, 0, 0, 0);
+        var newPointSE = computeNewPoint(centerPlotting, CubeDx / 2, -CubeDy / 2, 0); //(newPointSE);
+        var newPointNE = computeNewPoint(centerPlotting, CubeDx / 2, CubeDy / 2, 0); //(newPointNE);
+        var newPointSW = computeNewPoint(centerPlotting, -CubeDx / 2, -CubeDy / 2, 0); //(newPointSW);
+        var newPointNW = computeNewPoint(centerPlotting, -CubeDx / 2, CubeDy / 2, 0); //(newPointNW);
+        var newPointSEUP = computeNewPoint(centerPlotting, CubeDx / 2, -CubeDy / 2, CubeDz); //(newPointSEUP);
+        var newPointNEUP = computeNewPoint(centerPlotting, CubeDx / 2, CubeDy / 2, CubeDz); //(newPointNEUP);
+        var newPointSWUP = computeNewPoint(centerPlotting, -CubeDx / 2, -CubeDy / 2, CubeDz); //(newPointSWUP);
+        var newPointNWUP = computeNewPoint(centerPlotting, -CubeDx / 2, CubeDy / 2, CubeDz); //(newPointNWUP);
         const scene = viewer.scene;
         var ellipsoid = scene.globe.ellipsoid;
         var cartographicNW = Cartographic.fromCartesian(newPointNW, ellipsoid);
@@ -1525,7 +1467,7 @@ export async function LoadSimulation(viewer, data, city) {
         // var distance = Cartesian3.distance(newPointSE, newPointSEUP);
         // console.log("Distance between points: " + distance + " meters");
         const airspace = viewer.entities.add({
-            name: nameStr,// `Airspace`,
+            name: nameStr,
             description: ``,
             polygon: {
                 hierarchy: Cartesian3.fromDegreesArray([
@@ -1536,13 +1478,12 @@ export async function LoadSimulation(viewer, data, city) {
                 ]),
                 height: CubeDz0 + CubeDz1,
                 extrudedHeight: CubeDz0 + CubeDz + CubeDz1,
-                material: ColorStr,//Color.CYAN.withAlpha(0.1),
+                material: ColorStr,
                 outline: true,
-                outlineColor: outlineColorStr,//Color.CYAN,
+                outlineColor: outlineColorStr,
             },
             allowPicking: false,
         });
-        //viewer.zoomTo(airspace);
     }
     PlotCube(center, dx, dy, dz, dz0, dz1, 'Airspace', Color.BLACK.withAlpha(0.1), Color.BLACK);
     // if (data.Settings.Airspace.VTOL === 1) {
@@ -1571,7 +1512,6 @@ export async function LoadSimulation(viewer, data, city) {
 
     ///////////////////////////////////////////////////////////////////////////////////////
     // Start Aircraft Motion
-    // Function that genreate FlightData according to shiting dpx,dpy,dpz for number of steps
     async function generateFlightData(centerPoint, numSteps, dpx, dpy, dpz) {
         var flightData = [];
         var currentPosition = centerPoint;
@@ -1582,23 +1522,19 @@ export async function LoadSimulation(viewer, data, city) {
                 latitude: CesiumMath.toDegrees(Cartographic.fromCartesian(currentPosition).latitude),
                 height: Cartographic.fromCartesian(currentPosition).height
             });
-
-            // Calculate the next position by moving 10 meters east (positive x-axis)
-            //var eastOffset = new Cartesian3(stepSize, 0, 0);
-            //currentPosition = Cartesian3.add(currentPosition, eastOffset, new Cartesian3());
             currentPosition = computeNewPoint(currentPosition, dpx, dpy, dpz);
         }
         return flightData;
     }
 
     function TestFlightsFunctions(center) {
-        var numSteps = 75; // numSteps * 30 seconds for motion.
-        var dx = 1500; // in meters, eastward direction
-        var dy = 1500; // in meters, northward direction
-        var dz = 80;  // in meters, upward direction
-        var dpx = 0; // 10 meters north in each step
-        var dpy = 10; // 10 meters east in each step
-        var dpz = 1; // 10 meters up in each step
+        var numSteps = 75;
+        var dx = 1500;
+        var dy = 1500;
+        var dz = 80;
+        var dpx = 0;
+        var dpy = 10;
+        var dpz = 1;
         var newPointSE = computeNewPoint(center, dx / 2, -dy / 2, 0);
         var newPointNE = computeNewPoint(center, dx / 2, dy / 2, 0);
         var newPointSW = computeNewPoint(center, -dx / 2, -dy / 2, 0);
@@ -1618,7 +1554,6 @@ export async function LoadSimulation(viewer, data, city) {
         var flightData = generateFlightData(center, 75, 0, 0, -2);
         AddAircraftMotion(flightData, 1);
     }
-    // TestFlightsFunctions();
 
     async function AddAircraftMotion(startSim, stopSim, timeStepInSeconds, AircraftIndex, flightData, AMI, statusData, tda, taa, rs, rd, vertical, entitiesArray, positionPropertyArray) {
         const startAircraft = new JulianDate.addSeconds(startSim, tda, new JulianDate());
@@ -1642,7 +1577,6 @@ export async function LoadSimulation(viewer, data, city) {
                 point: {
                     pixelSize: 2,
                     color: Color.DARKGRAY.withAlpha(0.5),
-                    //markerSymbol: 'X'
                 },
                 availability: new TimeIntervalCollection([new TimeInterval({
                     start: startAircraft,
@@ -1666,21 +1600,7 @@ export async function LoadSimulation(viewer, data, city) {
             start: startAircraft,
             stop: stopAircraft
         })]);
-        // Draw shortest path
-        // const pathShortEntity = viewer.entities.add({
-        //     name: `Aircraft: ${AircraftIndex}, Waypoint Path`,
-        //     polyline: {
-        //         positions: [Cartesian3.fromDegrees(flightData[0].longitude, flightData[0].latitude, flightData[0].height),
-        //         Cartesian3.fromDegrees(flightData[flightData.length - 1].longitude, flightData[flightData.length - 1].latitude, flightData[flightData.length - 1].height)],
-        //         material: Color.GREEN.withAlpha(0.5),
-        //         width: 1.5,
-        //     },
-        //     allowPicking: false,
-        // });
-        // pathShortEntity.availability = new TimeIntervalCollection([new TimeInterval({
-        //     start: startAircraft,
-        //     stop: stopAircraft
-        // })]);
+
         // Add origin entity
         const oA = flightData[0];
         const oAEntity = viewer.entities.add({
@@ -1729,7 +1649,7 @@ export async function LoadSimulation(viewer, data, city) {
             });
         }, false);
 
-        // Add completed path entity (solid blue line)
+        // Add completed path entity
         const completed_path_entity = viewer.entities.add({
             polyline: {
                 positions: completedPathPositions,
@@ -1744,7 +1664,7 @@ export async function LoadSimulation(viewer, data, city) {
             stop: stopAircraft
         })]);
 
-        // Add planned path entity (dashed black line)
+        // Add planned path entity
         const planned_path_entity = viewer.entities.add({
             polyline: {
                 positions: plannedPathPositions,
@@ -1761,52 +1681,6 @@ export async function LoadSimulation(viewer, data, city) {
             start: startAircraft,
             stop: stopAircraft
         })]);
-
-        // Add travelled path until specific time
-        // const traveledPathEntity = viewer.entities.add({
-        //     polyline: {
-        //         name: `Aircraft: ${AircraftIndex}, Path`,
-        //         description: ``,
-        //         positions: new CallbackProperty(function () {
-        //             const currentTime = viewer.clock.currentTime;
-        //             const currentElapsedTime = JulianDate.secondsDifference(currentTime, startSim);
-        //             const currentIteration = Math.floor(currentElapsedTime / timeStepInSeconds);
-
-        //             // Ensure the current iteration is within the bounds of the polylinePositions array
-        //             if (currentIteration < 0 || currentIteration >= polylinePositions.length) {
-        //                 return [];
-        //             }
-        //             return polylinePositions.slice(0, currentIteration + 1);
-        //         }, false),
-        //         width: 2,
-        //         material: Color.BLUE.withAlpha(0.4),
-        //         allowPicking: false,
-        //     }
-        // });
-        // traveledPathEntity.availability = new TimeIntervalCollection([new TimeInterval({
-        //     start: startAircraft,
-        //     stop: stopAircraft
-        // })]);
-        // traveledPathEntity.distanceDisplayCondition = new DistanceDisplayCondition(
-        //     0.0,
-        //     45.5
-        // );
-        // Add Aircraft safety radius
-        // const SafetySphereEntity = viewer.entities.add({
-        //     name: `Aircraft: ${AircraftIndex}, Safety Space`,
-        //     description: ``,
-        //     position: positionProperty,
-        //     ellipsoid: {
-        //         radii: new Cesium.CallbackProperty(function (time, result) {
-        //             const randomScaleFactor = 2 * Math.random();  // Adjusts the scale randomly between 0 and 2
-        //             return new Cesium.Cartesian3(rs * randomScaleFactor, rs * randomScaleFactor, rs * randomScaleFactor);
-        //         }, false), // 'false' means it is not constant and should be recalculated over time
-        //         material: Cesium.Color.RED.withAlpha(0.1),
-        //         outline: true,
-        //         outlineColor: Cesium.Color.BLACK.withAlpha(0.2),
-        //     },
-        //     allowPicking: false,
-        // });
 
         // Add Aircraft safety radius
         const SafetySphereEntity = viewer.entities.add({
@@ -1857,7 +1731,6 @@ export async function LoadSimulation(viewer, data, city) {
 
             var AircraftURL = "/YS_VTOL.glb";
             var AircraftURLScale = 2;
-            // var AircraftModelIndex = Math.floor(Math.random() * 4) + 1;
             switch (AMI) {
                 case 1:
                     AircraftURL = "/YS_VTOL_Medical.glb";
@@ -1887,13 +1760,12 @@ export async function LoadSimulation(viewer, data, city) {
                 description: ``,
                 position: positionProperty,
                 model: {
-                    // uri: airplaneUri,
                     uri: AircraftURL,
                     scale: AircraftURLScale
                 },
                 path: new PathGraphics({ width: 0.2 }),
-                orientation: calculateOrientation(positionProperty, dz1), // Use a callback for orientation
-                // orientation: new VelocityOrientationProperty(positionProperty),
+                orientation: calculateOrientation(positionProperty, dz1), // Use a callback for orientation // TODO: FIX ISSUE
+                // orientation: new VelocityOrientationProperty(positionProperty), // TODO: FIX ISSUE
                 allowPicking: false,
             });
             airplaneEntity.availability = new TimeIntervalCollection([new TimeInterval({
@@ -1909,90 +1781,22 @@ export async function LoadSimulation(viewer, data, city) {
             return entitiesArray, positionPropertyArray;
         }
 
-        // function calculateOrientation(positionProperty, takeoffAltitudeThreshold) {
-        //     const velocityOrientation = new Cesium.VelocityOrientationProperty(positionProperty);
-
-        //     return new Cesium.CallbackProperty(function (time, result) {
-        //         // Get the current position and velocity
-        //         try {
-        //             const currentPosition = positionProperty.getValue(time);
-        //             const cartographic = Cartographic.fromCartesian(positionProperty.getValue(time));
-        //             const altitude = cartographic.height;
-        //             console.log('dz1' + takeoffAltitudeThreshold)
-        //             console.log('Altitude' + altitude)
-        //         }
-        //         catch (err) {
-        //             return new VelocityOrientationProperty(positionProperty);
-        //         }
-
-        //         // if (altitude < takeoffAltitudeThreshold) {
-        //         //     console.log('dz1' + takeoffAltitudeThreshold)
-        //         //     console.log('Altitude' + altitude)
-        //         //     if (!currentPosition) {
-        //         //         return result;
-        //         //     }
-
-        //         //     // Use velocity orientation for normal flight
-        //         //     const currentOrientation = velocityOrientation.getValue(time);
-        //         //     if (!currentOrientation) {
-        //         //         return result;
-        //         //     }
-
-        //         //     // Convert the quaternion to HeadingPitchRoll (HPR)
-        //         //     const hpr = Cesium.HeadingPitchRoll.fromQuaternion(currentOrientation);
-
-        //         //     // Handle special case for takeoff and landing when aircraft is near the ground (altitude threshold)
-
-        //         //     // Force aircraft to have a steep pitch for vertical takeoff/landing
-        //         //     hpr.pitch = Cesium.Math.toRadians(0);  // Adjust to straight up or down
-        //         //     hpr.roll = 0;  // Keep roll zero to avoid weird banking during takeoff/landing
-
-
-        //         //     // Convert the adjusted HPR back to a quaternion
-        //         //     return Cesium.Transforms.headingPitchRollQuaternion(
-        //         //         currentPosition,
-        //         //         hpr,
-        //         //     );
-        //         // }
-        //         // else {
-        //         return new VelocityOrientationProperty(positionProperty);
-        //         // }
-        //     }, false);
-        // }
-
-
-
-
-
-
-        // WORKING FOR NYC!!!!!!!!!!!!!!!!!!!
+        // KNOWN ISSUES WORKING FOR NYC ONLY TODO: Fix Function
         function calculateOrientation(positionProperty) {
             const velocityOrientation = new VelocityOrientationProperty(positionProperty, Ellipsoid.WGS84);
 
             return new CallbackProperty(function (time, result) {
-                // Get the velocity-based orientation (which is a quaternion)
                 const currentOrientation = velocityOrientation.getValue(time);
                 if (!currentOrientation) {
                     return result;
                 }
-
-                // Convert the current orientation from quaternion to HeadingPitchRoll (HPR)
                 const hpr = HeadingPitchRoll.fromQuaternion(currentOrientation);
-
-                // Set limits for pitch, heading, and roll
-                const maxPitch = CesiumMath.toRadians(10);  // Limit max pitch (e.g., vertical takeoff/landing)
-                const minPitch = CesiumMath.toRadians(-10); // Limit min pitch (downward during landing)
-                const maxRoll = CesiumMath.toRadians(2);   // Limit max roll (e.g., banking during turns)
-                const minRoll = CesiumMath.toRadians(-2);   // Limit max roll (e.g., banking during turns)
-
-                // Constrain the pitch
+                const maxPitch = CesiumMath.toRadians(10);
+                const minPitch = CesiumMath.toRadians(-10);
+                const maxRoll = CesiumMath.toRadians(2);
+                const minRoll = CesiumMath.toRadians(-2);
                 hpr.pitch = CesiumMath.clamp(hpr.pitch, minPitch, maxPitch);
-
-                // Constrain the roll
                 hpr.roll = CesiumMath.clamp(hpr.roll, minRoll, maxRoll);
-
-                // const fixedFrameTransform = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
-                // Convert the constrained HPR back into a quaternion
                 return Transforms.headingPitchRollQuaternion(
                     positionProperty.getValue(time),
                     hpr,
@@ -2001,185 +1805,12 @@ export async function LoadSimulation(viewer, data, city) {
             }, false);
         }
 
-
-
-
-
-
         entitiesArray, positionPropertyArray = loadModel(positionProperty, entitiesArray, positionPropertyArray, AMI);
-
-        // function calculateOrientation(positionProperty) {
-
-        //     const customOrientationProperty = new CallbackProperty((time, result) => {
-        //         try {
-        //             // Maximum Values
-        //             const maxPitch = CesiumMath.toRadians(5); // Max pitch in radians
-        //             const maxRoll = CesiumMath.toRadians(5);  // Max roll in radians
-        //             // Extract Cuurent Orientation
-        //             const velocityOrientation = new VelocityOrientationProperty(positionProperty, ellipsoid);
-        //             const CurrentvelocityOrientation = velocityOrientation.getValue(time);
-        //             // Extract pitch, roll, and yaw angles from the orientationQuaternion
-        //             const pitchRollYaw = new HeadingPitchRoll.fromQuaternion(CurrentvelocityOrientation);
-        //             // Store the initial orientation values
-        //             const initialOrientation = {
-        //                 heading: pitchRollYaw.heading,
-        //                 pitch: pitchRollYaw.pitch,
-        //                 roll: pitchRollYaw.roll,
-        //                 yaw: pitchRollYaw.yaw
-        //             };
-
-        //             if ((pitchRollYaw.pitch>maxPitch) || (pitchRollYaw.pitch<-maxPitch) || (pitchRollYaw.roll>maxRoll) || (pitchRollYaw.yaw<-maxRoll) || (pitchRollYaw.yaw>maxRoll) || (pitchRollYaw.yaw<-maxRoll))  {
-        //                 return undefined;
-        //             } else {
-        //                 return new VelocityOrientationProperty(positionProperty, ellipsoid);
-        //             }
-
-        //             // Apply pitch limits
-        //             // const center = positionProperty.getValue(time);
-        //             // const heading = pitchRollYaw.heading; //
-        //             // const pitch = CesiumMath.clamp(pitchRollYaw.pitch, -maxPitch, maxPitch);; // pitchRollYaw.pitch; //
-        //             // const roll = CesiumMath.clamp(pitchRollYaw.roll, -maxRoll, maxRoll);//  pitchRollYaw.roll; //
-        //             // const hpr = new HeadingPitchRoll(heading, pitch, roll);
-        //             // const modifiedOrientationQuaternion = Transforms.headingPitchRollQuaternion(center, hpr, ellipsoid);
-        //             // console.log(modifiedOrientationQuaternion)
-        //             //return modifiedOrientationQuaternion;
-        //             //return orientationProperty;
-
-        //             // Check if values changed and log them
-        //             /*if (hpr.heading !== initialOrientation.heading || hpr.pitch !== initialOrientation.pitch ||
-        //             hpr.roll !== initialOrientation.roll) {
-        //               console.log('Orientation values changed:');
-        //               console.log('Initial:', initialOrientation);
-        //               console.log('Modified:', hpr);
-        //             }*/
-
-        //             return modifiedOrientationQuaternion;
-        //         } catch (error) {
-        //             console.log('error in calculating orientation')
-        //             return undefined;//VelocityOrientationProperty(positionProperty, ellipsoid);
-        //         }
-        //     }, false);
-
-        //     return customOrientationProperty;
-
-
-        // }
-
-
-        // function calculateOrientation(position, velocity) {
-        //     // Normalize velocity vector
-        //     const normalizedVelocity = Cesium.Cartesian3.normalize(velocity, new Cesium.Cartesian3());
-
-        //     // Calculate heading, pitch, and roll based on velocity and other factors (e.g., altitude, acceleration)
-        //     const heading = CesiumMath.toDegrees(Math.atan2(normalizedVelocity.y, normalizedVelocity.x));
-        //     const pitch = calculatePitch(position, velocity); // Implement pitch calculation logic
-        //     const roll = 0; // Assuming no roll for simplicity
-
-        //     // Create quaternion from heading, pitch, and roll
-        //     const orientation = Cesium.Quaternion.fromHeadingPitchRoll(CesiumMath.toRadians(heading), CesiumMath.toRadians(pitch), CesiumMath.toRadians(roll));
-
-        //     return orientation;
-        // }
-        // function calculateOrientation(positionProperty) {
-        //     try {
-        //         return new Cesium.CallbackProperty(function (time, result) {
-        //             const position = positionProperty.getValue(time, result);
-        //             if (!position) {
-        //                 console.error('Invalid position:', position);
-        //                 return Cesium.Quaternion.IDENTITY;
-        //             }
-
-        //             const matrix = Cesium.Transforms.eastNorthUpToFixedFrame(position);
-        //             const baseOrientation = Cesium.Matrix4.getRotation(matrix, new Cesium.Matrix3());
-
-        //             // Pitch first, then roll
-        //             const pitchAdjustment = CesiumMath.toRadians(-10); // Example pitch adjustment
-        //             const rollAdjustment = CesiumMath.toRadians(0);    // Example roll adjustment
-
-        //             const pitchQuat = Cesium.Quaternion.fromAxisAngle(Cesium.Cartesian3.UNIT_Y, pitchAdjustment);
-        //             const rollQuat = Cesium.Quaternion.fromAxisAngle(Cesium.Cartesian3.UNIT_X, rollAdjustment);
-
-        //             // Normalize quaternions
-        //             Cesium.Quaternion.normalize(pitchQuat, pitchQuat);
-        //             Cesium.Quaternion.normalize(rollQuat, rollQuat);
-
-        //             // Combine quaternions in the correct order
-        //             const combinedQuat = Cesium.Quaternion.multiply(pitchQuat, rollQuat, new Cesium.Quaternion());
-
-        //             // Apply the combined orientation to the base orientation
-        //             const finalOrientation = Cesium.Quaternion.multiply(baseOrientation, combinedQuat, result);
-
-        //             // Normalize the final orientation
-        //             Cesium.Quaternion.normalize(finalOrientation, finalOrientation);
-
-        //             return finalOrientation;
-        //         }, false);
-        //     } catch { error } {
-        //         return undefined; // new VelocityOrientationProperty(positionProperty);
-        //     }
-
-        // }
-
-
-        //     function calculateOrientation(positionProperty) {
-
-        //         const customOrientationProperty = new CallbackProperty((time, result) => {
-        //             // const center = positionProperty.getValue(time);
-        //             // const cartographicPosition = Cartographic.fromCartesian(center, ellipsoid);
-        //             const altitude = 450;//cartographicPosition.height;
-        //             if (altitude > 400) {
-        //                 console.log('cursing')
-        //                 // return new VelocityOrientationProperty(positionProperty, ellipsoid);
-        //             } else {
-        //                 console.log('takeoff/landing')
-        //                 // return undefined;
-        //             }
-        //             return new VelocityOrientationProperty(positionProperty, ellipsoid);
-        //             // try {
-        //             //     // const maxPitch = CesiumMath.toRadians(5);
-        //             //     // const maxRoll = CesiumMath.toRadians(5);
-        //             //     // const velocityOrientation = VelocityOrientationProperty(positionProperty);
-        //             //     // const CurrentvelocityOrientation = velocityOrientation.getValue(time);
-        //             //     // const pitchRollYaw = HeadingPitchRoll.fromQuaternion(CurrentvelocityOrientation);
-        //             //     // const initialOrientation = {
-        //             //     //     heading: pitchRollYaw.heading,
-        //             //     //     pitch: pitchRollYaw.pitch,
-        //             //     //     roll: pitchRollYaw.roll,
-        //             //     //     yaw: pitchRollYaw.yaw
-        //             //     // };
-        //             //     // const center = positionProperty.getValue(time);
-        //             //     // const cartographicPosition = Cartographic.fromCartesian(center, ellipsoid);
-        //             //     // const altitude = cartographicPosition.height;
-        //             //     // if (altitude > 400) {
-        //             //     // const modifiedOrientationQuaternion = new VelocityOrientationProperty(positionProperty, ellipsoid);
-        //             //     // } else {
-        //             //     // const heading = pitchRollYaw.heading;
-        //             //     // const pitch = CesiumMath.clamp(pitchRollYaw.pitch, -maxPitch, maxPitch);
-        //             //     // const roll = CesiumMath.clamp(pitchRollYaw.roll, -maxRoll, maxRoll);
-        //             //     // const hpr = HeadingPitchRoll(heading, pitch, roll);
-        //             //     // const modifiedOrientationQuaternion = Transforms.headingPitchRollQuaternion(center, hpr); // Ellipsoid.WGS84, Transforms.localFrameToFixedFrameGenerator("north", "west")
-        //             //     // }
-        //             //     return undefined;
-        //             // } catch (error) {
-        //             //     // console.log(error)
-        //             //     return new VelocityOrientationProperty(positionProperty, ellipsoid);
-        //             // }
-        //         }, false);
-
-        //         return customOrientationProperty;
-
-
-        //     }
     }
 
-    ///////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     // Start Vertiport setting
     var VertiportArray = [];
-    // var VertiportArray.Vertiports = [];
-    // var VertiportArray.Takeoffs = [];
-    // var VertiportArray.Landings = [];
-
     async function AddVertiport(VertiportIndex, FunVertiportLocation, FunheadingPositionRoll, FunfixedFrameTransform, VertiportArray) {
         try {
             const vertiport_size = 10;
@@ -2191,7 +1822,6 @@ export async function LoadSimulation(viewer, data, city) {
                 model: {
                     uri: "/OneVertiport.glb",
                     scale: vertiport_obj_size,
-                    // minimumPixelSize: 128
                 },
                 orientation: Cesium.Transforms.headingPitchRollQuaternion(
                     adjusted_FunVertiportLocation,
@@ -2223,47 +1853,6 @@ export async function LoadSimulation(viewer, data, city) {
                 },
                 allowPicking: false,
             });
-            // VertiportArray.Landings.push(VertiPortSphereEntityB);
-            // const modelA = await Cesium.Model.fromGltfAsync({
-            //     url: "/Vertiport.glb",
-            //     scale: 0.5,
-            //     modelMatrix: Cesium.Transforms.headingPitchRollToFixedFrame(
-            //         FunVertiportLocation,
-            //         FunheadingPositionRoll,
-            //         Cesium.Ellipsoid.WGS84,
-            //         FunfixedFrameTransform
-            //     ),
-            // });
-            // viewer.scene.primitives.add(modelA);
-
-            // plotPoint(computeNewPoint(FunVertiportLocation, 0, 17.5, 2));
-            // plotPoint(computeNewPoint(FunVertiportLocation, 0, -17.5, 2));
-            // const VertiPortSphereEntityA = viewer.entities.add({
-            //     name: 'Vertiport:'  + VertiportIndex + 'a - Safety Space',
-            //     description: ``,
-            //     position: computeNewPoint(FunVertiportLocation, 0, 17.5, 0),
-            //     ellipsoid: {
-            //         radii: new Cartesian3(15, 15, 15),
-            //         material: Color.RED.withAlpha(0.1),
-            //         outline: true,
-            //         outlineColor: Color.BLACK.withAlpha(0.2),
-            //     },
-            //     allowPicking: false,
-            // });
-            // VertiportArray.Takeoffs.push(VertiPortSphereEntityA);
-            // const VertiPortSphereEntityB = viewer.entities.add({
-            //     name: 'Vertiport:'  + VertiportIndex + 'b - Safety Space',
-            //     description: ``,
-            //     position: computeNewPoint(FunVertiportLocation, 0, -17.5, 0),
-            //     ellipsoid: {
-            //         radii: new Cartesian3(15, 15, 15),
-            //         material: Color.RED.withAlpha(0.1),
-            //         outline: true,
-            //         outlineColor: Color.BLACK.withAlpha(0.2),
-            //     },
-            //     allowPicking: false,
-            // });
-            // VertiportArray.Landings.push(VertiPortSphereEntityB);
             console.log(VertiportArray)
             console.log('Added Vertiport to array')
             return VertiportArray;
@@ -2272,56 +1861,21 @@ export async function LoadSimulation(viewer, data, city) {
         }
     }
 
-
-    // function rotateEntity(entity, angleOffset) {
-    //     console.log(entity.id)
-    //     const currentOrientation = entity.orientation.getValue(Cesium.JulianDate.now());
-
-    //     // Calculate new orientation (modify existing matrix)
-    //     const rotation = Cesium.Matrix3.fromQuaternion(currentOrientation);
-    //     const rotationMatrix = Cesium.Matrix3.fromRotationZ(CesiumMath.toRadians(angleOffset));
-    //     Cesium.Matrix3.multiply(rotation, rotationMatrix, rotation); // Modify rotation in-place
-
-    //     // Apply new orientation
-    //     entity.orientation = Cesium.Quaternion.fromRotationMatrix(rotation);
-    // }
-    // const VertiportLocationA = Cartesian3.fromDegrees(-73.97618892920757, 40.739661015289336, 10); // NYC NYC Health + Hospitals/Bellevue
-    // const headingPositionRollA = new Cesium.HeadingPitchRoll();
-    // const fixedFrameTransformA = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
-    // AddVertiport(VertiportLocationA, headingPositionRollA, fixedFrameTransformA)
     ////////////////////////////////////////////
     // Add Vertiports.
     var scene = viewer.scene;
-    // scene.globe.depthTestAgainstTerrain = true;
     if (!scene.pickPositionSupported) {
         window.alert("This browser does not support pickPosition.");
     }
     if (!scene.sampleHeightSupported) {
         window.alert("This browser does not support sampleHeight.");
     }
-    // var scene = this.viewer.scene;
     var ellipsoid = scene.globe.ellipsoid;
     var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
-
     var isNetworkSetup = false; //document.getElementById('showNetworkSetup').checked;
-    // function resetVertiportData() {
-    //     fetch('/api/reset_vertiports', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //         body: null,
-    //     })
-    //         .then(response => response.json())
-    //         .then(data => console.log('Server response:', data))
-    //         .catch(error => console.error('Error:', error));
-    // }
 
     function handleNetworkSetup(isNetworkSetup) {
         if (isNetworkSetup) {
-            // Pickup location 
-            // Mouse over the globe to see the cartographic position
-            // handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
             const labelEntity = viewer.entities.add({
                 label: {
                     show: false,
@@ -2329,13 +1883,11 @@ export async function LoadSimulation(viewer, data, city) {
                     font: "14px Latin Modern",
                     horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
                     verticalOrigin: Cesium.VerticalOrigin.TOP,
-                    // pixelOffset: new Cesium.Cartesian2(15, 0),
                 },
             });
 
             handler.setInputAction(function (movement) {
                 let foundPosition = false;
-
                 const scene = viewer.scene;
                 if (scene.mode !== Cesium.SceneMode.MORPHING) {
                     if (scene.pickPositionSupported) {
@@ -2401,31 +1953,6 @@ export async function LoadSimulation(viewer, data, city) {
 
             }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
-
-
-
-            // function addObjectAndSaveData(cartesian, longitudeDeg, latitudeDeg, heightDeg) {
-            //     try {
-            //         const VertiportLocation = cartesian;
-            //         const headingPositionRollVertiport = new Cesium.HeadingPitchRoll();
-            //         const fixedFrameTransformVertiport = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
-            //         AddVertiport(VertiportLocation, headingPositionRollVertiport, fixedFrameTransformVertiport)
-            //         // const point = viewer.entities.add({
-            //         //     name: ['Vertiport:' + longitudeDeg, latitudeDeg, heightDeg],
-            //         //     position: VertiportLocation,
-            //         //     point: {
-            //         //         color: Cesium.Color.RED,
-            //         //         pixelSize: 30,
-            //         //     },
-            //         // });
-            //         console.log('Added Vertiport at ' + longitudeDeg, latitudeDeg, heightDeg)
-            //         // return modelVertipot;
-            //     } catch (error) {
-            //         console.error("Error loading model:", error);
-            //     }
-
-            // }
-
             function calculateNEUDistances(center, VertiportLocation) {
                 const transformMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(center);
                 const inverseTransformMatrix = Cesium.Matrix4.inverse(transformMatrix, new Cesium.Matrix4());
@@ -2449,8 +1976,6 @@ export async function LoadSimulation(viewer, data, city) {
                     const fixedFrameTransformVertiport = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
                     VertiportArray = AddVertiport(VertiportIndex, VertiportLocation, headingPositionRollVertiport, fixedFrameTransformVertiport, VertiportArray);
                     const neuDistances = calculateNEUDistances(center, VertiportLocation);
-
-                    // Save Vertiport data
                     const VertiportInfo = {
                         index: VertiportIndex,
                         longitude: longitudeDeg,
@@ -2489,9 +2014,7 @@ export async function LoadSimulation(viewer, data, city) {
                     .catch(error => console.error('Error:', error));
             }
         } else {
-            // labelEntity.label.show = false;
             handler.setInputAction(function (movement) {
-                // console.log('Network Setup is off')
             }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
             handler.setInputAction(function (event) {
                 console.log('Network Setup is off')
@@ -2499,26 +2022,18 @@ export async function LoadSimulation(viewer, data, city) {
         }
     }
 
-    // const VertiportLocationB = Cartesian3.fromDegrees(-73.98795424274152, 40.71316991516138, 30); // NYC Gotham Hospital
-
     // Function to rotate a specific entity
     function rotateEntity(entityRotated, angleOffset) {
         console.log(entityRotated)
         console.log('Rotating in' + angleOffset + 'degrees')
         const currentOrientation = entityRotated.orientation.getValue(Cesium.JulianDate.now());
-
-        // Calculate new orientation
         const rotation = Cesium.Matrix3.fromQuaternion(currentOrientation);
         const rotationMatrix = Cesium.Matrix3.fromRotationZ(CesiumMath.toRadians(angleOffset));
         const newRotation = Cesium.Matrix3.multiply(rotation, rotationMatrix, new Cesium.Matrix3());
-
-        // Apply new orientation
         entityRotated.orientation = Cesium.Quaternion.fromRotationMatrix(newRotation);
         return entityRotated;
     }
-    // Load setting if needed.
     if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
-        // Fetch and load fixed Vertiport settings from JSON file
         var FetchVertiportFileName = '/FixedVertiportsSettings_V2_NYC.json';
         switch (city) {
             case "NYC":
@@ -2554,262 +2069,16 @@ export async function LoadSimulation(viewer, data, city) {
             })
             .catch(error => console.error('Error loading fixed Vertiport settings:', error));
     }
-
     // End Vertiport setting
     ///////////////////////////////////////////////////////////////////////////////////////
-
-    ///////////////////////////////////////////////////////////////////////////////////////
-    // Start Pedestrian setting
-    var PedestrianArray = [];
-    async function AddPedestrian(PedestrianIndex, FunPedestrianLocation, FunPheadingPositionRoll, FunfixedFrameTransform, PedestrianArray) {
-        try {
-            const entityPedestrian = viewer.entities.add({
-                name: "Pedestrian " + PedestrianIndex,
-                position: FunPedestrianLocation,
-                model: {
-                    uri: "/YS_Human.glb",
-                    scale: 1,
-                    // minimumPixelSize: 128
-                },
-                orientation: Cesium.Transforms.headingPitchRollQuaternion(
-                    FunPedestrianLocation,
-                    FunPheadingPositionRoll,
-                    Ellipsoid.WGS84,
-                    FunfixedFrameTransform
-                )
-            });
-            PedestrianArray.push(entityPedestrian);
-            const PedestrianSphereEntityA = viewer.entities.add({
-                name: 'Pedestrian ' + PedestrianIndex + ' - Safety Space',
-                description: ``,
-                position: computeNewPoint(FunPedestrianLocation, 0, 0, 0),
-                ellipsoid: {
-                    radii: new Cartesian3(2, 2, 2),
-                    material: Color.YELLOW.withAlpha(0.05),
-                    outline: true,
-                    outlineColor: Color.BLACK.withAlpha(0.05),
-                },
-                allowPicking: false,
-            });
-            const opEntity = viewer.entities.add({
-                name: "Pedestrian " + PedestrianIndex,
-                position: FunPedestrianLocation,
-                point: {
-                    pixelSize: 2,
-                    color: Color.RED.withAlpha(0.1),
-                    markerSymbol: 'X'
-                },
-                allowPicking: false,
-            });
-            console.log(PedestrianArray)
-            console.log('Added Pedestrian to array')
-            return PedestrianArray;
-        } catch (error) {
-            console.log(`Failed to load Pedestrian. ${error}`);
-        }
-    }
-
-    var isPedestrianSetup = false; //document.getElementById('showNetworkSetup').checked;
-    function handlePedestrianSetup(isPedestrianSetup) {
-        if (isPedestrianSetup) {
-            // Pickup location 
-            // Mouse over the globe to see the cartographic position
-            // handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
-            const labelEntity = viewer.entities.add({
-                label: {
-                    show: false,
-                    showBackground: true,
-                    font: "14px Latin Modern",
-                    horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
-                    verticalOrigin: Cesium.VerticalOrigin.TOP,
-                    // pixelOffset: new Cesium.Cartesian2(15, 0),
-                },
-            });
-
-            handler.setInputAction(function (movement) {
-                let foundPosition = false;
-
-                const scene = viewer.scene;
-                if (scene.mode !== Cesium.SceneMode.MORPHING) {
-                    if (scene.pickPositionSupported) {
-                        const cartesian = viewer.scene.pickPosition(
-                            movement.endPosition
-                        );
-
-                        if (Cesium.defined(cartesian)) {
-                            const cartographic = Cesium.Cartographic.fromCartesian(
-                                cartesian
-                            );
-                            const longitudeString = CesiumMath.toDegrees(
-                                cartographic.longitude
-                            ).toFixed(2);
-                            const latitudeString = CesiumMath.toDegrees(
-                                cartographic.latitude
-                            ).toFixed(2);
-                            const heightString = cartographic.height.toFixed(2);
-
-                            labelEntity.position = cartesian;
-                            labelEntity.label.show = true;
-                            labelEntity.label.text =
-                                `Lon: ${`   ${longitudeString}`.slice(-7)}\u00B0` +
-                                `\nLat: ${`   ${latitudeString}`.slice(-7)}\u00B0` +
-                                `\nAlt: ${`   ${heightString}`.slice(-7)}m`;
-
-                            labelEntity.label.eyeOffset = new Cesium.Cartesian3(
-                                0.0,
-                                0.0,
-                                -cartographic.height *
-                                (scene.mode === Cesium.SceneMode.SCENE2D ? 1.5 : 1.0)
-                            );
-
-                            foundPosition = true;
-                        }
-                    }
-                }
-
-                if (!foundPosition) {
-                    labelEntity.label.show = false;
-                }
-            }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-
-            handler.setInputAction(function (event) {
-                var cartesian = scene.camera.pickEllipsoid(event.position, ellipsoid);
-                const lonLat = Cesium.Cartographic.fromCartesian(cartesian);
-                const longitudeDeg = CesiumMath.toDegrees(lonLat.longitude);
-                const latitudeDeg = CesiumMath.toDegrees(lonLat.latitude);
-                const cartographic = new Cesium.Cartographic();
-                const objectsToExclude = [];
-                cartographic.longitude = lonLat.longitude;
-                cartographic.latitude = lonLat.latitude;
-                let Checkheight;
-                if (scene.sampleHeightSupported) {
-                    Checkheight = scene.sampleHeight(cartographic, objectsToExclude);
-                }
-                if (Cesium.defined(Checkheight)) {
-                    cartographic.height = Checkheight;
-                }
-                const heightDeg = cartographic.height;
-                const adjustedCartesian = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, cartographic.height); // Adjust height
-                addPObjectAndSaveData(adjustedCartesian, longitudeDeg, latitudeDeg, heightDeg, PedestrianArray);
-
-            }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-
-            function calculateNEUDistances(center, PedestrianDataLocation) {
-                const transformMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(center);
-                const inverseTransformMatrix = Cesium.Matrix4.inverse(transformMatrix, new Cesium.Matrix4());
-
-                const localPosition = new Cesium.Cartesian3();
-                Cesium.Matrix4.multiplyByPoint(inverseTransformMatrix, PedestrianDataLocation, localPosition);
-
-                return {
-                    north: localPosition.y,
-                    east: localPosition.x,
-                    up: localPosition.z
-                };
-            }
-            const PedestrianData = [];
-            var PedestrianIndex = 0;
-
-            function addPObjectAndSaveData(cartesian, longitudeDeg, latitudeDeg, heightDeg, PedestrianArray) {
-                try {
-                    const PedestrianLocation = cartesian;
-                    const headingPositionRollPedestrian = new Cesium.HeadingPitchRoll();
-                    const fixedFrameTransformPedestrian = Cesium.Transforms.localFrameToFixedFrameGenerator("north", "west");
-                    PedestrianArray = AddPedestrian(PedestrianIndex, PedestrianLocation, headingPositionRollPedestrian, fixedFrameTransformPedestrian, PedestrianArray);
-                    const neuDistances = calculateNEUDistances(center, PedestrianLocation);
-
-                    // Save Pedestrian data
-                    const PedestrianInfo = {
-                        index: PedestrianIndex,
-                        longitude: longitudeDeg,
-                        latitude: latitudeDeg,
-                        height: heightDeg,
-                        cartesian: {
-                            x: cartesian.x,
-                            y: cartesian.y,
-                            z: cartesian.z
-                        },
-                        neuDistances: neuDistances,
-                    };
-                    PedestrianData.push(PedestrianInfo);
-                    console.log('Added Pedestrian at ' + longitudeDeg, latitudeDeg, heightDeg);
-                    console.log('Distance of Pedestrian from cetner ' + neuDistances.north, neuDistances.east, neuDistances.up);
-
-                    // Send PedestrianData data to the server
-                    // savePedestrianDataData(PedestrianData);
-                    PedestrianIndex = PedestrianIndex + 1;
-                    return PedestrianArray;
-                } catch (error) {
-                    console.error("Error loading Pedestrian:", error);
-                }
-            }
-
-            function savePedestrianDataData(data) {
-                fetch('/api/save_Pedestrian', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ PedestrianData: data }),
-                })
-                    .then(response => response.json())
-                    .then(data => console.log('Server response:', data))
-                    .catch(error => console.error('Error:', error));
-            }
-        } else {
-            // labelEntity.label.show = false;
-            handler.setInputAction(function (movement) {
-                // console.log('Pedestrian Setup is off')
-            }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-            handler.setInputAction(function (event) {
-                console.log('Pedestrian Setup is off')
-            }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-        }
-    }
-    // End Pedestrian setting
-    ///////////////////////////////////////////////////////////////////////////////////////
-
-    ///////////////////////////////////////////////////////////////////////////////////////
-    // Start cloud setting
-
-
-    async function AddCloud(centerCloud, startSim, stopSim) {
-        // Initialize the cloud collection
-        var cloudCollection = viewer.scene.primitives.add(new Cesium.CloudCollection());
-
-        // Define the center point for your environment
-        var center = Cesium.Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, 600);
-
-        // Add a cloud near the center point
-        cloudCollection.add({
-            position: center,  // Position of the cloud
-            maximumSize: new Cesium.Cartesian2(1000.0, 800.0),  // Max size of the cloud in meters
-            maximumBrightness: 1,  // Brightness of the cloud (0.0 - 1.0)
-            slice: 1 // Optional: Controls the thickness of the cloud layer (range: 0 to 1)
-        });
-
-        // Move the camera to view the cloud
-        viewer.camera.flyTo({
-            destination: Cesium.Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0 + 500),
-            orientation: {
-                heading: Cesium.Math.toRadians(0.0),
-                pitch: Cesium.Math.toRadians(-45.0),
-                roll: 0.0
-            }
-        });
-
-    }
-    // End cloud setting
-    ///////////////////////////////////////////////////////////////////////////////////////
-
 
     //async function main() {
     // Add Aircraft Data from the simulation
     const dtS = data.SimInfo.dtS;
     const tf = data.SimInfo.tf / dtS;
-    const timeStepInSeconds = 10 * dtS; // for objects dt Plotting, every 00 seconds.
-    const dt = timeStepInSeconds / dtS; // for importing.
-    const totalSeconds = data.SimInfo.tf;//timeStepInSeconds * (tf - 1);
+    const timeStepInSeconds = 10 * dtS;
+    const dt = timeStepInSeconds / dtS;
+    const totalSeconds = data.SimInfo.tf;
     const currentTime = Cesium.JulianDate.now();
     const startSim = currentTime;
     const stopSim = JulianDate.addSeconds(startSim, totalSeconds, new JulianDate());
@@ -2821,14 +2090,11 @@ export async function LoadSimulation(viewer, data, city) {
     viewer.clock.shouldAnimate = false;
     viewer.clock.clockRange = ClockRange.CLAMPED;
     viewer.clock.clockStep = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
-
     var entitiesArray = [];
     var positionPropertyArray = [];
 
     data.ObjAircraft.forEach((ObjAircraft, index) => {
-        if ((index > 0) & (index < 300)) {
-            //const startAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.tda, new JulianDate());
-            //const stopAircraft = new JulianDate.addSeconds(startSim, ObjAircraft.taa, new JulianDate());
+        if ((index > 0) & (index < 250)) { // TODO: Enhance to be unlimited by agents (currently 250)
             const trajectoryPositions = [];
             for (let i = 0; i < ObjAircraft.x.length; i += dt) {
                 const currentPosition = computeNewPoint(center, ObjAircraft.x[i], ObjAircraft.y[i], ObjAircraft.z[i]);
@@ -2837,43 +2103,10 @@ export async function LoadSimulation(viewer, data, city) {
                     latitude: CesiumMath.toDegrees(Cartographic.fromCartesian(currentPosition).latitude),
                     height: Cartographic.fromCartesian(currentPosition).height
                 });
-            } // IF INDEX END
+            }
             AddAircraftMotion(startSim, stopSim, timeStepInSeconds, index + 1, trajectoryPositions, ObjAircraft.AMI, ObjAircraft.status, ObjAircraft.tda, ObjAircraft.taa, ObjAircraft.rs, ObjAircraft.rd, 0, entitiesArray, positionPropertyArray);
         }
     });
-
-    // AddCloud(center, startSim, stopSim);
-
-    // // const url = "/Cesium_Man.glb";
-    // const url = "/CesiumMilkTruck.glb";
-    // // const resource = await IonResource.fromAssetId(2461035);
-
-    // const entity = (viewer.trackedEntity = viewer.entities.add({
-    //     name: url,
-    //     position: positionProperty,
-    //     model: {
-    //         uri: url,
-    //         scale: 1.0
-    //     },
-    // }));
-    // entitiesArray.push(entity);
-    // return entitiesArray;
-
     // Cesium Main End
     //};
 }
-
-//   // LoadSimulation(selectedFilename);
-//   // End Simulation
-//   fetch('/LAATSimData/SimOutput_ObjAircraft.json')
-//     .then(response => response.json())
-//     .then(data => {
-//       LoadSimulation(viewer,data);
-//     })
-//     .catch(error => {
-//       console.error('Error fetching data:', error);
-//     });
-// =================================================================================================================================================
-
-// Export the function to make it available outside this file
-// module.exports = LoadSimulation;
