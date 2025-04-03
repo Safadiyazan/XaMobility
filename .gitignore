@@ -4,12 +4,10 @@ dist/
 mis/
 public/Outputs/*
 public/Samples/*
+pyLAATSimV0200/Outputs/*
 *.json
 *.asv
 *.csv
 *.kml
 *.pkl
 *.mat
-pyLAATSimV0200/DataMAT/
-pyLAATSimV0200/Outputs/
-pyLAATSimV0200/LAATSimV0200Ped/
