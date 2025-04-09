@@ -23,7 +23,7 @@ jsonText = fileread(jsonFilePath);
 vertiportData = jsondecode(jsonText);
 for i=1:size(vertiportData)
     firstVertiport = vertiportData(i);
-    VertiportOD(i,1:3) = [firstVertiport.points.neuDistances.east, firstVertiport.points.neuDistances.north, firstVertiport.points.height+2];
+    VertiportOD(i,1:3) = [firstVertiport.neuDistances.east, firstVertiport.neuDistances.north, firstVertiport.height+2];
 end
 MaxXY = max(max(abs(VertiportOD(:,1))), max(abs(VertiportOD(:,2))));
 MaxXY = 500*ceil(MaxXY/500);
