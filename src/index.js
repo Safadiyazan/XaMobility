@@ -17,7 +17,8 @@ import './css/main.css';
 // Cesium Viewer Setting =================================================================
 import { IonResource, ClockStep, ClockRange, HeadingPitchRoll, VelocityOrientationProperty, PathGraphics, DistanceDisplayCondition, CallbackProperty, TimeInterval, TimeIntervalCollection, SampledPositionProperty, JulianDate, Cartographic, Sun, ShadowMode, Color, Ellipsoid, Matrix4, Transforms, Cesium3DTileset, Cartesian3, createOsmBuildingsAsync, Ion, Math as CesiumMath, Terrain, Viewer } from 'cesium';
 import "cesium/Build/Cesium/Widgets/widgets.css";
-Ion.defaultAccessToken = ''; // TODO: Fill in your Cesium Ion access token here
+import token from '../mis/token.js';
+Ion.defaultAccessToken = token; // Load Cesium Ion access token from external file at ./mis/token.js
 const viewer = new Viewer('cesiumContainer', {
   terrain: Terrain.fromWorldTerrain(),
   imageryProvider: false,
