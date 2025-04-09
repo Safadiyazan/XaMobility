@@ -171,7 +171,7 @@ function Settings() {
                                                     <option value="SF">SF</option>
                                                     <option value="PAR">PAR</option>
                                                     <option value="HK">HK</option>
-                                                    {/* <option value="AS2">VTOL-2R</option> */}
+                                                    <option value="LI">LI</option>
                                                 </Form.Select>
                                             </Form.Group>
                                         </div>
