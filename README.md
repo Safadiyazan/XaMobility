@@ -108,7 +108,7 @@ The generous support of the following institutions is gratefully acknowledged:
 
 ## Collaborators and Special Thanks
 
-Thanks to Kfir Assor, Ayelet Gal-Tzur, Nikolas Geroliminis, Assaf Granot, Ramiz Elaiyan, Nizar Jbara, Miran Khweis, Boris Mirkin, Quan Quan, Tal Zameret, Ron Zehavi, and especially Rao Fu, for their collaboration, discussions, and contributions to the development of this work.
+Thanks to Kfir Assor, BAI Shuangxia, GAO Yang, Ayelet Gal-Tzur, Nikolas Geroliminis, Assaf Granot, Ramiz Elaiyan, Nizar Jbara, Miran Khweis, Lishuai LI, Boris Mirkin, Qing Quan, Rami Sabbagh, Tal Zameret, and Ron Zehavi, and especially Rao Fu, for their collaboration, discussions, and contributions to the development of this work.
 
 ---
 
