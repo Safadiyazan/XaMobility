@@ -21,4 +21,4 @@ pyLAATSimV0200/Archive/
 *.kml
 *.pkl
 *.mat
-!token.js
+token.js
