@@ -1,3 +1,22 @@
+%{
+    CalTFC_Ri - Calculate the Total Fuel Consumption (TFC) for a given aircraft.
+
+    This function computes the Total Fuel Consumption (TFC) based on the
+    simulation information, aircraft object, and settings provided.
+
+    Parameters:
+        TFC (numeric): Initial or previous Total Fuel Consumption value.
+        SimInfo (struct): A structure containing simulation information.
+        ObjAircraft (struct): A structure representing the aircraft object
+                              with relevant properties.
+        Settings (struct): A structure containing configuration and settings
+                           for the simulation.
+
+    Returns:
+        TFC (numeric): Updated Total Fuel Consumption value after calculations.
+%}
+% Author: Yazan Safadi
+% Date Created: 2023-02-08
 function [TFC] = CalTFC_Ri(TFC,SimInfo,ObjAircraft,Settings)
 %%
 dtS = SimInfo.dtS;

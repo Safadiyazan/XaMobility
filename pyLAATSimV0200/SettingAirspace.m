@@ -1,3 +1,28 @@
+% SETTINGAIRSPACE Configures the airspace settings for the simulation.
+%
+%   [Airspace] = SettingAirspace(dx, dy, dz, asStr, UIRun) sets up the
+%   airspace parameters based on the provided inputs.
+%
+%   Inputs:
+%       dx      - The x-dimension size of the airspace (numeric).
+%       dy      - The y-dimension size of the airspace (numeric).
+%       dz      - The z-dimension size of the airspace (numeric).
+%       asStr   - A string specifying the airspace configuration or type.
+%       UIRun   - A flag indicating whether the function is being run
+%                 in a user interface context (logical or numeric).
+%
+%   Outputs:
+%       Airspace - A structure or object containing the configured
+%                  airspace settings.
+%
+%   Example:
+%       Airspace = SettingAirspace(100, 200, 50, 'default', true);
+%
+%   Note:
+%       Ensure that the input dimensions (dx, dy, dz) are positive
+%       and that asStr corresponds to a valid airspace configuration.
+% Author: Yazan Safadi
+% Date Created: 2023-02-08
 function [Airspace] = SettingAirspace(dx,dy,dz,asStr,UIRun)
 Airspace.asStr = asStr;
 disp(UIRun)

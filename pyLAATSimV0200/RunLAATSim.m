@@ -1,3 +1,29 @@
+% RunLAATSim - Executes the LAAT simulation with specified parameters.
+%
+% Syntax:
+%   RunLAATSim(InflowRate, SceStr, asStr)
+%
+% Description:
+%   This function runs the LAAT simulation using the provided inflow rate,
+%   scenario string, and additional settings string. It serves as the main
+%   entry point for configuring and executing the simulation.
+%
+% Inputs:
+%   InflowRate - Numeric value specifying the inflow rate for the simulation.
+%   SceStr     - String specifying the scenario to simulate.
+%   asStr      - String specifying additional settings or parameters.
+%
+% Outputs:
+%   None.
+%
+% Example:
+%   RunLAATSim(10/60, 'Scenario1', 'NYC');
+%
+% Notes:
+%   Ensure that the input parameters are valid and correspond to the
+%   expected formats for the simulation to run correctly.
+% Author: Yazan Safadi
+% Date Created: 2023-02-08
 function [] = RunLAATSim(InflowRate,SceStr,asStr)
 %%
 clc; close all; dbstop if error;
@@ -24,7 +50,7 @@ SimInfo.M = 1:1:Settings.Sim.M; SimInfo.cc = 0;
 dtS = Settings.Sim.dtsim; dtM = Settings.Sim.dtMFD; tf = Settings.Sim.tf;
 SimInfo.dtS = dtS; SimInfo.dtM = dtM; SimInfo.tf = tf;
 SimInfo.pdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,3*size(SimInfo.M,2))); SimInfo.vdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,3*size(SimInfo.M,2))); SimInfo.statusdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2))); SimInfo.ridt = (zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2)));
-TFC = []; TFC.CS = []; TFC.EC = []; 
+TFC = []; TFC.CS = []; TFC.EC = [];
 TFC.EC.ECdt = zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2)); TFC.EC.sumECtdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.sumECqdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.avgECtdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.avgECqdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.sumECdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1);
 %% Aircraft Creation
 waitbar(0,fwaitbar,'Initalizing Aircraft');

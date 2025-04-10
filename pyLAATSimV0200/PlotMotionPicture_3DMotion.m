@@ -1,3 +1,35 @@
+% PlotMotionPicture_3DMotion - Plots a 3D motion picture of the simulation.
+%
+% Syntax:
+%   PlotMotionPicture_3DMotion(SES, SimInfo, ObjAircraft, TFC, Settings)
+%
+% Description:
+%   This function generates a 3D motion picture visualization based on the
+%   simulation data provided. It uses the input parameters to configure
+%   and render the motion of the aircraft or object in a 3D space.
+%
+% Inputs:
+%   SES         - Session data structure containing simulation context.
+%   SimInfo     - Structure containing simulation information and metadata.
+%   ObjAircraft - Object or structure representing the aircraft or object
+%                 being simulated.
+%   TFC         - Time frame control or time-related data for the simulation.
+%   Settings    - Structure containing visualization and plotting settings.
+%
+% Outputs:
+%   None. This function generates a plot as a side effect.
+%
+% Example:
+%   PlotMotionPicture_3DMotion(SES, SimInfo, ObjAircraft, TFC, Settings)
+%
+% Notes:
+%   - Ensure that all input structures are properly initialized before
+%     calling this function.
+%   - This function is designed for visualization purposes and does not
+%     modify the input data.
+%
+% Author: Yazan Safadi
+% Date Created: 2023-02-08
 function [] = PlotMotionPicture_3DMotion(SES,SimInfo,ObjAircraft,TFC,Settings)
 close all;
 AirspaceS = Settings.Airspace;
@@ -184,9 +216,9 @@ for aa = 1:length(ID)
             plot3(pt(1:dt,3*aa-2),pt(1:dt,3*aa-1),pt(1:dt,3*aa),'-','color',[0, 0, 0, 0.25],'LineWidth',1.1)
         end
         plot3([pt(dt,3*aa-2) ObjAircraft(ID(aa)).d(1)],[pt(dt,3*aa-1) ObjAircraft(ID(aa)).d(2)],[pt(dt,3*aa) ObjAircraft(ID(aa)).d(3)],'--','color',[0.3010, 0.7450, 0.9330, 0.25],'LineWidth',1.1)
-                plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rd,0.1,'k') % detection
-                plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).ra,0.5,'y') % avoidance
-                plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.4660, 0.6740, 0.1880]) % safety
+        plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rd,0.1,'k') % detection
+        plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).ra,0.5,'y') % avoidance
+        plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.4660, 0.6740, 0.1880]) % safety
         %         plotCircle(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.4660, 0.6740, 0.1880]) % safety
         % plot3(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),'d','color',[0.4660, 0.6740, 0.1880],'LineWidth',1,'MarkerSize',2) % safety
         %         %         plotCircle(ObjAircraft(ID(aa)).o(1),ObjAircraft(ID(aa)).o(2),ObjAircraft(ID(aa)).o(3),ObjAircraft(ID(aa)).rs,0.1,'k') % origin
@@ -211,10 +243,10 @@ for aa = 1:length(ID)
         hold on;
         plot3(pt(1:dt,3*aa-2),pt(1:dt,3*aa-1),pt(1:dt,3*aa),'-','color',[0, 0, 0, 0.5],'LineWidth',1.1)
         plot3([pt(dt,3*aa-2) ObjAircraft(ID(aa)).d(1)],[pt(dt,3*aa-1) ObjAircraft(ID(aa)).d(2)],[pt(dt,3*aa) ObjAircraft(ID(aa)).d(3)],'--','color',[0.3010, 0.7450, 0.9330, 0.5],'LineWidth',1.1)
-                plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rd,0.1,'k') % detection
-                plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).ra,0.5,'y') % avoidance
-                plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.9290, 0.6940, 0.1250]) % safety
-                % plotCircle(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.9290, 0.6940, 0.1250]) % safety
+        plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rd,0.1,'k') % detection
+        plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).ra,0.5,'y') % avoidance
+        plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.9290, 0.6940, 0.1250]) % safety
+        % plotCircle(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.9290, 0.6940, 0.1250]) % safety
         % plot3(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),'d','color',[0.9290, 0.6940, 0.1250],'LineWidth',1,'MarkerSize',2) % safety
         %         %         plotCircle(ObjAircraft(ID(aa)).o(1),ObjAircraft(ID(aa)).o(2),ObjAircraft(ID(aa)).o(3),ObjAircraft(ID(aa)).rs,0.1,'k') % origin
         %         %         plotCircle(ObjAircraft(ID(aa)).d(1),ObjAircraft(ID(aa)).d(2),ObjAircraft(ID(aa)).d(3),ObjAircraft(ID(aa)).rs,0.1,'k') % origin
@@ -289,9 +321,9 @@ function [titletextGndt] = PlotTFCTS_ndt(Xdata,Ydata,istr,titlePreStr,Color,FigF
 plot(Xdata,Ydata,['--' Marker ''],'color',Color,'LineWidth',LW,'MarkerSize',MS)
 hold on;
 if(CurMarker~="")
-plot(Xdata(end),Ydata(end),['--' CurMarker ''],'color',Color,'LineWidth',LW,'MarkerSize',MS)
-textGndt = {['$' istr '(' sprintf('%0.0f',Xdata(end)) ',' sprintf('%0.0f',Ydata(end)) ')$'];'$\downarrow$'};
-text(Xdata(end),Ydata(end),textGndt,'color',[Color, 0.5],'HorizontalAlignment','center','VerticalAlignment','bottom', 'Interpreter', 'latex','FontSize',0.7*FigFontSize,'FontName','Times')
+    plot(Xdata(end),Ydata(end),['--' CurMarker ''],'color',Color,'LineWidth',LW,'MarkerSize',MS)
+    textGndt = {['$' istr '(' sprintf('%0.0f',Xdata(end)) ',' sprintf('%0.0f',Ydata(end)) ')$'];'$\downarrow$'};
+    text(Xdata(end),Ydata(end),textGndt,'color',[Color, 0.5],'HorizontalAlignment','center','VerticalAlignment','bottom', 'Interpreter', 'latex','FontSize',0.7*FigFontSize,'FontName','Times')
 end
 titletextGndt = ['$\quad' titlePreStr '=(' sprintf('%0.0f',Xdata(end)) ',' sprintf('%0.0f',Ydata(end)) ')$'];
 end
@@ -299,9 +331,9 @@ function [titletextGndt] = PlotTFCTS_udt(Xdata,Ydata,istr,titlePreStr,Color,FigF
 stairs([Xdata 2*Xdata(end)-Xdata(end-1)],[Ydata Ydata(end)],['--' Marker ''],'color',Color,'LineWidth',LW,'MarkerSize',MS)
 hold on;
 if(CurMarker~="")
-plot(Xdata(end),Ydata(end),['--' CurMarker ''],'color',Color,'LineWidth',LW,'MarkerSize',MS)
-textGndt = {['$' istr '(' sprintf('%0.0f',Xdata(end)) ',' sprintf('%0.1f',Ydata(end)) ')$'];'$\downarrow$'};
-text(Xdata(end),Ydata(end),textGndt,'color',[Color, 0.5],'HorizontalAlignment','center','VerticalAlignment','bottom', 'Interpreter', 'latex','FontSize',0.7*FigFontSize,'FontName','Times')
+    plot(Xdata(end),Ydata(end),['--' CurMarker ''],'color',Color,'LineWidth',LW,'MarkerSize',MS)
+    textGndt = {['$' istr '(' sprintf('%0.0f',Xdata(end)) ',' sprintf('%0.1f',Ydata(end)) ')$'];'$\downarrow$'};
+    text(Xdata(end),Ydata(end),textGndt,'color',[Color, 0.5],'HorizontalAlignment','center','VerticalAlignment','bottom', 'Interpreter', 'latex','FontSize',0.7*FigFontSize,'FontName','Times')
 end
 titletextGndt = ['$\quad' titlePreStr '=(' sprintf('%0.0f',Xdata(end)) ',' sprintf('%0.1f',Ydata(end)) ')$'];
 end

@@ -1,3 +1,23 @@
+% AircraftController - Controls the aircraft simulation based on the provided settings.
+%
+% Syntax:
+%   [SimInfo, ObjAircraft] = AircraftController(SimInfo, ObjAircraft, Settings)
+%
+% Inputs:
+%   SimInfo     - (struct) A structure containing simulation information, such as time, state, and other relevant data.
+%   ObjAircraft - (object) An object representing the aircraft, containing its properties and methods.
+%   Settings    - (struct) A structure containing configuration settings for the aircraft controller.
+%
+% Outputs:
+%   SimInfo     - (struct) Updated simulation information after applying the controller logic.
+%   ObjAircraft - (object) Updated aircraft object after applying the controller logic.
+%
+% Description:
+%   This function serves as the main controller for the aircraft simulation. It updates the simulation
+%   information and the aircraft object based on the provided settings and the current state of the simulation.
+%
+% Author: Rao Fu
+% Date Created: 2021-05-10
 function [SimInfo,ObjAircraft] = AircraftController(SimInfo,ObjAircraft,Settings)
 Sim = Settings.Sim;
 Aircraft = Settings.Aircraft;

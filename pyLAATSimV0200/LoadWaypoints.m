@@ -1,3 +1,23 @@
+% LoadWaypoints - Loads waypoint paths from a specified directory.
+%
+% Syntax:
+%   [WaypointPaths] = LoadWaypoints(asStr, public_dir)
+%
+% Inputs:
+%   asStr      - A string or parameter specifying the waypoint data to load.
+%   public_dir - The directory path where waypoint files are stored.
+%
+% Outputs:
+%   WaypointPaths - A structure or array containing the loaded waypoint paths.
+%
+% Description:
+%   This function reads waypoint data from the specified directory and
+%   returns the paths in a structured format. The input 'asStr' determines
+%   the specific waypoints to load, and 'public_dir' specifies the base
+%   directory containing the waypoint files.
+%
+% Author: Yazan Safadi
+% Date Created: 2025-03-27
 function [WaypointPaths] = LoadWaypoints(asStr, public_dir)
 switch asStr
     case 'LI'

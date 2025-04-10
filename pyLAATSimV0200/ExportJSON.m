@@ -1,3 +1,26 @@
+% ExportJSON - Exports simulation data to a JSON file.
+%
+% Syntax:
+%   [scenarioName] = ExportJSON(SceStr, SimInfo, ObjAircraft, TFC, Settings)
+%
+% Inputs:
+%   SceStr      - Structure containing scenario data.
+%   SimInfo     - Structure containing simulation information.
+%   ObjAircraft - Object or structure representing aircraft data.
+%   TFC         - Traffic data or related structure.
+%   Settings    - Structure containing export settings and configurations.
+%
+% Outputs:
+%   scenarioName - Name of the exported scenario file.
+%
+% Description:
+%   This function takes simulation data, including scenario details,
+%   simulation information, aircraft objects, traffic data, and settings,
+%   and exports it to a JSON file. The function returns the name of the
+%   exported scenario file.
+%
+% Author: Yazan Safadi
+% Date Created: 2023-02-08
 function [scenarioName] = ExportJSON(SceStr,SimInfo,ObjAircraft,TFC,Settings)
 M = SimInfo.M(end); % number of aircraft
 full_pdt = full(SimInfo.pdt)'; % tranform position matrix
@@ -9,16 +32,16 @@ for i = 1:M
     z = double(full_pdt(3*i, :)); % z position [m]
     stat = double(full_stat(i, :));  % aircraft flight staus {0-inactive, 1-active, 2-arrived}
     ObjAircraftData{i} = struct(...
-    'AMI', ObjAircraft(i).AMI,...
-    'stat', stat,...
-    'tda',max(ObjAircraft(i).tdp,0),... % aircraft departure time [s]
-    'taa',min(ObjAircraft(i).taa,SimInfo.tf),... % aircraft arrival time [s]
-    'rs',ObjAircraft(i).rs,... % aircraft safety radius [m]
-    'rd',ObjAircraft(i).rd,... % aircraft detection radius [m]
-    'x', x,...
-    'y', y,...
-    'z', z...
-    );
+        'AMI', ObjAircraft(i).AMI,...
+        'stat', stat,...
+        'tda',max(ObjAircraft(i).tdp,0),... % aircraft departure time [s]
+        'taa',min(ObjAircraft(i).taa,SimInfo.tf),... % aircraft arrival time [s]
+        'rs',ObjAircraft(i).rs,... % aircraft safety radius [m]
+        'rd',ObjAircraft(i).rd,... % aircraft detection radius [m]
+        'x', x,...
+        'y', y,...
+        'z', z...
+        );
 end
 Data.TFC = TFC;
 Data.SimInfo.tf = SimInfo.tf; % simulation final time [s]

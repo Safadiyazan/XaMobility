@@ -1,3 +1,18 @@
+%{
+InitAircraftObj - Initializes the aircraft object and updates simulation information.
+
+Inputs:
+    SimInfo  - A structure containing simulation information and parameters.
+    Settings - A structure containing configuration settings for the aircraft.
+
+Outputs:
+    SimInfo     - Updated simulation information structure.
+    ObjAircraft - Initialized aircraft object.
+
+    /C:/DEV/app/pyLAATSimV0200/InitAircraftObj.m
+%}
+% Author: Yazan Safadi
+% Date Created: 2023-02-08
 function [SimInfo,ObjAircraft] = InitAircraftObj(SimInfo,Settings)
 ObjAircraft = struct();
 Airspace = Settings.Airspace;
@@ -42,7 +57,7 @@ for aa = 1:Sim.M
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODVertiports(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground Two Regions Uniformly
         % ObjAircraft(aa).wp  = AircraftRouteTL(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs); % waypoints
         ObjAircraft(aa).wp  = AircraftRouteTL_MultiLayer(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs,ObjAircraft(aa).AMI); % waypoints
-
+        
     elseif(Airspace.SubsetNetwork)
         ObjAircraft(aa).VTOL = 0;
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODBoundary(Airspace,ObjAircraft(aa).rd); % origin and desitation at the boundaries
@@ -114,7 +129,7 @@ switch AMI
             rs = mean(range);
         end
     case 3 % PAV
-         if ((range(2)-range(1))>0)
+        if ((range(2)-range(1))>0)
             rs = range(1) + ((range(2)-range(1))/2) + randi((range(2)-range(1))/2);
         else
             rs = mean(range);

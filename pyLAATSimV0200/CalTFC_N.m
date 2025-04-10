@@ -1,3 +1,24 @@
+% CalTFC_N - Calculate the Total Fuel Consumption (TFC) for a given simulation.
+%
+% Syntax:
+%   [TFC] = CalTFC_N(TFC, SimInfo, ObjAircraft, Settings)
+%
+% Inputs:
+%   TFC         - Initial Total Fuel Consumption value (numeric).
+%   SimInfo     - Structure containing simulation information (struct).
+%   ObjAircraft - Object or structure representing the aircraft (struct or object).
+%   Settings    - Structure containing configuration settings (struct).
+%
+% Outputs:
+%   TFC - Updated Total Fuel Consumption value (numeric).
+%
+% Description:
+%   This function calculates the Total Fuel Consumption (TFC) based on the
+%   provided simulation information, aircraft object, and settings. It updates
+%   the TFC value accordingly.
+%
+% Author: Yazan Safadi
+% Date Created: 2023-02-08
 function [TFC] = CalTFC_N(TFC,SimInfo,ObjAircraft,Settings)
 %%
 dtS = SimInfo.dtS;
@@ -73,18 +94,18 @@ AverageSpeedAircraft = TravelDistanceAircraft./TravelTimeAircraft';
 % Which aircraft exitted
 NexitAircraft =  [ExitAircraft~=(t+dtS)]';
 % Cleanning Double or Short Trip.
-    ExcCond = and((TravelDistanceAircraft<=4*cat(1,ObjAircraft(ActiveAircraft).ra)'),or((TravelTimeAircraft<5)',(AverageSpeedAircraft<5)));
-    if any(ExcCond)
-        ExcludedAircraft = ExcCond;
-        NexitAircraft(ExcludedAircraft) = 0;
-        %TravelTimeAircraft(ExcludedAircraft) = 0;
-        TravelDistanceAircraft(ExcludedAircraft) = 0;
-        AverageSpeedAircraft(ExcludedAircraft) = 0;
-    else
-        ExcludedAircraft = zeros(size(AverageSpeedAircraft));
-    end
-    %if (sum(NexitAircraft)~=nexit); warning('detected short trip'); end
-    TripLengthAircraft = TravelDistanceAircraft(NexitAircraft);
+ExcCond = and((TravelDistanceAircraft<=4*cat(1,ObjAircraft(ActiveAircraft).ra)'),or((TravelTimeAircraft<5)',(AverageSpeedAircraft<5)));
+if any(ExcCond)
+    ExcludedAircraft = ExcCond;
+    NexitAircraft(ExcludedAircraft) = 0;
+    %TravelTimeAircraft(ExcludedAircraft) = 0;
+    TravelDistanceAircraft(ExcludedAircraft) = 0;
+    AverageSpeedAircraft(ExcludedAircraft) = 0;
+else
+    ExcludedAircraft = zeros(size(AverageSpeedAircraft));
+end
+%if (sum(NexitAircraft)~=nexit); warning('detected short trip'); end
+TripLengthAircraft = TravelDistanceAircraft(NexitAircraft);
 % Travel time - Calculate statsitics
 TFC.N.TTT(t/dtM) = sum(TravelTimeAircraft);
 TFC.N.sta.ATT(t/dtM) = sum(TravelTimeAircraft)/nT;

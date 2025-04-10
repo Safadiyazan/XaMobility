@@ -1,3 +1,25 @@
+% RunLAATSimUI - Executes the LAAT simulation with specified parameters.
+%
+% Syntax:
+%   [scenarioName] = RunLAATSimUI(InflowRate, NewSettings, SceStr)
+%
+% Inputs:
+%   InflowRate  - Numeric value specifying the inflow rate for the simulation.
+%   NewSettings - Structure containing new settings or parameters for the simulation.
+%   SceStr      - String specifying the scenario name or description.
+%
+% Outputs:
+%   scenarioName - String representing the name of the executed simulation scenario.
+%
+% Description:
+%   This function runs the LAAT simulation using the provided inflow rate,
+%   settings, and scenario string. It returns the name of the executed scenario.
+%
+% Note:
+% This function is part of the LAAT simulation framework and is not designed to be run independently. This function is called by Flask API to run the simulation and return the results.
+%
+% Author: Yazan Safadi
+% Date Created: 2024-03-05
 function [scenarioName] = RunLAATSimUI(InflowRate,NewSettings,SceStr)
 clc; close all; dbstop if error;
 close all force; close all hidden;
@@ -27,7 +49,7 @@ SimInfo.M = 1:1:Settings.Sim.M; SimInfo.cc = 0;
 dtS = Settings.Sim.dtsim; dtM = Settings.Sim.dtMFD; tf = Settings.Sim.tf;
 SimInfo.dtS = dtS; SimInfo.dtM = dtM; SimInfo.tf = tf;
 SimInfo.pdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,3*size(SimInfo.M,2))); SimInfo.vdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,3*size(SimInfo.M,2))); SimInfo.statusdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2))); SimInfo.ridt = (zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2)));
-TFC = []; TFC.CS = []; TFC.EC = []; 
+TFC = []; TFC.CS = []; TFC.EC = [];
 TFC.EC.ECdt = zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2)); TFC.EC.sumECtdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.sumECqdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.avgECtdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.avgECqdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.sumECdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1);
 %% Aircraft Creation
 disp(['Initalizing Aircraft']);

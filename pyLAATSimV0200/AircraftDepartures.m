@@ -1,3 +1,23 @@
+% AircraftDepartures - Simulates the departure of aircraft in the simulation.
+%
+% Syntax:
+%   [SimInfo, ObjAircraft] = AircraftDepartures(SimInfo, ObjAircraft)
+%
+% Inputs:
+%   SimInfo     - A structure containing simulation information and parameters.
+%   ObjAircraft - An object or structure representing the aircraft in the simulation.
+%
+% Outputs:
+%   SimInfo     - Updated simulation information after processing departures.
+%   ObjAircraft - Updated aircraft object or structure after departure simulation.
+%
+% Description:
+%   This function handles the simulation of aircraft departures within the
+%   simulation environment. It updates the simulation information and the
+%   aircraft object to reflect the changes caused by the departure process.
+%
+% Author: Yazan Safadi
+% Date Created: 2023-02-08
 function [SimInfo,ObjAircraft] = AircraftDepartures(SimInfo,ObjAircraft)
 Mina = SimInfo.Mina;
 Mque = SimInfo.Mque;

@@ -1,3 +1,21 @@
+%{
+    Function: SettingAircraft
+    Description: Configures the aircraft settings based on the provided
+                 maximum velocity and turn radius.
+
+    Inputs:
+        - Vmax: Maximum velocity of the aircraft (numeric).
+        - Rs: Turn radius of the aircraft (numeric).
+
+    Outputs:
+        - Aircraft: A structure containing the configured aircraft settings.
+
+    Usage:
+        [Aircraft] = SettingAircraft(Vmax, Rs);
+
+%}
+% Author: Yazan Safadi
+% Date Created: 2023-02-08
 function [Aircraft] = SettingAircraft(Vmax,Rs)
 Aircraft.rs_range = [Rs(1);Rs(2)];% Safety radius [m]
 gr = 1.8;

@@ -1,3 +1,25 @@
+% PlotMotionPicture - Generates a motion picture plot for the simulation.
+%
+% Syntax:
+%   PlotMotionPicture(SES, SimInfo, ObjAircraft, TFC, Settings)
+%
+% Inputs:
+%   SES         - A structure containing the simulation execution settings.
+%   SimInfo     - A structure containing simulation information and metadata.
+%   ObjAircraft - An object or structure representing the aircraft data.
+%   TFC         - Traffic control or related data for the simulation.
+%   Settings    - A structure containing additional settings for the plot.
+%
+% Outputs:
+%   None. This function generates a plot as a side effect.
+%
+% Description:
+%   This function creates a motion picture plot based on the provided
+%   simulation data, aircraft information, and settings. It is used to
+%   visualize the motion of aircraft or other objects in the simulation.
+%
+% Author: Yazan Safadi
+% Date Created: 2023-02-08
 function [] = PlotMotionPicture(SES,SimInfo,ObjAircraft,TFC,Settings)
 close all;
 AirspaceS = Settings.Airspace;
@@ -130,14 +152,14 @@ function [] = PlotAirspaceLayersDesign(AirspaceS,FigFontSize)
 zz = cat(1,AirspaceS.Regions.B(:).xyz);
 unizz = unique(zz(:,3));
 for li=1:size(unizz,1)
-        PlotCube([AirspaceS.xyz(:,1:2), [unizz(li);unizz(li)]],'black',0.01,'black',0.1,1,'--','none',1,'flat');
+    PlotCube([AirspaceS.xyz(:,1:2), [unizz(li);unizz(li)]],'black',0.01,'black',0.1,1,'--','none',1,'flat');
 end
 end
 
 function [] = PlotAirspaceBuffersDesign(AirspaceS,FigFontSize)
 bb = cat(1,AirspaceS.Regions.Buffer(:).xyz);
 for li=1:size(bb,1)/2
-        PlotCube(bb(2*li-1:2*li,:),'cyan',0.05,'cyan',0.05,1,'--','none',1,'flat');
+    PlotCube(bb(2*li-1:2*li,:),'cyan',0.05,'cyan',0.05,1,'--','none',1,'flat');
 end
 end
 %
@@ -174,37 +196,37 @@ for aa = 1:length(ID)
             plot3(pt(1:dt,3*aa-2),pt(1:dt,3*aa-1),pt(1:dt,3*aa),'-','color',[0, 0, 0, 0.25],'LineWidth',1.1)
         end
         plot3([pt(dt,3*aa-2) ObjAircraft(ID(aa)).d(1)],[pt(dt,3*aa-1) ObjAircraft(ID(aa)).d(2)],[pt(dt,3*aa) ObjAircraft(ID(aa)).d(3)],'--','color',[0.3010, 0.7450, 0.9330, 0.25],'LineWidth',1.1)
-%         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rd,0.1,'k') % detection
-%         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).ra,0.5,'y') % avoidance
-%         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.4660, 0.6740, 0.1880]) % safety
-%         plotCircle(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.4660, 0.6740, 0.1880]) % safety
+        %         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rd,0.1,'k') % detection
+        %         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).ra,0.5,'y') % avoidance
+        %         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.4660, 0.6740, 0.1880]) % safety
+        %         plotCircle(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.4660, 0.6740, 0.1880]) % safety
         plot3(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),'d','color',[0.4660, 0.6740, 0.1880],'LineWidth',1,'MarkerSize',2) % safety
         %         %         plotCircle(ObjAircraft(ID(aa)).o(1),ObjAircraft(ID(aa)).o(2),ObjAircraft(ID(aa)).o(3),ObjAircraft(ID(aa)).rs,0.1,'k') % origin
         %         %         plotCircle(ObjAircraft(ID(aa)).d(1),ObjAircraft(ID(aa)).d(2),ObjAircraft(ID(aa)).d(3),ObjAircraft(ID(aa)).rs,0.1,'k') % origin
         plot3(ObjAircraft(ID(aa)).o(1),ObjAircraft(ID(aa)).o(2),ObjAircraft(ID(aa)).o(3),'o','color',[0, 0, 0, 0.2],'LineWidth',1,'MarkerSize',2.5)
         plot3(ObjAircraft(ID(aa)).d(1),ObjAircraft(ID(aa)).d(2),ObjAircraft(ID(aa)).d(3),'x','color',[0, 0, 0, 0.2],'LineWidth',1,'MarkerSize',2.5)
-%         plot3([ObjAircraft(ID(aa)).o(1) ObjAircraft(ID(aa)).d(1)],[ObjAircraft(ID(aa)).o(2) ObjAircraft(ID(aa)).d(2)],[ObjAircraft(ID(aa)).o(3) ObjAircraft(ID(aa)).d(3)],'--','color',[0, 0, 0, 0.2],'LineWidth',1.2,'MarkerSize',2.5)
-%         if (ObjAircraft(ID(aa)).VTOL)
-%             for wpi=size(ObjAircraft(ID(aa)).wpta,1):-1:1
-%                 if ObjAircraft(ID(aa)).wpta(wpi)<=tt
-%                     %                 % arrived already.
-%                 elseif (tt<ObjAircraft(ID(aa)).wpta(wpi-1))&&(tt<ObjAircraft(ID(aa)).wpta(wpi))
-%                     plot3([ObjAircraft(ID(aa)).wp(wpi,1) ObjAircraft(ID(aa)).wp(wpi-1,1)],[ObjAircraft(ID(aa)).wp(wpi,2) ObjAircraft(ID(aa)).wp(wpi-1,2)],[ObjAircraft(ID(aa)).wp(wpi,3) ObjAircraft(ID(aa)).wp(wpi-1,3)],':','color',[0, 0, 0, 0.5],'LineWidth',1.1)
-%                 elseif (ObjAircraft(ID(aa)).wpta(wpi-1)<=tt)&&(tt<ObjAircraft(ID(aa)).wpta(wpi))
-%                     plot3([pt(dt,3*aa-2) ObjAircraft(ID(aa)).wp(wpi,1)],[pt(dt,3*aa-1) ObjAircraft(ID(aa)).wp(wpi,2)],[pt(dt,3*aa) ObjAircraft(ID(aa)).wp(wpi,3)],':','color',[0, 0.4470, 0.7410, 0.5],'LineWidth',1.1)
-%                     break;
-%                 end
-%             end
-%         end
+        %         plot3([ObjAircraft(ID(aa)).o(1) ObjAircraft(ID(aa)).d(1)],[ObjAircraft(ID(aa)).o(2) ObjAircraft(ID(aa)).d(2)],[ObjAircraft(ID(aa)).o(3) ObjAircraft(ID(aa)).d(3)],'--','color',[0, 0, 0, 0.2],'LineWidth',1.2,'MarkerSize',2.5)
+        %         if (ObjAircraft(ID(aa)).VTOL)
+        %             for wpi=size(ObjAircraft(ID(aa)).wpta,1):-1:1
+        %                 if ObjAircraft(ID(aa)).wpta(wpi)<=tt
+        %                     %                 % arrived already.
+        %                 elseif (tt<ObjAircraft(ID(aa)).wpta(wpi-1))&&(tt<ObjAircraft(ID(aa)).wpta(wpi))
+        %                     plot3([ObjAircraft(ID(aa)).wp(wpi,1) ObjAircraft(ID(aa)).wp(wpi-1,1)],[ObjAircraft(ID(aa)).wp(wpi,2) ObjAircraft(ID(aa)).wp(wpi-1,2)],[ObjAircraft(ID(aa)).wp(wpi,3) ObjAircraft(ID(aa)).wp(wpi-1,3)],':','color',[0, 0, 0, 0.5],'LineWidth',1.1)
+        %                 elseif (ObjAircraft(ID(aa)).wpta(wpi-1)<=tt)&&(tt<ObjAircraft(ID(aa)).wpta(wpi))
+        %                     plot3([pt(dt,3*aa-2) ObjAircraft(ID(aa)).wp(wpi,1)],[pt(dt,3*aa-1) ObjAircraft(ID(aa)).wp(wpi,2)],[pt(dt,3*aa) ObjAircraft(ID(aa)).wp(wpi,3)],':','color',[0, 0.4470, 0.7410, 0.5],'LineWidth',1.1)
+        %                     break;
+        %                 end
+        %             end
+        %         end
     end
     if SimInfo.statusdt(dt,ID(aa)) == 11
         hold on;
         plot3(pt(1:dt,3*aa-2),pt(1:dt,3*aa-1),pt(1:dt,3*aa),'-','color',[0, 0, 0, 0.5],'LineWidth',1.1)
         plot3([pt(dt,3*aa-2) ObjAircraft(ID(aa)).d(1)],[pt(dt,3*aa-1) ObjAircraft(ID(aa)).d(2)],[pt(dt,3*aa) ObjAircraft(ID(aa)).d(3)],'--','color',[0.3010, 0.7450, 0.9330, 0.5],'LineWidth',1.1)
-%         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rd,0.1,'k') % detection
-%         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).ra,0.5,'y') % avoidance
-%         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.9290, 0.6940, 0.1250]) % safety
-%         plotCircle(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.9290, 0.6940, 0.1250]) % safety
+        %         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rd,0.1,'k') % detection
+        %         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).ra,0.5,'y') % avoidance
+        %         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.9290, 0.6940, 0.1250]) % safety
+        %         plotCircle(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.9290, 0.6940, 0.1250]) % safety
         plot3(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),'d','color',[0.9290, 0.6940, 0.1250],'LineWidth',1,'MarkerSize',2) % safety
         %         %         plotCircle(ObjAircraft(ID(aa)).o(1),ObjAircraft(ID(aa)).o(2),ObjAircraft(ID(aa)).o(3),ObjAircraft(ID(aa)).rs,0.1,'k') % origin
         %         %         plotCircle(ObjAircraft(ID(aa)).d(1),ObjAircraft(ID(aa)).d(2),ObjAircraft(ID(aa)).d(3),ObjAircraft(ID(aa)).rs,0.1,'k') % origin
@@ -228,7 +250,7 @@ for aa = 1:length(ID)
         plot3(ObjAircraft(ID(aa)).o(1),ObjAircraft(ID(aa)).o(2),ObjAircraft(ID(aa)).o(3),'o','color',[0.6350, 0.0780, 0.1840, 0.2],'LineWidth',1,'MarkerSize',2.5)
         plot3(ObjAircraft(ID(aa)).d(1),ObjAircraft(ID(aa)).d(2),ObjAircraft(ID(aa)).d(3),'x','color',[0.827, 0.827, 0.827, 0.2],'LineWidth',1,'MarkerSize',2.5)
         plot3([ObjAircraft(ID(aa)).o(1) ObjAircraft(ID(aa)).d(1)],[ObjAircraft(ID(aa)).o(2) ObjAircraft(ID(aa)).d(2)],[ObjAircraft(ID(aa)).o(3) ObjAircraft(ID(aa)).d(3)],'--','color',[0.827, 0.827, 0.827, 0.2],'LineWidth',1)
-%         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.6350, 0.0780, 0.1840]) % safety
+        %         plotSphere(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),ObjAircraft(ID(aa)).rs,1,[0.6350, 0.0780, 0.1840]) % safety
         plot3(pt(dt,3*aa-2),pt(dt,3*aa-1),pt(dt,3*aa),'d','color',[0.6350, 0.0780, 0.1840],'LineWidth',1,'MarkerSize',2) % safety
     end
 end

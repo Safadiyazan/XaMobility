@@ -1,3 +1,23 @@
+%{
+    CalEC_AG - Calculate Emission Coefficients for Aircraft Group
+
+    This function calculates the emission coefficients (EC) for a given
+    aircraft group based on simulation information and updates the
+    aircraft object accordingly.
+
+    Inputs:
+        EC - A structure or array containing emission coefficient data.
+        SimInfo - A structure containing simulation information and parameters.
+        ObjAircraft - An object or structure representing the aircraft group.
+
+    Outputs:
+        EC - Updated emission coefficient data.
+        ObjAircraft - Updated aircraft object with calculated emission coefficients.
+
+        /C:/DEV/app/pyLAATSimV0200/CalEC_AG.m
+%}
+% Author: Assaf Granot
+% Date Created: 2023-05-01
 function [EC,ObjAircraft] = CalEC_AG(EC,SimInfo,ObjAircraft)
 %%
 t=SimInfo.t;

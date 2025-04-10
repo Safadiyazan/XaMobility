@@ -1,3 +1,23 @@
+% AircraftArrivals - Simulates the arrival of aircraft in the simulation.
+%
+% Syntax:
+%   [SimInfo, ObjAircraft] = AircraftArrivals(SimInfo, ObjAircraft)
+%
+% Inputs:
+%   SimInfo     - A structure containing simulation information and parameters.
+%   ObjAircraft - An object or structure representing the aircraft in the simulation.
+%
+% Outputs:
+%   SimInfo     - Updated simulation information after processing aircraft arrivals.
+%   ObjAircraft - Updated aircraft object or structure after processing arrivals.
+%
+% Description:
+%   This function handles the arrival of aircraft within the simulation environment.
+%   It updates the simulation information and aircraft objects based on the arrival
+%   events and any associated logic.
+%
+% Author: Yazan Safadi
+% Date Created: 2023-02-08
 function [SimInfo,ObjAircraft] = AircraftArrivals(SimInfo,ObjAircraft)
 Mact = SimInfo.Mact;
 Marr = SimInfo.Marr;
