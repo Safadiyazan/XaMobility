@@ -1592,7 +1592,7 @@ export async function LoadSimulation(viewer, data, city) {
             polyline: {
                 positions: polylinePositions,
                 material: Color.DARKGRAY.withAlpha(0.4),
-                width: 1,
+                width: 5,
             },
             allowPicking: false,
         });
@@ -1654,7 +1654,7 @@ export async function LoadSimulation(viewer, data, city) {
             polyline: {
                 positions: completedPathPositions,
                 material: Color.DARKBLUE.withAlpha(0.4),
-                width: 1,
+                width: 3,
             },
             allowPicking: false,
         });
@@ -1672,7 +1672,7 @@ export async function LoadSimulation(viewer, data, city) {
                     color: Color.DARKRED.withAlpha(0.4),
                     dashLength: 8.0,
                 }),
-                width: 1,
+                width: 3,
             },
             allowPicking: false,
         });
