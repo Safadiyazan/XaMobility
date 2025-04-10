@@ -1,14 +1,26 @@
-function [Airspace] = SettingAirspace(dx,dy,dz,asStr)
+function [Airspace] = SettingAirspace(dx,dy,dz,asStr,UIRun)
 Airspace.asStr = asStr;
-if ismember(asStr, {'Subset', 'VTOL'})
-    Airspace.Vertiports = 0;
+disp(UIRun)
+if (UIRun==1)
+    public_dir = './public';
 else
+    public_dir = '../public';
+end
+Airspace.public_dir = public_dir;
+
+if ismember(asStr, {'Subset'})
+    Airspace.Vertiports = 0;
+    Airspace.FixedWaypoints = 0;
+elseif ismember(asStr, {'LI'})
     Airspace.Vertiports = 1;
     Airspace.FixedWaypoints = 1;
+else
+    Airspace.Vertiports = 1;
+    Airspace.FixedWaypoints = 0;
 end
 
 if Airspace.Vertiports
-    [VertiportOD,MaxXY,minDz1] = LoadVertiports(asStr);
+    [VertiportOD,MaxXY,minDz1] = LoadVertiports(asStr,public_dir);
     Airspace.dx = MaxXY*2; % width [m]
     Airspace.dy = MaxXY*2; % length [m]
     Airspace.dz = dz;%Airspace.dz2-Airspace.dz1;  % height [m]
@@ -20,7 +32,7 @@ else
     Airspace.dz1 = 30;  % start at height [m]
 end
 if Airspace.FixedWaypoints
-    [Airspace.WaypointPaths] = LoadWaypoints(asStr);
+    [Airspace.WaypointPaths] = LoadWaypoints(asStr,public_dir);
 end
 Airspace.dz2 = dz+Airspace.dz1; % end at height [m]
 Airspace.xyz = [[-Airspace.dx;Airspace.dx]/2,[-Airspace.dy;Airspace.dy]/2,[[Airspace.dz1;Airspace.dz1]+[0;Airspace.dz]]];

@@ -3,6 +3,7 @@ function [] = RunLAATSim(InflowRate,SceStr,asStr)
 clc; close all; dbstop if error;
 close all force; close all hidden;
 fwaitbar = waitbar(0,'Starting Simulation');
+UIRun = 0;
 SimInfo.RT.TCP_PostRunningTime = [];
 SimInfo.RT.TFCRunningTime = [];
 SimInfo.RT.SimStartTime = datetime;
@@ -14,7 +15,7 @@ if ~exist(SimInfo.SimOutputDirStr, 'dir')
 end
 %% Settings
 waitbar(0,fwaitbar,'Determining Setting');
-[Settings.Airspace] = SettingAirspace(1500,1500,90,asStr); % 20*60*30/3.6,20*60*30/3.6
+[Settings.Airspace] = SettingAirspace(1500,1500,90,asStr,UIRun); % 20*60*30/3.6,20*60*30/3.6
 [Settings.Aircraft] = SettingAircraft([20,20],[10,10]);
 [Settings.Sim] = SettingSimulation(InflowRate,10);
 %% Init Objects
@@ -70,7 +71,7 @@ waitbar(1,fwaitbar,'Exporting Data');
 %% Exporting and Plotting
 % Export Workspace
 close(fwaitbar)
-ExportJSON([SimInfo.SimOutputDirStr 'Results' '_' SimFilename],SimInfo,ObjAircraft,TFC,Settings)
+ExportJSON(['../public/Outputs/' 'SimOutput_' SimFilename],SimInfo,ObjAircraft,TFC,Settings)
 save([SimInfo.SimOutputDirStr 'Trajectories' '_' SimFilename],'-v7.3'); clear SimFilename;
 fwaitbar = waitbar(1,'Finishing Simulation');
 % % Export Video

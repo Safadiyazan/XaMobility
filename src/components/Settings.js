@@ -113,69 +113,77 @@ function Settings() {
                             <Accordion.Item eventKey="1">
                                 <Accordion.Header>Airspace settings</Accordion.Header>
                                 <Accordion.Body>
-                                    <Form className="text-center">
-                                        <div className="row">
+                                    <div className="col">
+                                        <Form.Group controlId="dropdown" className="mb-3">
+                                            <Form.Label>Network:</Form.Label>
+                                            <Form.Select
+                                                name="asStr"
+                                                value={values.asStr}
+                                                onChange={handleChangeString}
+                                            >
+                                                <option value="Subset">Subset</option>
+                                                <option value="NYC">NYC</option>
+                                                <option value="SF">SF</option>
+                                                <option value="PAR">PAR</option>
+                                                <option value="HK">HK</option>
+                                                <option value="LI">LI</option>
+                                            </Form.Select>
+                                        </Form.Group>
+                                    </div>
+                                    {values.asStr === 'Subset' && (
+                                        <>
                                             <div className="col">
-                                                <Form.Group controlId="dx" className="mb-3">
-                                                    <Form.Label>dx [m]:</Form.Label>
-                                                    <Form.Control
-                                                        type="number"
-                                                        value={values.dx}
-                                                        onChange={handleChange}
-                                                        min={500}
-                                                        max={30000}
-                                                        step={500}
-                                                    />
-                                                </Form.Group>
+                                                <div className="mb-3">
+                                                    <p>(Subset) Free-flight scenario with airspace size:</p>
+                                                </div>
                                             </div>
+                                            <Form className="text-center">
+                                                <div className="row">
+                                                    <div className="col">
+                                                        <Form.Group controlId="dx" className="mb-3">
+                                                            <Form.Label>dx [m]:</Form.Label>
+                                                            <Form.Control
+                                                                type="number"
+                                                                value={values.dx}
+                                                                onChange={handleChange}
+                                                                min={500}
+                                                                max={30000}
+                                                                step={500}
+                                                            />
+                                                        </Form.Group>
+                                                    </div>
 
-                                            <div className="col">
-                                                <Form.Group controlId="dy" className="mb-3">
-                                                    <Form.Label>dy [m]:</Form.Label>
-                                                    <Form.Control
-                                                        type="number"
-                                                        value={values.dy}
-                                                        onChange={handleChange}
-                                                        min={500}
-                                                        max={30000}
-                                                        step={500}
-                                                    />
-                                                </Form.Group>
-                                            </div>
+                                                    <div className="col">
+                                                        <Form.Group controlId="dy" className="mb-3">
+                                                            <Form.Label>dy [m]:</Form.Label>
+                                                            <Form.Control
+                                                                type="number"
+                                                                value={values.dy}
+                                                                onChange={handleChange}
+                                                                min={500}
+                                                                max={30000}
+                                                                step={500}
+                                                            />
+                                                        </Form.Group>
+                                                    </div>
 
-                                            <div className="col">
-                                                <Form.Group controlId="dz" className="mb-3">
-                                                    <Form.Label>dz [m]:</Form.Label>
-                                                    <Form.Control
-                                                        type="number"
-                                                        value={values.dz}
-                                                        onChange={handleChange}
-                                                        min={30}
-                                                        max={300}
-                                                        step={10}
-                                                    />
-                                                </Form.Group>
-                                            </div>
-                                        </div>
-                                        <div className="col">
-                                            <Form.Group controlId="dropdown" className="mb-3">
-                                                <Form.Label>Airspace structure:</Form.Label>
-                                                <Form.Select
-                                                    name="asStr"
-                                                    value={values.asStr}
-                                                    onChange={handleChangeString}
-                                                >
-                                                    <option value="Subset">Subset</option>
-                                                    <option value="VTOL">VTOL</option>
-                                                    <option value="NYC">NYC</option>
-                                                    <option value="SF">SF</option>
-                                                    <option value="PAR">PAR</option>
-                                                    <option value="HK">HK</option>
-                                                    <option value="LI">LI</option>
-                                                </Form.Select>
-                                            </Form.Group>
-                                        </div>
-                                    </Form>
+                                                    <div className="col">
+                                                        <Form.Group controlId="dz" className="mb-3">
+                                                            <Form.Label>dz [m]:</Form.Label>
+                                                            <Form.Control
+                                                                type="number"
+                                                                value={values.dz}
+                                                                onChange={handleChange}
+                                                                min={30}
+                                                                max={300}
+                                                                step={10}
+                                                            />
+                                                        </Form.Group>
+                                                    </div>
+                                                </div>
+                                            </Form>
+                                        </>
+                                    )}
                                 </Accordion.Body>
                             </Accordion.Item>
                             <Accordion.Item eventKey="2">

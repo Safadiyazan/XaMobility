@@ -16,6 +16,7 @@ pyLAATSimV0200/Archive/
 !FixedVertiportsSettings_V1_SF.json
 !FixedVertiportsSettings_V1_PAR.json
 !FixedVertiportsSettings_V1_HK.json
+!token.js
 *.asv
 *.csv
 *.kml

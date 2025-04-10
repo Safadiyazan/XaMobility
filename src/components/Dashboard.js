@@ -120,7 +120,7 @@ const Dashboard = () => {
     };
     // =======================================================================================
     // Run and Load Simulation Handles =======================================================
-    const [selectedFile, setSelectedFile] = useState("/Samples/Results_Qin2Subset_2by2_10apm.json");
+    const [selectedFile, setSelectedFile] = useState("/Outputs/Results_Qin2Subset_2by2_10apm.json");
     const [analyticsData, setAnalyticsData] = useState(null);
 
     useEffect(() => {
@@ -188,7 +188,6 @@ const Dashboard = () => {
                 </div>
             </div>
             <br />
-            {/* /* <Settings updateButtonClass={updateButtonClass} /> */}
             <Settings />
             <hr />
             <Accordion defaultActiveKey="0">

@@ -2,6 +2,7 @@ function [scenarioName] = RunLAATSimUI(InflowRate,NewSettings,SceStr)
 clc; close all; dbstop if error;
 close all force; close all hidden;
 disp(['Starting Simulation']);
+UIRun = 1;
 SimInfo.RT.TCP_PostRunningTime = [];
 SimInfo.RT.TFCRunningTime = [];
 SimInfo.RT.SimStartTime = datetime;
@@ -11,11 +12,12 @@ SimInfo.SimOutputDirStr = ['.\Outputs\SimOutput_' datestr(now,'yyyymmdd_hhMMss')
 %% Settings
 disp(['Determining Setting']);
 if (~isempty(NewSettings))
-    [Settings.Airspace] = SettingAirspace(double(NewSettings.Airspace.dx),double(NewSettings.Airspace.dy),double(NewSettings.Airspace.dz),NewSettings.Airspace.asStr);    [Settings.Aircraft] = SettingAircraft([double(NewSettings.Aircraft.VmaxMin);double(NewSettings.Aircraft.VmaxMax)],[double(NewSettings.Aircraft.RsMin);double(NewSettings.Aircraft.RsMax)]);
+    [Settings.Airspace] = SettingAirspace(double(NewSettings.Airspace.dx),double(NewSettings.Airspace.dy),double(NewSettings.Airspace.dz),NewSettings.Airspace.asStr,UIRun);
+    [Settings.Aircraft] = SettingAircraft([double(NewSettings.Aircraft.VmaxMin);double(NewSettings.Aircraft.VmaxMax)],[double(NewSettings.Aircraft.RsMin);double(NewSettings.Aircraft.RsMax)]);
     [Settings.Sim] = SettingSimulation(double(NewSettings.Sim.Qin)/60,10);
     disp(['Inflow aircraft/s:' double(NewSettings.Sim.Qin)/60])
 else
-    [Settings.Airspace] = SettingAirspace(1500,1500,90,'HK');
+    [Settings.Airspace] = SettingAirspace(1500,1500,90,'NYC',UIRun);
     [Settings.Aircraft] = SettingAircraft([10,30],[10,30]);
     [Settings.Sim] = SettingSimulation(InflowRate,10);
 end

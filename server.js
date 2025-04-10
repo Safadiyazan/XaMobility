@@ -109,7 +109,7 @@ app.post('/api/save_settings', async (req, res) => {
     }
 });
 
-const filePath = path.join(__dirname, 'public', 'VertiportsSettings.json');
+const filePath = path.join(__dirname, 'public', 'Vertiports', 'VertiportsSettings.json');
 fs.writeFile(filePath, JSON.stringify([], null, 2), (err) => {
     if (err) {
         console.error('Error resetting vertiport data:', err);

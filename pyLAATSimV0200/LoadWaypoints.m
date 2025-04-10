@@ -1,7 +1,7 @@
-function [WaypointPaths] = LoadWaypoints(asStr)
+function [WaypointPaths] = LoadWaypoints(asStr, public_dir)
 switch asStr
     case 'LI'
-        jsonFilePath = '../public/Waypoints/FixedWaypointSettings_V3_LI.json';
+        jsonFilePath = [public_dir '/Waypoints/FixedWaypointSettings_V3_LI.json'];
     otherwise
         error('error in loading waypoint json')
 end

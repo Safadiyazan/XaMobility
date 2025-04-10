@@ -214,7 +214,7 @@ end
 
 function [o, d] = AircraftODVertiports(AirspaceS,rs,rd)
 if AirspaceS.Vertiports
-    [VertiportOD,MaxXY,minDz1] = LoadVertiports(AirspaceS.asStr);
+    [VertiportOD,MaxXY,minDz1] = LoadVertiports(AirspaceS.asStr,AirspaceS.public_dir);
     ODMat = VertiportOD;
 else
     ODMat = 0.99.*[
@@ -271,8 +271,8 @@ end
 
 %% Waypoints
 function [o,d,wp]  = AircraftFixedPath(AirspaceS,rs)
-[VertiportOD,MaxXY,minDz1] = LoadVertiports(AirspaceS.asStr);
-[WaypointPaths] = LoadWaypoints(AirspaceS.asStr);
+[VertiportOD,MaxXY,minDz1] = LoadVertiports(AirspaceS.asStr,AirspaceS.public_dir);
+[WaypointPaths] = LoadWaypoints(AirspaceS.asStr,AirspaceS.public_dir);
 Pathi = randperm(size(WaypointPaths,2),1);
 o = WaypointPaths{Pathi}(1,:);
 d = WaypointPaths{Pathi}(end,:);
