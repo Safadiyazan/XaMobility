@@ -172,12 +172,20 @@ const Dashboard = () => {
         <div className="container mt-5">
             <h3>Dashboard</h3>
             <div className="form-group text-center">
-                <select className="form-select" id="filenameDropdown" onChange={handleDropdownChange} value={selectedFile}>
+                <label htmlFor="jsonDropdown"><b>Choose a new scenario for display:</b></label>
+                <select className="form-select" id="jsonDropdown" onChange={handleDropdownChange} value={selectedFile}>
                     <option value={selectedFile}>
-                        Choose a sample for display
+                        Choose a new scenario for display
                     </option>
-                    <option value="/Samples/Results_Qin2Subset_2by2_10apm.json">Subset</option>
+                    {jsonFiles.map((file, index) => (
+                        <option key={index} value={'/Outputs/' + file}>
+                            {file}
+                        </option>
+                    ))}
                 </select>
+                <div style={resultContainerStyle}>
+                    <b><center><p className="mt-3">Viewer selected file: {selectedFile}</p></center></b>
+                </div>
             </div>
             <br />
             {/* /* <Settings updateButtonClass={updateButtonClass} /> */}
@@ -210,33 +218,21 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                                 <div className="col-md-3">
-                                    <div id="result-container" className="mt-3" style={resultContainerStyle}></div>
-                                </div>
-                                <div className="col-md-3">
                                     <button
                                         id="restartButton"
                                         className="btn btn-warning btn-block mb-3"
                                         onClick={restart_MatlabCode}
-                                        // disabled={setRestart}
                                     >
                                         Reset engine
                                     </button>
                                 </div>
+                                <div className="col-12">
+                                    <hr />
+                                </div>
+                                <div>
+                                    <div id="result-container" className="mt-3" style={resultContainerStyle}></div>
+                                </div>
                             </div>
-                        </div>
-                        <label htmlFor="jsonDropdown"><b>Choose a new scenario for display:</b></label>
-                        <select className="form-select" id="jsonDropdown" onChange={handleDropdownChange} value={selectedFile}>
-                            <option value={selectedFile}>
-                                Choose a new scenario for display
-                            </option>
-                            {jsonFiles.map((file, index) => (
-                                <option key={index} value={'/Outputs/' + file}>
-                                    {file}
-                                </option>
-                            ))}
-                        </select>
-                        <div style={resultContainerStyle}>
-                            <b><center><p className="mt-3">Viewer selected file: {selectedFile}</p></center></b>
                         </div>
                     </Accordion.Body>
                 </Accordion.Item>
