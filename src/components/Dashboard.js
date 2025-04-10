@@ -17,6 +17,7 @@ const Dashboard = () => {
     // MATLAB Call ===========================================================================
     // ============ MATLAB Code =========================
     const [setRunning, setRunningSuccess] = useState(false);
+    const [setRestart, setRestartSuccess] = useState(true);
 
     const runMatlabCode = async () => {
         const loadingContainer = document.getElementById('loading');
@@ -25,6 +26,7 @@ const Dashboard = () => {
 
         try {
             setRunningSuccess(true);
+            // setRestartSuccess(true);
             loadingContainer.style.display = 'block';
             runButton.classList.remove('btn-primary');
             runButton.classList.remove('btn-success');
@@ -56,6 +58,29 @@ const Dashboard = () => {
             runButton.classList.remove('btn-danger');
         }
     };
+
+    const restart_MatlabCode = async () => {
+        const restartButton = document.getElementById('restartButton');
+        try {
+            // setRestartSuccess(false);
+            restartButton.classList.remove('btn-danger');
+            restartButton.classList.remove('btn-warning');
+            restartButton.classList.add('btn-secondary');
+            const response = await fetch('/api/reset_matlab_engine', {
+                method: 'POST',
+            });
+            console.log('Engine Restarted');
+            restartButton.classList.remove('btn-secondary');
+            restartButton.classList.add('btn-danger');
+            runButton.classList.add('btn-primary');
+            setRunningSuccess(false);
+            // setRestartSuccess(true);
+            // alert('Engine restarted successfully!');
+        } catch (error) {
+            console.error('Error restarting engine:', error);
+            // alert('Error restarting engine: ' + error.message);
+        }
+    }
 
     // =======================================================================================
     const [jsonFiles, setJsonFiles] = useState([]);
@@ -155,7 +180,7 @@ const Dashboard = () => {
                 </select>
             </div>
             <br />
-            {/* <Settings updateButtonClass={updateButtonClass} /> */}
+            {/* /* <Settings updateButtonClass={updateButtonClass} /> */}
             <Settings />
             <hr />
             <Accordion defaultActiveKey="0">
@@ -166,18 +191,17 @@ const Dashboard = () => {
                     <Accordion.Body>
                         <div className="container">
                             <div className="row align-items-center justify-content-center">
-                                <div className="col-md-4">
+                                <div className="col-md-3">
                                     <button
-                                        // ref={runButtonRef}
                                         id="runButton"
                                         className="btn btn-primary btn-block mb-3"
                                         onClick={runMatlabCode}
                                         disabled={setRunning}
                                     >
-                                        Run a new scenario on the server
+                                        Run a new scenario on the engine
                                     </button>
                                 </div>
-                                <div className="col-md-4 text-center">
+                                <div className="col-md-3 text-center">
                                     <div id="loading" style={{ display: 'none' }}>
                                         <p>Running...</p>
                                         <div className="spinner-border" role="status">
@@ -185,8 +209,18 @@ const Dashboard = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-md-4">
+                                <div className="col-md-3">
                                     <div id="result-container" className="mt-3" style={resultContainerStyle}></div>
+                                </div>
+                                <div className="col-md-3">
+                                    <button
+                                        id="restartButton"
+                                        className="btn btn-warning btn-block mb-3"
+                                        onClick={restart_MatlabCode}
+                                        // disabled={setRestart}
+                                    >
+                                        Reset engine
+                                    </button>
                                 </div>
                             </div>
                         </div>

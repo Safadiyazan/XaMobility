@@ -41,6 +41,17 @@ def cleanup():
 def run_matlab_code():
     return runMatlabCode()
 
+@app.route('/reset_matlab_engine', methods=['GET'])
+def restart_matlab_code():
+    global eng
+    try:
+        cleanup()  # Shut down the current MATLAB engine
+        eng = matlab.engine.start_matlab("-nojvm")  # Restart the MATLAB engine
+        eng.addpath('./pyLAATSimV0200', nargout=0)  # Re-add the required path
+        return jsonify({'message': 'MATLAB engine restarted successfully'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @atexit.register
 def cleanup_on_exit():
     cleanup()

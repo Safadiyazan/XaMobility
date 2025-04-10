@@ -77,6 +77,23 @@ app.post('/api/run_matlab_code', async (req, res) => {
     }
 });
 
+app.post('/api/reset_matlab_engine', async (req, res) => {
+    console.log(`Restarting MATLAB`);
+    try {
+        const response = await axios.get('http://127.0.0.1:5000/reset_matlab_engine');
+        if (response.status === 200) {
+            console.log('MATLAB engine restarted successfully.');
+            res.json({ message: 'MATLAB engine restarted successfully.' });
+        } else {
+            console.error('1-Error:', response.data.error);
+            res.status(response.status).json({ error: response.data.error });
+        }
+    } catch (error) {
+        console.error('2-Error:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // =======================================================================================
 // MATLAB Settings =======================================================================
 app.post('/api/save_settings', async (req, res) => {
