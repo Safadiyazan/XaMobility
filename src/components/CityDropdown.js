@@ -7,6 +7,7 @@ const CityDropdown = ({ handleDropdownCityChange, selectedCity }) => {
       <span className="dropdown-city-label">Select City:</span>
       <select id="dropdown-city" onChange={handleDropdownCityChange} value={selectedCity}>
         <option value="NYC">NYC</option>
+        <option value="NAU">NAU</option>
         <option value="SF">SF</option>
         <option value="PAR">PAR</option>
         <option value="ZH">ZH</option>

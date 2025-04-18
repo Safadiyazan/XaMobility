@@ -53,6 +53,14 @@ export async function LoadSimulation(viewer, data, city) {
             }
             var center = Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0); // NYC
             break;
+        case "NAU":
+            if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
+                var dz0 = 0;
+            } else {
+                var dz0 = 480;
+            }
+            var center = Cartesian3.fromDegrees(-73.98435971601633, 40.75171803897241, dz0); // NYC
+            break;
         case "SF":
             if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
                 var dz0 = 0;
@@ -2034,22 +2042,25 @@ export async function LoadSimulation(viewer, data, city) {
         return entityRotated;
     }
     if ((data.Settings.Airspace.Vertiports !== undefined) && (data.Settings.Airspace.Vertiports === 1)) {
-        var FetchVertiportFileName = '/FixedVertiportsSettings_V2_NYC.json';
+        var FetchVertiportFileName = '/Vertiports/FixedVertiportsSettings_V2_NYC.json';
         switch (city) {
             case "NYC":
-                var FetchVertiportFileName = '/FixedVertiportsSettings_V2_NYC.json';
+                var FetchVertiportFileName = '/Vertiports/FixedVertiportsSettings_V2_NYC.json';
+                break;
+            case "NAU":
+                var FetchVertiportFileName = '/Vertiports/FixedVertiportsSettings_V1_NYC_Archer_United.json';
                 break;
             case "PAR":
-                var FetchVertiportFileName = '/FixedVertiportsSettings_V1_PAR.json';
+                var FetchVertiportFileName = '/Vertiports/FixedVertiportsSettings_V1_PAR.json';
                 break;
             case "SF":
-                var FetchVertiportFileName = '/FixedVertiportsSettings_V1_SF.json';
+                var FetchVertiportFileName = '/Vertiports/FixedVertiportsSettings_V1_SF.json';
                 break;
             case "HK":
-                var FetchVertiportFileName = '/FixedVertiportsSettings_V1_HK.json';
+                var FetchVertiportFileName = '/Vertiports/FixedVertiportsSettings_V1_HK.json';
                 break;
             case "LI":
-                var FetchVertiportFileName = '/FixedVertiportsSettings_V2_LI.json';
+                var FetchVertiportFileName = '/Vertiports/FixedVertiportsSettings_V2_LI.json';
                 break;
         }
 

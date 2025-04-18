@@ -123,6 +123,7 @@ function Settings() {
                                             >
                                                 <option value="Subset">Subset</option>
                                                 <option value="NYC">NYC</option>
+                                                <option value="NYC-Archer-United">NYC-Archer-United</option>
                                                 <option value="SF">SF</option>
                                                 <option value="PAR">PAR</option>
                                                 <option value="HK">HK</option>

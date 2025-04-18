@@ -25,6 +25,9 @@ switch asStr
     case 'NYC'
         jsonFilePath = [public_dir '/Vertiports/FixedVertiportsSettings_V2_NYC.json'];
         minDz1 = 400;
+    case 'NYC-Archer-United'
+        jsonFilePath = [public_dir '/Vertiports/FixedVertiportsSettings_V1_NYC_Archer_United.json'];
+        minDz1 = 400;
     case 'SF'
         jsonFilePath = [public_dir '/Vertiports/FixedVertiportsSettings_V1_SF.json'];
         minDz1 = 40;

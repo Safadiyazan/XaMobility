@@ -20,7 +20,7 @@ Aircraft = Settings.Aircraft;
 Sim = Settings.Sim;
 Mina = SimInfo.Mina;
 %% Create Set Vector with Perc.
-ModelsTypes = [0,0,0,1];%[1/4,1/4,1/4,1/4]; %EPAV-1 EUAV-2 PAV-3 UAV-4
+ModelsTypes = [0,0,1,0];%[1/4,1/4,1/4,1/4]; %EPAV-1 EUAV-2 PAV-3 UAV-4
 ModelsVec = [1.*ones(ceil(Sim.M.*ModelsTypes(1)),1);2.*ones(ceil(Sim.M.*ModelsTypes(2)),1);3.*ones(ceil(Sim.M.*ModelsTypes(3)),1);4.*ones(ceil(Sim.M.*ModelsTypes(4)),1)]';
 %%
 for aa = 1:Sim.M
