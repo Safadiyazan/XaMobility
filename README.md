@@ -4,6 +4,9 @@
 
 This repository provides an open-source research tool for simulating and visualizing air mobility (AM) operations in low-altitude airspace.
 
+More info about the research can be viewed in the attached seminar:  
+[![Watch the seminar](https://img.youtube.com/vi/50ZTlQwncGQ/hqdefault.jpg)](https://youtu.be/50ZTlQwncGQ)
+
 ---
 
 ## Usage Notice
@@ -73,6 +76,7 @@ Before using this repository, ensure you have the following installed:
     ```bash
     python -m pip install -r requirements_pip.txt
     ```
+    Please note that it might be that only Flask is needed.
 
 3. **Install Dependencies**  
      Install the required npm packages:  
@@ -108,7 +112,7 @@ The generous support of the following institutions is gratefully acknowledged:
 
 ## Collaborators and Special Thanks
 
-Thanks to Kfir Assor, BAI Shuangxia, GAO Yang, Ayelet Gal-Tzur, Nikolas Geroliminis, Assaf Granot, Ramiz Elaiyan, Nizar Jbara, Miran Khweis, Lishuai LI, Boris Mirkin, Qing Quan, Rami Sabbagh, Tal Zameret, and Ron Zehavi, and especially Rao Fu, for their collaboration, discussions, and contributions to the development of this work.
+Thanks to Kfir Assor, BAI Shuangxia, GAO Yang, Ayelet Gal-Tzur, Nikolas Geroliminis, Assaf Granot, Ramiz Elaiyan, Nizar Jbara, Miran Khweis, Lishuai LI, Boris Mirkin, Quan Quan, Rami Sabbagh, Tal Zameret, and Ron Zehavi, and especially Rao Fu, for their collaboration, discussions, and contributions to the development of this work.
 
 ---
 
