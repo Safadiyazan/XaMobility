@@ -31,7 +31,7 @@ while aa<=LMact
     epsilon_SwitchWaypoint = ObjAircraft(Mact(aa)).rd;
     epsilon_BoundaryControl = ObjAircraft(Mact(aa)).rd;
     epsilon_PreRouting = 2*ObjAircraft(Mact(aa)).rd;
-    if(ObjAircraft(Mact(aa)).status==1)
+    if(ObjAircraft(Mact(aa)).status==1)  % Active aircraft
         if (ObjAircraft(Mact(aa)).wpCR<ObjAircraft(Mact(aa)).wpTR-1)&&(norm(ObjAircraft(Mact(aa)).pt-ObjAircraft(Mact(aa)).wp(ObjAircraft(Mact(aa)).wpCR+1,:)) <= epsilon_SwitchWaypoint)
             ObjAircraft(Mact(aa)).wpCR = ObjAircraft(Mact(aa)).wpCR + 1;
             ObjAircraft(Mact(aa)).wpta  = [ObjAircraft(Mact(aa)).wpta;t];
@@ -53,7 +53,7 @@ while aa<=LMact
         else
             aa = aa + 1;
         end
-    elseif(ObjAircraft(Mact(aa)).status==11)
+    elseif(ObjAircraft(Mact(aa)).status==11) % Boundary queue aircraft
         if (norm(ObjAircraft(Mact(aa)).pt-ObjAircraft(Mact(aa)).wp(ObjAircraft(Mact(aa)).wpCR+1,:))<= epsilon_BoundaryControl)
             if((ObjAircraft(Mact(aa)).ResumeTime(end))<=t)
                 ObjAircraft(Mact(aa)).status = 1;

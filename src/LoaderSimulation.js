@@ -120,12 +120,12 @@ export async function LoadSimulation(viewer, data, city) {
     const cesiumBlue = Color.fromCssColorString('#076790');
     const cesiumGold = Color.fromCssColorString('#D59F0F');
 
-    
+
     var randomNumberVerti = 0;
     ///////////////////////////////////////////////////////////////////////////////////////
     ViewSetting(center, NavigationOn);
     function ViewSetting(center, NavigationOn) {
-        viewer.scene.globe.enableLighting = true; 
+        viewer.scene.globe.enableLighting = true;
         viewer.shadows = true;
         viewer.scene.shadowMode = ShadowMode.ENABLED;
         viewer.shadowMap.maximumDistance = 5000.0;
@@ -1563,10 +1563,11 @@ export async function LoadSimulation(viewer, data, city) {
         AddAircraftMotion(flightData, 1);
     }
 
-    async function AddAircraftMotion(startSim, stopSim, timeStepInSeconds, AircraftIndex, flightData, AMI, statusData, tda, taa, rs, rd, vertical, entitiesArray, positionPropertyArray) {
+    async function AddAircraftMotion(startSim, stopSim, timeStepInSeconds, AircraftIndex, flightData, aircraft_vm, AMI, statusData, tda, taa, rs, rd, vertical, entitiesArray, positionPropertyArray) {
         const startAircraft = new JulianDate.addSeconds(startSim, tda, new JulianDate());
         const stopAircraft = new JulianDate.addSeconds(startSim, taa, new JulianDate());
         const positionProperty = new SampledPositionProperty();
+        const positionSpeedSignProperty = new SampledPositionProperty();
         const polylinePositions = [];
         const polylinePositionsDeg = [];
         // Load and draw waypoints
@@ -1575,6 +1576,9 @@ export async function LoadSimulation(viewer, data, city) {
             const time = JulianDate.addSeconds(startSim, i * timeStepInSeconds, new JulianDate());
             const position = Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height);
             positionProperty.addSample(time, position);
+            const positionSpeedSign = Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height);
+            const adjusted_positionSpeedSign = computeNewPoint(positionSpeedSign, 0, 0, 2 * rs);
+            positionSpeedSignProperty.addSample(time, adjusted_positionSpeedSign);
             polylinePositions.push(position);
             polylinePositionsDeg.push(position);
             const validTime = JulianDate.lessThanOrEquals(time, stop);
@@ -1814,7 +1818,71 @@ export async function LoadSimulation(viewer, data, city) {
         }
 
         entitiesArray, positionPropertyArray = loadModel(positionProperty, entitiesArray, positionPropertyArray, AMI);
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // // Add Speed Sign Model
+
+        const speedEntities = [];
+
+        for (let speed = 10; speed <= 65; speed += 5) {
+            const entity = viewer.entities.add({
+                name: `Speed Sign ${speed}`,
+                position: positionSpeedSignProperty,
+                model: {
+                    uri: `/SpeedSigns/dodecahedron_sign-${speed}.glb`,
+                    scale: rs / 10
+                },
+                show: false, // initially hidden
+                availability: new Cesium.TimeIntervalCollection([
+                    new Cesium.TimeInterval({
+                        start: startAircraft,
+                        stop: stopAircraft
+                    })
+                ]),
+                distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0.0, 45.5),
+                allowPicking: false
+            });
+
+            speedEntities.push(entity);
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // Add Speed Signs Call
+
+        viewer.clock.onTick.addEventListener((clock) => {
+            const timeIndex = Math.floor(
+                Cesium.JulianDate.secondsDifference(clock.currentTime, startSim) / timeStepInSeconds
+            );
+
+            if (timeIndex < aircraft_vm.length) {
+                let currentSpeed = aircraft_vm[timeIndex];
+                if (currentSpeed === -1) {
+                    // If speed is -1, hide all speed signs
+                    for (let i = 0; i < speedEntities.length; i++) {
+                        speedEntities[i].show = false;
+                    }
+                    return; // Exit if speed is -1
+                }
+                else {
+                    // Round to nearest 5 and clamp between 10 and 65
+                    currentSpeed = Math.max(10, Math.min(65, Math.round(currentSpeed / 5) * 5));
+
+                    const index = (currentSpeed - 10) / 5;
+
+                    for (let i = 0; i < speedEntities.length; i++) {
+                        speedEntities[i].show = (i === index);
+                    }
+                }
+            }
+        });
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+
     }
+
+
+
 
     ///////////////////////////////////////////////////////////////////////////////////////
     // Start Vertiport setting
@@ -2107,6 +2175,7 @@ export async function LoadSimulation(viewer, data, city) {
     data.ObjAircraft.forEach((ObjAircraft, index) => {
         if ((index > 0) & (index < 250)) { // TODO: Enhance to be unlimited by agents (currently 250)
             const trajectoryPositions = [];
+            const aircraft_vm = [];
             for (let i = 0; i < ObjAircraft.x.length; i += dt) {
                 const currentPosition = computeNewPoint(center, ObjAircraft.x[i], ObjAircraft.y[i], ObjAircraft.z[i]);
                 trajectoryPositions.push({
@@ -2114,10 +2183,19 @@ export async function LoadSimulation(viewer, data, city) {
                     latitude: CesiumMath.toDegrees(Cartographic.fromCartesian(currentPosition).latitude),
                     height: Cartographic.fromCartesian(currentPosition).height
                 });
+                if (ObjAircraft.vm && ObjAircraft.vm[i] !== undefined) {
+                    aircraft_vm.push(ObjAircraft.vm[i]);
+                }
+                else {
+                    aircraft_vm.push(-1); // Default value if vm is not defined
+                }
             }
-            AddAircraftMotion(startSim, stopSim, timeStepInSeconds, index + 1, trajectoryPositions, ObjAircraft.AMI, ObjAircraft.status, ObjAircraft.tda, ObjAircraft.taa, ObjAircraft.rs, ObjAircraft.rd, 0, entitiesArray, positionPropertyArray);
+            AddAircraftMotion(startSim, stopSim, timeStepInSeconds, index + 1, trajectoryPositions, aircraft_vm, ObjAircraft.AMI, ObjAircraft.status, ObjAircraft.tda, ObjAircraft.taa, ObjAircraft.rs, ObjAircraft.rd, 0, entitiesArray, positionPropertyArray);
         }
     });
+
+
+
     // Cesium Main End
     //};
 }

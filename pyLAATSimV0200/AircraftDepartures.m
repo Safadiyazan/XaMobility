@@ -72,7 +72,7 @@ while aa<=LMque
 end
 clear aa
 aa = 1;
-InActiveAircraftID = Mina(all([( (t+dtS) < (cat(1,ObjAircraft(Mina).tda)) ) , ( (cat(1,ObjAircraft(Mina).tda)) < (t+dtM+dtS) )],2));
+InActiveAircraftID = Mina(all([( (t) < (cat(1,ObjAircraft(Mina).tda)) ) , ( (cat(1,ObjAircraft(Mina).tda)) < (t+dtM+dtS) )],2));
 LMina = size(InActiveAircraftID,2);
 while aa<=LMina
     if (ObjAircraft(Mina(aa)).tda - t) < epsilon

@@ -8,8 +8,6 @@ Inputs:
 Outputs:
     SimInfo     - Updated simulation information structure.
     ObjAircraft - Initialized aircraft object.
-
-    /C:/DEV/app/pyLAATSimV0200/InitAircraftObj.m
 %}
 % Author: Yazan Safadi
 % Date Created: 2023-02-08
@@ -37,8 +35,8 @@ for aa = 1:Sim.M
     ObjAircraft(aa).vct = [0,0,0]; % current  velocity command
     ObjAircraft(aa).vnt = norm(ObjAircraft(aa).vt); % speed
     gain = [5,5,5];
-    ObjAircraft(aa).gain = (eye(length((gain))).*(gain));
-    ObjAircraft(aa).lgain = (eye(length((gain)))./(gain));
+    ObjAircraft(aa).gain = (eye(length((gain))).*(gain)); % gain
+    ObjAircraft(aa).lgain = (eye(length((gain)))./(gain)); % l-gain
     %% Radius
     ObjAircraft(aa).rs = funcRS(Aircraft.rs_range, ObjAircraft(aa).AMI); % safety radius function
     ObjAircraft(aa).ra = 1.5*ObjAircraft(aa).rs; % avoidance radius
@@ -46,33 +44,33 @@ for aa = 1:Sim.M
     ObjAircraft(aa).rd = ObjAircraft(aa).ra + ObjAircraft(aa).rs + 2*ObjAircraft(aa).rv; % detetion radius
     %% Origin, Destiation, Waypoints, positions
     if Airspace.FixedWaypoints
-        ObjAircraft(aa).VTOL = 1;
+        ObjAircraft(aa).VTOL = 1; % idetify the aircraft as VTOL
         [ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).wp]  = AircraftFixedPath(Airspace,ObjAircraft(aa).rs); % waypoints
     elseif (Airspace.VTOL)&&(~Airspace.Vertiports)
-        ObjAircraft(aa).VTOL = 1;
+        ObjAircraft(aa).VTOL = 1; % idetify the aircraft as VTOL
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODGround2R(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground Two Regions Uniformly
         ObjAircraft(aa).wp  = AircraftRouteTL(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs); % waypoints
     elseif (Airspace.VTOL)&&(Airspace.Vertiports)
-        ObjAircraft(aa).VTOL = 1;
+        ObjAircraft(aa).VTOL = 1; % idetify the aircraft as VTOL
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODVertiports(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground Two Regions Uniformly
         % ObjAircraft(aa).wp  = AircraftRouteTL(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs); % waypoints
         ObjAircraft(aa).wp  = AircraftRouteTL_MultiLayer(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs,ObjAircraft(aa).AMI); % waypoints
         
     elseif(Airspace.SubsetNetwork)
-        ObjAircraft(aa).VTOL = 0;
+        ObjAircraft(aa).VTOL = 0; % idetify the aircraft as VTOL
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODBoundary(Airspace,ObjAircraft(aa).rd); % origin and desitation at the boundaries
         ObjAircraft(aa).wp  = AircraftRoute(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d); % waypoints
     else
-        ObjAircraft(aa).VTOL = 0;
+        ObjAircraft(aa).VTOL = 0; % idetify the aircraft as VTOL
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftOD(Airspace,ObjAircraft(aa).rd); % origin and desitation
         ObjAircraft(aa).wp  = AircraftRoute(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d); % waypoints
     end
-    ObjAircraft(aa).wpSet = ObjAircraft(aa).wp;
-    ObjAircraft(aa).wpChange = 0;
-    ObjAircraft(aa).wpRouting = 0;
-    ObjAircraft(aa).wpta  = [0;];
-    ObjAircraft(aa).wpCR  = 1;
-    ObjAircraft(aa).wpTR  = size(ObjAircraft(aa).wp,1);
+    ObjAircraft(aa).wpSet = ObjAircraft(aa).wp; % waypoints set
+    ObjAircraft(aa).wpChange = 0; % idetify if the waypoints are changed
+    ObjAircraft(aa).wpRouting = 0; % idetify if the waypoints are changed for routin strategy
+    ObjAircraft(aa).wpta  = [0;]; % waypoints time arrival
+    ObjAircraft(aa).wpCR  = 1; % current waypoint index
+    ObjAircraft(aa).wpTR  = size(ObjAircraft(aa).wp,1); % total waypoints number
     ObjAircraft(aa).pt = ObjAircraft(aa).o; % current position
     ObjAircraft(aa).fpt = (ObjAircraft(aa).pt) + (ObjAircraft(aa).vt)*(ObjAircraft(aa).lgain); % ObjAircraft(aa).o; % current filterd position
     %% Regions
@@ -96,14 +94,14 @@ for aa = 1:Sim.M
     ObjAircraft(aa).tte = ObjAircraft(aa).tle/ObjAircraft(aa).vm; % expected travel time
     ObjAircraft(aa).tap = ObjAircraft(aa).tdp  + ObjAircraft(aa).tle/ObjAircraft(aa).vm; % planned arrival time
     %% Boundary Control
-    ObjAircraft(aa).fptrd = [];
-    ObjAircraft(aa).nextrit = [];
-    ObjAircraft(aa).BQ = 0;
-    ObjAircraft(aa).LastStopBoundary = [];
-    ObjAircraft(aa).StopBoundary = [];
-    ObjAircraft(aa).StopTime = [];
-    ObjAircraft(aa).ResumeTime = [];
-    ObjAircraft(aa).HoveringTime = [];
+    ObjAircraft(aa).fptrd = []; % filtered position with detetion radius distance
+    ObjAircraft(aa).nextrit = []; % next region index
+    ObjAircraft(aa).BQ = 0; % idetify if the aircraft is in the boundary queue
+    ObjAircraft(aa).LastStopBoundary = []; % last stop boundary index
+    ObjAircraft(aa).StopBoundary = []; % stop boundary indexes set
+    ObjAircraft(aa).StopTime = []; % stop timestamp at the boundary
+    ObjAircraft(aa).ResumeTime = []; % resume timestamp from the boundary to exit
+    ObjAircraft(aa).HoveringTime = []; % total hovering time at the boundary
     ObjAircraft(aa).CurHoveringTime = [];
     %% Energy and Battery
     ObjAircraft(aa).ECtdt = 0;
