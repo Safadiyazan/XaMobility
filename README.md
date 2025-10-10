@@ -9,15 +9,6 @@ More info about the research can be viewed in the attached seminar:
 
 ---
 
-## Usage Notice
-
-Use of this repository requires prior registration.
-
-**Please complete the following form before using or distributing this repository:**  
-📄 [XaMobility Access Form](https://forms.gle/UhkTWUsA5uwBvQDC6)
-
-By accessing or using this repository, you agree not to redistribute the content or use it for commercial purposes without prior written permission from the author.
-
 ## Prerequisites
 
 Before using this repository, ensure you have the following installed:
@@ -72,11 +63,11 @@ Before using this repository, ensure you have the following installed:
      ```
 
 2. **Python Requirements**  
-    Install the required Python packages using the provided `requirements_pip.txt` file:  
+    Install the required Python packages:  
     ```bash
-    python -m pip install -r requirements_pip.txt
+    pip install flask
+    pip install flask_cors
     ```
-    Please note that it might be that only Flask is needed.
 
 3. **Install Dependencies**  
      Install the required npm packages:  
@@ -112,7 +103,7 @@ The generous support of the following institutions is gratefully acknowledged:
 
 ## Collaborators and Special Thanks
 
-Thanks to Kfir Assor, BAI Shuangxia, GAO Yang, Ayelet Gal-Tzur, Nikolas Geroliminis, Assaf Granot, Ramiz Elaiyan, Nizar Jbara, Miran Khweis, Lishuai LI, Boris Mirkin, Quan Quan, Rami Sabbagh, Tal Zameret, and Ron Zehavi, and especially Rao Fu, for their collaboration, discussions, and contributions to the development of this work.
+Thanks to Jack Haddad, Kfir Assor, Shuangxia Bai, Ayelet Gal-Tzur, Yang Gao, Nikolas Geroliminis, Assaf Granot, Ramiz Elaiyan, Nizar Jbara, Miran Khweis, Lishuai LI, Boris Mirkin, Quan Quan, Rami Sabbagh, Tal Zameret, and Ron Zehavi, and especially Rao Fu, for their collaboration, discussions, and contributions to the development of this work.
 
 ---
 
@@ -121,6 +112,25 @@ For questions, feedback, or support, please contact:
 
 ---
 
-## License
+## License & Contributions
 
-This repository is open-source and distributed under the [Apache 2.0 License](LICENSE).
+This project is open-source and available under the [Apache 2.0 License](LICENSE). We welcome contributions from the community.
+
+### How to Contribute
+If you'd like to contribute, please follow the standard workflow:
+
+1.  **Fork** the repository.
+2.  Create a **new branch** for your changes.
+3.  Commit your changes and **submit a pull request**.
+
+For bug reports or feature requests, please [react out](mailto:safadiyazan@gmail.com).
+
+## Citation
+If you use **XaMobility** in your academic or research work, we kindly ask that you cite the relevant publications from this project.
+
+Please cite one or more of the following papers:
+* [https://doi.org/10.1016/j.trc.2023.104141](https://doi.org/10.1016/j.trc.2023.104141)
+* [https://doi.org/10.1016/j.trb.2024.103020](https://doi.org/10.1016/j.trb.2024.103020)
+* [https://doi.org/10.1016/j.ifacol.2024.07.356](https://doi.org/10.1016/j.ifacol.2024.07.356)
+* [https://dx.doi.org/10.2139/ssrn.5237517](https://dx.doi.org/10.2139/ssrn.5237517)
+* [https://dx.doi.org/10.2139/ssrn.5218097](https://dx.doi.org/10.2139/ssrn.5218097)
