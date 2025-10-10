@@ -8,9 +8,7 @@ import { createRoot } from 'react-dom/client';
 // Import components =====================================================================
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
-import About from './components/About';
 import Footer from './components/Footer';
-import Login from './components/Login';
 import './css/main.css';
 
 // =======================================================================================
@@ -34,62 +32,14 @@ const tileset = viewer.scene.primitives.add(
 // =======================================================================================
 // App UI ================================================================================
 function App() {
-  
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState('');
-
-  const handleLogin = async (username) => {
-    try {
-      setUsername(username);
-      setIsAuthenticated(true);
-      localStorage.setItem('username', username);
-      console.log('Login successful');
-    } catch (error) {
-      console.error('Error during login:', error);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      const response = await fetch('/api/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', 
-      });
-
-      if (response.ok) {
-        setIsAuthenticated(false);
-        setUsername('');
-        localStorage.removeItem('username');
-        console.log('Logout successful');
-      } else {
-        console.error('Logout failed');
-      }
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
-  };
-
   return (
     <div>
       <Router>
         <div className="d-flex flex-column min-vh-100">
-          <Header
-            isAuthenticated={isAuthenticated}
-            onLoginButtonClick={() => console.log('Navigate to login page')}
-            username={username}
-            onLogout={handleLogout}
-          />
+          <Header />
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" />} />
-            <Route
-              path="/dashboard"
-              element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
-            />
-            <Route path="/login" element={<Login onLogin={handleLogin} />} />
-            <Route path="/about" element={<About />} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
           <Footer />
         </div>
