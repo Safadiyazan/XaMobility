@@ -20,6 +20,8 @@ function [w_opt,MPCSim] = TCP_SpeedControl_MPC_Macro(SimInfo,ObjAircraft,Setting
 %
 %   This is a "macro" function as it operates entirely on the macroscopic,
 %   aggregated model.
+% Author: Yazan Safadi
+% Date Created: 2025-02-09
 %%
 disp('[WARN] TCP_SpeedControl_MPC_Macro: Function is in testing phase and may need updates.');
 import casadi.*

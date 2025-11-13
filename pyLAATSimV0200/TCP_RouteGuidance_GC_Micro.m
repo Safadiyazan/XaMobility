@@ -17,6 +17,8 @@ function [TFC,ObjAircraft,SimInfo] = TCP_RouteGuidance_GC_Micro(SimInfo,ObjAircr
 %
 %   This is a "greedy" controller because it chooses the best path based only
 %   on current conditions, without predicting how traffic will evolve.
+% Author: Yazan Safadi
+% Date Created: 2023-04-10
 dtC = SimInfo.dtC;
 dtS = SimInfo.dtS;
 t = SimInfo.t;

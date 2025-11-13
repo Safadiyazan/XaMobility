@@ -1,3 +1,45 @@
+%
+% Author: Yazan Safadi
+% Date Created: 2023-09-20
+%
+%
+% This function implements a centralized Model Predictive Control (MPC) strategy
+% for tactical air traffic flow management in a two-region airspace system.
+% The control objective is to mitigate congestion and optimize traffic flow by
+% regulating departure rates and inter-regional boundary flows.
+%
+% The system is modeled using a macroscopic approach based on the Macroscopic
+% Fundamental Diagram (MFD), which relates the number of aircraft in a region
+% to the region's overall outflow capacity. This allows for a computationally
+% efficient representation of large-scale traffic dynamics.
+%
+% The controller uses the CasADi optimization framework to solve the nonlinear
+% MPC problem.
+%
+% System States (x):
+% The state vector represents the number of aircraft in various locations:
+%   - x11T, x12T: Aircraft in region 1, destined for region 1 and 2 respectively.
+%   - x21T, x22T: Aircraft in region 2, destined for region 1 and 2 respectively.
+%   - x1T, x2T: Total number of aircraft in region 1 and region 2.
+%   - x1DQ, x2DQ: Aircraft in the departure queues for region 1 and 2.
+%   - x12Q, x21Q: Aircraft in the boundary queues from region 1 to 2, and 2 to 1.
+%
+% Control Inputs (u):
+% The control inputs are the decision variables for the MPC:
+%   - ud1, ud2: Departure release rates for region 1 and 2 (departure metering).
+%   - ub12I, ub21I: Inflow rates for boundary crossing between regions (internal boundary control).
+%   - ub12O, ub21O: Outflow rates from boundary queues (boundary queue release).
+%
+% MPC Formulation:
+% The MPC solves an optimal control problem over a finite prediction horizon (Np)
+% at each time step. The objective function is quadratic and aims to:
+%   1. Drive the number of aircraft in each flying region towards a desired
+%      reference (e.g., the critical density for maximum flow).
+%   2. Minimize the size of departure and boundary queues.
+%   3. Minimize control effort to avoid aggressive changes.
+%
+% The system dynamics are modeled as a set of nonlinear ordinary differential
+% equations (ODEs) and are integrated using a 4th-order Runge-Kutta method.
 function [ud_opt,ub_opt,MPCSim] = TCP_DBControl_MPC_Macro(SimInfo,ObjAircraft,Settings,TFC,ttt)
 %%
 import casadi.*

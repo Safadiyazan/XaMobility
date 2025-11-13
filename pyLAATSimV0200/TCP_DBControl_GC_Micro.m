@@ -23,6 +23,8 @@ function [TFC,ObjAircraft,SimInfo] = TCP_DBControl_GC_Micro(SimInfo,ObjAircraft,
 %   Settings    - (struct) Simulation settings.
 %   TFC         - (struct) Current Traffic Flow Characteristics data.
 %   t           - (numeric) The current simulation time.
+% Author: Yazan Safadi
+% Date Created: 2023-09-20
 t = SimInfo.t;
 dtC = SimInfo.dtC;
 dtS = SimInfo.dtS;

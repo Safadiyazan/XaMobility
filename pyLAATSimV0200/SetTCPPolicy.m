@@ -14,6 +14,8 @@
 %
 % Outputs:
 %   TFC - (struct) The updated TFC structure with policy flags and parameters set.
+% Author: Yazan Safadi
+% Date Created: 2025-11-13
 function [TFC] = SetTCPPolicy(TFC)
 
 % --- Define Active TCP Policy ---

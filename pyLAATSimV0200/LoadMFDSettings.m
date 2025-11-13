@@ -15,6 +15,8 @@ function [TFC] = LoadMFDSettings(TFC, Settings, public_dir, regionIndices, numLa
 %
 %   These functions and parameters are stored in the `TFC` structure for use
 %   by the traffic control modules.
+% Author: Yazan Safadi
+% Date Created: 2025-11-13
 numRegions = numel(regionIndices);
 
 disp(['[INFO] LoadMFDSettings: Loading MFD data for ', num2str(numLayers), ' layer(s) and ', num2str(numRegions), ' unique region(s) per layer with indices: [', num2str(regionIndices), '].']);

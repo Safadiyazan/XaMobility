@@ -15,6 +15,8 @@
 %   Settings    - (struct) Simulation settings, including TCP flags.
 %   TFC         - (struct) Current Traffic Flow Characteristics data.
 %   t           - (numeric) The current simulation time.
+% Author: Yazan Safadi
+% Date Created: 2023-03-23
 function [TFC,ObjAircraft,SimInfo] = TCP_Post(SimInfo,ObjAircraft,Settings,TFC,t)
 if Settings.TFC.TCP_DBController_GC
     disp(['[INFO] t=', num2str(t), 's - Activating TCP_DBControl_GC_Micro']);

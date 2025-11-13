@@ -21,6 +21,8 @@ function [TFC,ObjAircraft,SimInfo] = TCP_SpeedControl_MPC_Micro(SimInfo,ObjAircr
 %   Settings    - (struct) Simulation settings.
 %   TFC         - (struct) Current Traffic Flow Characteristics data.
 %   t           - (numeric) The current simulation time.
+% Author: Yazan Safadi
+% Date Created: 2025-02-09
 t = SimInfo.t;
 dtC = SimInfo.dtC;
 dtS = SimInfo.dtS;

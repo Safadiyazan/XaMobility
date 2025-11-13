@@ -18,6 +18,8 @@
 %
 % Outputs:
 %   TFC - (struct) The Traffic Flow Characteristics structure, now populated with control settings.
+% Author: Yazan Safadi
+% Date Created: 2023-03-23
 function [TFC] = SettingTrafficControl(Settings, UIRun)
 if (UIRun==1)
     public_dir = './public';
