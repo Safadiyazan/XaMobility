@@ -48,6 +48,9 @@ Before using this repository, ensure you have the following installed:
     ```
     For more details, refer to the [MATLAB Engine API for Python Documentation](https://www.mathworks.com/help/matlab/matlab_external/get-started-with-matlab-engine-for-python.html).
 
+- **Casadi**  
+    [CasADi](https://web.casadi.org/) is required to use the MPC framework. [1, 4, 7, 8, 9, 10] Download the package for MATLAB, unzip it, and add it to your MATLAB path. [1, 3, 5] For more details, see the [installation guide](https://web.casadi.org/get/). [1, 5]
+
 - **Git**  
     Install Git for version control: [git-scm.com](https://git-scm.com/).
 
