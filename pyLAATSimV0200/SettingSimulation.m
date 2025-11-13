@@ -1,3 +1,22 @@
+%SettingSimulation Configures the core simulation timing and demand parameters.
+%   This function sets up the fundamental parameters that govern the
+%   simulation's execution, including its duration, time steps, and the
+%   profile of aircraft demand over time.
+%
+%   The function defines:
+%   - `dtsim`: The microscopic simulation time step [s].
+%   - `dtMFD`: The time interval for aggregating macroscopic data [s].
+%   - `InflowRate`: The base rate of aircraft arrivals [aircraft/s].
+%   - A demand profile (`switchtime`, `switchvalue`): A time-varying profile
+%     that modulates the base inflow rate, allowing for simulations of
+%     peak and off-peak traffic periods.
+%
+% Inputs:
+%   InflowRate - (numeric) The base rate of aircraft entering the simulation [aircraft/s].
+%   tfStr      - (numeric) An identifier to select a predefined demand profile.
+%
+% Outputs:
+%   Sim - (struct) A structure containing all simulation timing and demand settings.
 function [Sim] = SettingSimulation(InflowRate,tfStr)
 %% simulation time step
 Sim.dtsim=double(0.5); %step time(s) should be smaller then rs/vm

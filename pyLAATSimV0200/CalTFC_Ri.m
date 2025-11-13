@@ -1,20 +1,26 @@
-%{
-    CalTFC_Ri - Calculate the Total Fuel Consumption (TFC) for a given aircraft.
-
-    This function computes the Total Fuel Consumption (TFC) based on the
-    simulation information, aircraft object, and settings provided.
-
-    Parameters:
-        TFC (numeric): Initial or previous Total Fuel Consumption value.
-        SimInfo (struct): A structure containing simulation information.
-        ObjAircraft (struct): A structure representing the aircraft object
-                              with relevant properties.
-        Settings (struct): A structure containing configuration and settings
-                           for the simulation.
-
-    Returns:
-        TFC (numeric): Updated Total Fuel Consumption value after calculations.
-%}
+%CalTFC_Ri Calculates region-specific macroscopic Traffic Flow Characteristics (TFC).
+%   This function disaggregates the simulation data by airspace region to
+%   compute macroscopic variables for each defined region. This is crucial
+%   for multi-region traffic control strategies.
+%
+%   The function performs the following steps for each region:
+%   1. Identifies aircraft that were active, in departure queues, or in
+%      boundary queues within that region during the last time interval.
+%   2. Calculates region-specific metrics like accumulation, flow, density,
+%      and speed.
+%   3. Computes inter-region transfer metrics, such as the number of aircraft
+%      originating from, destined for, or heading towards other regions.
+%   4. Calculates region-specific delays (departure and boundary queues).
+%   5. Aggregates and stores these values in the `TFC.Ri` structure array.
+%
+% Inputs:
+%   TFC         - (struct) The main Traffic Flow Characteristics data structure.
+%   SimInfo     - (struct) Simulation information, including historical state data.
+%   ObjAircraft - (struct) Array of aircraft objects.
+%   Settings    - (struct) Simulation settings, including airspace region definitions.
+%
+% Outputs:
+%   TFC - (struct) The updated TFC structure with new region-specific data.
 % Author: Yazan Safadi
 % Date Created: 2023-02-08
 function [TFC] = CalTFC_Ri(TFC,SimInfo,ObjAircraft,Settings)
@@ -23,12 +29,12 @@ dtS = SimInfo.dtS;
 dtM = SimInfo.dtM;
 t = SimInfo.t;
 Airspace = Settings.Airspace;
-%% MFD data anaylsis
+%% MFD data analysis
 tk0 = ((t-dtM)/dtM)*(dtM/dtS)+1;
 tk1 = (t/dtM)*(dtM/dtS)+1;
 tdt = [(tk0-1)*dtS:dtS:(tk1-1)*dtS]';
 Ri = cat(1,Airspace.Regions.B.ri);
-%% Status Matrices
+%% Status Matrices for the last time interval
 % Check who was active in the last time period
 StatusActivedt = double(SimInfo.statusdt(tk0:tk1,:)==1);
 ActiveAircraft = unique([1:size(SimInfo.statusdt,2)].*(StatusActivedt))';
@@ -58,6 +64,7 @@ clear StatusBouQueueddt
 uniRi = unique(Ri);
 for i=1:size(uniRi,1)
     TFC.Ri(i).ri = uniRi(i);
+    % Filter aircraft and data for the current region 'i'
     Current_RiActiveAircraftdt = double(RegionActivedt == uniRi(i));
     ActiveAircraftRi = unique([1:size(SimInfo.statusdt,2)].*Current_RiActiveAircraftdt)';
     ActiveAircraftRi(ActiveAircraftRi==0) = [];
@@ -66,7 +73,7 @@ for i=1:size(uniRi,1)
     %%
     nT = size(ActiveAircraftRi,2);
     n = sum(Status_Current_RiActiveAircraftdt(end,:));
-    nexit = nT-n;
+    nexit = nT-n; % Number of aircraft that exited the region
     %% nij matrix accumulation according to regions
     [Risortted, Riorder] = sort(uniRi);
     ActiveAircraftRitk = ActiveAircraftRi(Status_Current_RiActiveAircraftdt(end,:)==1);
@@ -94,7 +101,7 @@ for i=1:size(uniRi,1)
     ActiveAircraftRirih = cat(1,ObjAircraft(ActiveAircraftRi).nextrit);
     ActiveAircraftRirihcounts = hist(ActiveAircraftRirih,Risortted);
     nihT(Riorder) = ActiveAircraftRirihcounts;
-    %% Calculate Aircraft Enterance and Exitted Times.
+    %% Calculate Aircraft Entrance and Exit Times for the region.
     time_Change_RiActiveAircraftdt = [tdt(1:end)].*[zeros(1,size(Status_Current_RiActiveAircraftdt,2));diff(Status_Current_RiActiveAircraftdt)];
     EnterAircraftRi = [max(time_Change_RiActiveAircraftdt,[],1)'];
     EnterAircraftRi = max(t-dtM+dtS,EnterAircraftRi);
@@ -107,7 +114,7 @@ for i=1:size(uniRi,1)
     diffdxyz = repelem(Status_Current_RiActiveAircraftdt,1,3).*[zeros(1,size(pdt_Current_ActiveAircraftdt,2));diff(pdt_Current_ActiveAircraftdt)];
     TravelDistanceAircraft =  vecnorm(reshape(sum(diffdxyz),3,[]));
     AverageSpeedAircraft = TravelDistanceAircraft./TravelTimeAircraft';
-    NexitAircraft =  [ExitAircraftRi~=(t+dtS)]';
+    NexitAircraft =  [ExitAircraftRi~=(t+dtS)]'; % Boolean vector of exited aircraft
     % Cleanning Double or Short Trip.
     ExcCond = and((TravelDistanceAircraft<=4*cat(1,ObjAircraft(ActiveAircraftRi).ra)'),or((TravelTimeAircraft<5)',(AverageSpeedAircraft<5)));
     if any(ExcCond)
@@ -282,4 +289,3 @@ for i=1:size(uniRi,1)
     TFC.EC.Ri(i).ECt_G(t/dtM) = TFC.EC.Ri(i).ECt(t/dtM)./TFC.Ri(i).G(t/dtM);
 end
 end
-

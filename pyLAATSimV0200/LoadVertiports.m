@@ -1,22 +1,24 @@
-% LoadVertiports - Loads vertiport data and computes related parameters.
+%LoadVertiports Loads vertiport location data from a JSON file.
+%   This function reads a JSON file containing the coordinates and other
+%   data for a set of vertiports corresponding to a specific urban area.
+%   It is used to set up simulations where aircraft operate between
+%   predefined vertiport locations.
 %
-% Syntax:
-%   [VertiportOD, MaxXY, minDz1] = LoadVertiports(asStr, public_dir)
+%   The function performs the following steps:
+%   1. Selects the appropriate JSON file based on the airspace string (`asStr`).
+%   2. Reads and decodes the JSON file.
+%   3. Extracts the East, North, and Up (height) coordinates for each vertiport.
+%   4. Calculates the maximum X/Y extent of the vertiport network, which is
+%      used to set the airspace dimensions.
 %
 % Inputs:
-%   asStr      - A string input specifying the configuration or data source.
-%   public_dir - A string specifying the directory path to public data.
+%   asStr      - (string) A string identifier for the airspace (e.g., 'NYC', 'SF').
+%   public_dir - (string) The path to the public data directory.
 %
 % Outputs:
-%   VertiportOD - Output data structure or matrix containing vertiport information.
-%   MaxXY       - Maximum X and Y coordinates of the loaded vertiports.
-%   minDz1      - Minimum vertical displacement or related parameter.
-%
-% Description:
-%   This function processes the input parameters to load vertiport data
-%   from the specified directory and computes additional parameters such
-%   as maximum X/Y coordinates and minimum vertical displacement.
-%
+%   VertiportOD - (matrix) An N-by-3 matrix of vertiport coordinates [East, North, Up].
+%   MaxXY       - (numeric) The maximum absolute coordinate value, used to size the airspace.
+%   minDz1      - (numeric) The minimum flight altitude for the given airspace.
 % Author: Yazan Safadi
 % Date Created: 2024-07-05
 function [VertiportOD,MaxXY,minDz1] = LoadVertiports(asStr, public_dir)

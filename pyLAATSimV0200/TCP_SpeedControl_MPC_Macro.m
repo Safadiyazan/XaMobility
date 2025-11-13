@@ -1,4 +1,25 @@
 function [w_opt,MPCSim] = TCP_SpeedControl_MPC_Macro(SimInfo,ObjAircraft,Settings,TFC,ttt)
+%TCP_SpeedControl_MPC_Macro Formulates and solves the MPC optimization problem for speed control.
+%   This function contains the core of the Model Predictive Control (MPC)
+%   for the speed control policy. It uses the CasADi optimization framework
+%   to solve a nonlinear optimal control problem.
+%
+%   The function performs these steps:
+%   1. Defines the state variables (regional accumulations) and control
+%      variables (speed control ratios `w_i`).
+%   2. Formulates the system dynamics using the MFD-based model, where the
+%      outflow `G(n)` is scaled by the control input `w_i`.
+%   3. Defines the objective function, which aims to minimize a weighted sum
+%      of the total network energy consumption (derived from the eLMFD) and
+%      the control effort.
+%   4. Sets up the constraints, including state bounds and control bounds.
+%   5. Calls the IPOPT solver (via CasADi) to find the optimal sequence of
+%      speed control ratios over the prediction horizon.
+%   6. Returns the first control action from the optimal sequence to be
+%      applied to the simulation.
+%
+%   This is a "macro" function as it operates entirely on the macroscopic,
+%   aggregated model.
 %%
 disp('[WARN] TCP_SpeedControl_MPC_Macro: Function is in testing phase and may need updates.');
 import casadi.*

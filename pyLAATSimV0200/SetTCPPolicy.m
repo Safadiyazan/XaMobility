@@ -1,5 +1,20 @@
+%SetTCPPolicy Configures the active Traffic Control Policy (TCP) for the simulation.
+%   This function acts as a high-level switch to select which traffic
+%   management strategy will be active during a simulation run. It sets flags
+%   and parameters within the TFC (Traffic Flow Characteristics) structure
+%   that are used by other functions to dispatch the correct control logic.
+%
+%   The function defines:
+%   1. The active policy type (e.g., Departure/Boundary Control, Speed Control).
+%   2. The controller type (e.g., Greedy Controller, Model Predictive Control).
+%   3. The specific weighting strategy for MPC, if applicable.
+%
+% Inputs:
+%   TFC - (struct) The main Traffic Flow Characteristics data structure.
+%
+% Outputs:
+%   TFC - (struct) The updated TFC structure with policy flags and parameters set.
 function [TFC] = SetTCPPolicy(TFC)
-%SetTCPPolicy Sets the active TCP policy and its parameters.
 
 % --- Define Active TCP Policy ---
 % Policy 1: Departure/Boundary Control (DBC)
@@ -48,12 +63,11 @@ if TFC.TCP_SpeedController_MPC
     end
 end
 
-
 disp(['[INFO] SetTCPPolicy: Active TCP Policy: ', num2str(TFC.TCPolicy)]);
 disp(['[INFO] SetTCPPolicy: MPC Weighting Strategy: ', WeightingStrategy]);
 
 % --- Configure MPC Weights based on Strategy ---
-if (TFC.TCP_DBController_MPC || TFC.TCP_SpeedController_MPC)
+if TFC.TCP_DBController_MPC || TFC.TCP_SpeedController_MPC
     TFC = SetMPCWeights(TFC, WeightingStrategy);
 end
 

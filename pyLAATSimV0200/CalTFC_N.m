@@ -1,21 +1,29 @@
-% CalTFC_N - Calculate the Total Fuel Consumption (TFC) for a given simulation.
+%CalTFC_N Calculates network-wide macroscopic Traffic Flow Characteristics (TFC).
+%   This function aggregates microscopic simulation data over a defined time
+%   interval (dtM) to compute network-level macroscopic variables, often
+%   referred to as Macroscopic Fundamental Diagram (MFD) variables.
 %
-% Syntax:
-%   [TFC] = CalTFC_N(TFC, SimInfo, ObjAircraft, Settings)
+%   The function performs the following steps:
+%   1. Identifies all aircraft that were active, in a departure queue, or in
+%      a boundary queue during the last time interval.
+%   2. For each group, it calculates the total time spent and total distance
+%      traveled within the interval using generalized definitions.
+%   3. It computes key macroscopic metrics for the network, including:
+%      - Accumulation (n), Flow (Q), Density (K), Speed (V)
+%      - Total/Average Travel Time (TTT/ATT) and Distance (TTD/ATD)
+%      - Outflow (G) and Production (P)
+%      - Total Time Spent (TTS), including travel, departure, and boundary delays.
+%      - Aggregated energy consumption metrics.
+%   4. Stores these values and their statistics (mean, std, var) in the TFC structure.
 %
 % Inputs:
-%   TFC         - Initial Total Fuel Consumption value (numeric).
-%   SimInfo     - Structure containing simulation information (struct).
-%   ObjAircraft - Object or structure representing the aircraft (struct or object).
-%   Settings    - Structure containing configuration settings (struct).
+%   TFC         - (struct) The main Traffic Flow Characteristics data structure.
+%   SimInfo     - (struct) Simulation information, including historical state data.
+%   ObjAircraft - (struct) Array of aircraft objects.
+%   Settings    - (struct) Simulation settings.
 %
 % Outputs:
-%   TFC - Updated Total Fuel Consumption value (numeric).
-%
-% Description:
-%   This function calculates the Total Fuel Consumption (TFC) based on the
-%   provided simulation information, aircraft object, and settings. It updates
-%   the TFC value accordingly.
+%   TFC - (struct) The updated TFC structure with new network-level data for the current time step.
 %
 % Author: Yazan Safadi
 % Date Created: 2023-02-08
@@ -25,12 +33,12 @@ dtS = SimInfo.dtS;
 dtM = SimInfo.dtM;
 t = SimInfo.t;
 Airspace = Settings.Airspace;
-%% MFD data anaylsis
+%% MFD data analysis
 tk0 = ((t-dtM)/dtM)*(dtM/dtS)+1;
 tk1 = (t/dtM)*(dtM/dtS)+1;
 tdt = [(tk0-1)*dtS:dtS:(tk1-1)*dtS]';
 %%
-% Check who was active in the last time period
+% Identify active aircraft in the last time period
 StatusActivedt = double(SimInfo.statusdt(tk0:tk1,:)==1);
 ActiveAircraft = unique([1:size(SimInfo.statusdt,2)].*(StatusActivedt))';
 ActiveAircraft(ActiveAircraft==0) = [];
@@ -38,7 +46,7 @@ Status_Current_ActiveAircraftdt = StatusActivedt(:,ActiveAircraft);
 pdt_Current_ActiveAircraftdt = SimInfo.pdt(tk0:tk1,reshape([3*ActiveAircraft(:)-2,3*ActiveAircraft(:)-1,3*ActiveAircraft(:)]',[],1)');
 %% Check who is queued in departure
 StatusDepQueueddt = double(SimInfo.statusdt(tk0:tk1,:)==10);
-DepQueueAircraft = unique([1:size(SimInfo.statusdt,2)].*(StatusDepQueueddt))';
+DepQueueAircraft = unique([1:size(SimInfo.statusdt,2)].*(StatusDepQueueddt))'; % All aircraft that were in departure queue
 DepQueueAircraft(DepQueueAircraft==0) = [];
 Status_Current_DepQueueAircraftdt = StatusDepQueueddt(:,DepQueueAircraft);
 % clear StatusDepQueueddt
@@ -54,7 +62,7 @@ DQExitAircraft = min((t+dtS).*ones(size(DQEnterAircraft)),DQExitAircraft);
 DQTimeAircraft = DQExitAircraft-DQEnterAircraft;
 TFC.N.TDQT(t/dtM) = sum(DQTimeAircraft);
 %% Check who is queued in boundary
-StatusBouQueueddt = double(SimInfo.statusdt(tk0:tk1,:)==11);
+StatusBouQueueddt = double(SimInfo.statusdt(tk0:tk1,:)==11); % All aircraft that were in boundary queue
 BouQueueAircraft = unique([1:size(SimInfo.statusdt,2)].*(StatusBouQueueddt))';
 BouQueueAircraft(BouQueueAircraft==0) = [];
 Status_Current_BouQueueAircraftdt = StatusBouQueueddt(:,BouQueueAircraft);
@@ -73,7 +81,7 @@ TFC.N.TBQT(t/dtM) = sum(BQTimeAircraft);
 %%
 nT = size(ActiveAircraft,2); % total aircraf in this time period
 n = sum(Status_Current_ActiveAircraftdt(end,:)); % Accumulation
-nexit = nT-n;
+nexit = nT-n; % Number of aircraft that exited the network
 %%
 time_Change_ActiveAircraftdt = [tdt(1:end)].*[zeros(1,size(Status_Current_ActiveAircraftdt,2));diff(Status_Current_ActiveAircraftdt)];
 EnterAircraft = [max(time_Change_ActiveAircraftdt,[],1)'];
@@ -81,7 +89,7 @@ EnterAircraft = max(t-dtM+dtS,EnterAircraft);
 ExitAircraft = [-min(time_Change_ActiveAircraftdt,[],1)'];
 ExitAircraft(ExitAircraft==0) = Inf;
 ExitAircraft = min((t+dtS).*ones(size(EnterAircraft)),ExitAircraft);
-%% Check each UAV TT TD Nexit
+%% Calculate metrics for each aircraft
 % Travel time
 TravelTimeAircraft = ExitAircraft-EnterAircraft;
 WaitingTimeAircraft = cat(1,ObjAircraft(ActiveAircraft).Safdd);
@@ -93,7 +101,7 @@ TravelDistanceAircraft =  vecnorm(reshape(sum(diffdxyz),3,[]));
 AverageSpeedAircraft = TravelDistanceAircraft./TravelTimeAircraft';
 % Which aircraft exitted
 NexitAircraft =  [ExitAircraft~=(t+dtS)]';
-% Cleanning Double or Short Trip.
+% Cleaning Double or Short Trip.
 ExcCond = and((TravelDistanceAircraft<=4*cat(1,ObjAircraft(ActiveAircraft).ra)'),or((TravelTimeAircraft<5)',(AverageSpeedAircraft<5)));
 if any(ExcCond)
     ExcludedAircraft = ExcCond;
@@ -106,7 +114,7 @@ else
 end
 %if (sum(NexitAircraft)~=nexit); warning('detected short trip'); end
 TripLengthAircraft = TravelDistanceAircraft(NexitAircraft);
-% Travel time - Calculate statsitics
+% Travel time - Calculate statistics
 TFC.N.TTT(t/dtM) = sum(TravelTimeAircraft);
 TFC.N.sta.ATT(t/dtM) = sum(TravelTimeAircraft)/nT;
 TFC.N.sta.StdTTT(t/dtM) = std(TravelTimeAircraft);
@@ -114,7 +122,7 @@ TFC.N.sta.VarTTT(t/dtM) = var(TravelTimeAircraft);
 TFC.N.sta.MeanTTT(t/dtM) = mean(TravelTimeAircraft);
 TFC.N.sta.MedianTTT(t/dtM) = median(TravelTimeAircraft);
 TFC.N.sta.ModeTTT(t/dtM) = mode(TravelTimeAircraft);
-% Travel distance - Calculate statsitics
+% Travel distance - Calculate statistics
 TFC.N.TTD(t/dtM) = sum(TravelDistanceAircraft);
 TFC.N.sta.ATD(t/dtM) = sum(TravelDistanceAircraft)/nT;
 TFC.N.sta.StdTTD(t/dtM) = std(TravelDistanceAircraft);
@@ -122,7 +130,7 @@ TFC.N.sta.VarTTD(t/dtM) = var(TravelDistanceAircraft);
 TFC.N.sta.MeanTTD(t/dtM) = mean(TravelDistanceAircraft);
 TFC.N.sta.MedianTTD(t/dtM) = median(TravelDistanceAircraft);
 TFC.N.sta.ModeTTD(t/dtM) = mode(TravelDistanceAircraft);
-% Trip length - Calculate statsitics
+% Trip length - Calculate statistics
 TFC.N.TL(t/dtM) = sum(TripLengthAircraft);
 TFC.N.ATL(t/dtM) = sum(TripLengthAircraft)/nexit;
 TFC.N.sta.StdTL(t/dtM) = std(TripLengthAircraft);
@@ -130,7 +138,7 @@ TFC.N.sta.VarTL(t/dtM) = var(TripLengthAircraft);
 TFC.N.sta.MeanTL(t/dtM) = mean(TripLengthAircraft);
 TFC.N.sta.MedianTL(t/dtM) = median(TripLengthAircraft);
 TFC.N.sta.ModeTL(t/dtM) = mode(TripLengthAircraft);
-% Average Speed - Calculate statsitics
+% Average Speed - Calculate statistics
 
 TFC.N.V(t/dtM) = TFC.N.TTD(t/dtM)/TFC.N.TTT(t/dtM);
 TFC.N.sta.AS(t/dtM) = sum(AverageSpeedAircraft)/nT;
@@ -139,9 +147,9 @@ TFC.N.sta.VarAS(t/dtM) = var(AverageSpeedAircraft);
 TFC.N.sta.MeanAS(t/dtM) = mean(AverageSpeedAircraft);
 TFC.N.sta.MedianAS(t/dtM) = median(AverageSpeedAircraft);
 TFC.N.sta.ModeAS(t/dtM) = mode(AverageSpeedAircraft);
-% Density - Calculate statsitics
+% Density - Calculate statistics
 TFC.N.K(t/dtM) = TFC.N.TTT(t/dtM)/(dtM*Airspace.Space);
-% Flow - Calculate statsitics
+% Flow - Calculate statistics
 TFC.N.Q(t/dtM) = TFC.N.TTD(t/dtM)/(dtM*Airspace.Space);
 % number of aircrafts
 TFC.N.n(t/dtM) = n;
@@ -152,7 +160,7 @@ TFC.N.ndqT(t/dtM) = ndqT; % Including safety queues.
 TFC.N.ndq(t/dtM) = ndq; % Including safety queues.
 TFC.N.nbqT(t/dtM) = nbqT;
 TFC.N.nbq(t/dtM) = nbq;
-% outflow - Calculate statsitics
+% outflow - Calculate statistics
 TFC.N.G(t/dtM) = nexit/dtM;
 % % total time spent
 TFC.N.TWT(t/dtM) = sum(WaitingTimeAircraft);
@@ -177,4 +185,3 @@ TFC.EC.N.ECt_N(t/dtM) = TFC.EC.N.ECt(t/dtM)./TFC.N.n(t/dtM);
 TFC.EC.N.ECt_G(t/dtM) = TFC.EC.N.ECt(t/dtM)./TFC.N.G(t/dtM);
 clear StatusDepQueueddt StatusBouQueueddt
 end
-

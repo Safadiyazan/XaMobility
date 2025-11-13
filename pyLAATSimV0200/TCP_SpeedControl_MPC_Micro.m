@@ -1,4 +1,26 @@
 function [TFC,ObjAircraft,SimInfo] = TCP_SpeedControl_MPC_Micro(SimInfo,ObjAircraft,Settings,TFC,t)
+%TCP_SpeedControl_MPC_Micro Implements the Model Predictive Controller for speed control.
+%   This function serves as the high-level interface for the MPC-based
+%   speed control strategy. At each control step, it gathers the current
+%   state of the airspace and passes it to the MPC solver.
+%
+%   The process is as follows:
+%   1. Call `TCP_SpeedControl_MPC_Macro`, which formulates and solves the
+%      optimal control problem over a prediction horizon. The objective is
+%      typically to minimize energy consumption while maintaining traffic
+%      efficiency. The solver returns an optimal sequence of speed control
+%      ratios (`w_opt`).
+%   2. The first control action from the optimal sequence is taken.
+%   3. The function then calls `ApplySpeedControl` to translate the macroscopic
+%      speed ratio into an updated maximum speed for each individual aircraft
+%      in the corresponding region.
+%
+% Inputs:
+%   SimInfo     - (struct) Current simulation information.
+%   ObjAircraft - (struct) Array of aircraft objects.
+%   Settings    - (struct) Simulation settings.
+%   TFC         - (struct) Current Traffic Flow Characteristics data.
+%   t           - (numeric) The current simulation time.
 t = SimInfo.t;
 dtC = SimInfo.dtC;
 dtS = SimInfo.dtS;

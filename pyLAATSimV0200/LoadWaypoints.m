@@ -1,20 +1,22 @@
-% LoadWaypoints - Loads waypoint paths from a specified directory.
+%LoadWaypoints Loads predefined waypoint paths from a JSON file.
+%   This function reads a JSON file containing a set of fixed flight paths,
+%   where each path is defined by a sequence of waypoints. This is used for
+%   scenarios with structured routes, such as flights along predefined
+%   air corridors.
 %
-% Syntax:
-%   [WaypointPaths] = LoadWaypoints(asStr, public_dir)
+%   The function performs the following steps:
+%   1. Selects the appropriate JSON file based on the airspace string (`asStr`).
+%   2. Reads and decodes the JSON file.
+%   3. Iterates through each path in the JSON data and converts the sequence
+%      of points into a matrix of waypoints.
+%   4. Returns a cell array where each cell contains a matrix representing one flight path.
 %
 % Inputs:
-%   asStr      - A string or parameter specifying the waypoint data to load.
-%   public_dir - The directory path where waypoint files are stored.
+%   asStr      - (string) A string identifier for the airspace (e.g., 'LI').
+%   public_dir - (string) The path to the public data directory.
 %
 % Outputs:
-%   WaypointPaths - A structure or array containing the loaded waypoint paths.
-%
-% Description:
-%   This function reads waypoint data from the specified directory and
-%   returns the paths in a structured format. The input 'asStr' determines
-%   the specific waypoints to load, and 'public_dir' specifies the base
-%   directory containing the waypoint files.
+%   WaypointPaths - (cell array) A cell array where each cell contains an M-by-3 matrix of waypoints for a specific path.
 %
 % Author: Yazan Safadi
 % Date Created: 2025-03-27

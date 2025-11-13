@@ -1,4 +1,26 @@
 function [TFC,ObjAircraft,SimInfo] = TCP_SpeedControl_GC_Micro(SimInfo,ObjAircraft,Settings,TFC,t)
+%TCP_SpeedControl_GC_Micro Implements the Greedy Controller for speed control.
+%   This function applies a simple, reactive, threshold-based control logic
+%   for managing traffic speed. It is a "Greedy Controller" (GC) because
+%   it makes decisions based only on the current state.
+%
+%   The control logic can be based on two different thresholds:
+%   1. Accumulation-based (GC-G): For each region, if the current accumulation
+%      `n_i` is greater than or equal to the critical accumulation `n_ci`, the
+%      speed limit for aircraft entering that region is reduced.
+%   2. Speed-based (GC-E): For each region, if the current average speed `V_i`
+%      drops below a critical speed threshold `V_ci` (derived from the eLMFD),
+%      the speed limit for aircraft entering that region is reduced.
+%
+%   The function determines the optimal speed ratio `w_opt` and then calls
+%   `ApplySpeedControl` to update the maximum speed for each individual aircraft.
+%
+% Inputs:
+%   SimInfo     - (struct) Current simulation information.
+%   ObjAircraft - (struct) Array of aircraft objects.
+%   Settings    - (struct) Simulation settings.
+%   TFC         - (struct) Current Traffic Flow Characteristics data.
+%   t           - (numeric) The current simulation time.
 t = SimInfo.t;
 dtC = SimInfo.dtC;
 dtS = SimInfo.dtS;

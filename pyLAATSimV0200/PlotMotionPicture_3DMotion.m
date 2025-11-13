@@ -1,33 +1,24 @@
-% PlotMotionPicture_3DMotion - Plots a 3D motion picture of the simulation.
+%PlotMotionPicture_3DMotion Generates a dynamic 3D video animation of the simulation.
+%   This function creates a cinematic 3D visualization of the simulation by
+%   using a pre-programmed camera path. The camera view changes over the
+%   course of the animation, providing different perspectives of the
+%   air traffic.
 %
-% Syntax:
-%   PlotMotionPicture_3DMotion(SES, SimInfo, ObjAircraft, TFC, Settings)
-%
-% Description:
-%   This function generates a 3D motion picture visualization based on the
-%   simulation data provided. It uses the input parameters to configure
-%   and render the motion of the aircraft or object in a 3D space.
+%   The function performs the following steps:
+%   1. Defines a sequence of camera view angles (`VectorView`).
+%   2. Sets up the video writer and figure properties.
+%   3. Loops through time, taking a snapshot of the simulation state at
+%      specified intervals.
+%   4. For each snapshot, it updates the camera view according to the
+%      predefined path and plots the airspace and aircraft trajectories.
+%   5. Compiles the frames into an AVI video file and saves it to the output directory.
 %
 % Inputs:
-%   SES         - Session data structure containing simulation context.
-%   SimInfo     - Structure containing simulation information and metadata.
-%   ObjAircraft - Object or structure representing the aircraft or object
-%                 being simulated.
-%   TFC         - Time frame control or time-related data for the simulation.
-%   Settings    - Structure containing visualization and plotting settings.
-%
-% Outputs:
-%   None. This function generates a plot as a side effect.
-%
-% Example:
-%   PlotMotionPicture_3DMotion(SES, SimInfo, ObjAircraft, TFC, Settings)
-%
-% Notes:
-%   - Ensure that all input structures are properly initialized before
-%     calling this function.
-%   - This function is designed for visualization purposes and does not
-%     modify the input data.
-%
+%   SES         - (numeric) Snapshots Every Second, determining the frame rate of the video.
+%   SimInfo     - (struct) Simulation information containing trajectories and status history.
+%   ObjAircraft - (struct) Array of aircraft objects.
+%   TFC         - (struct) The final Traffic Flow Characteristics data structure.
+%   Settings    - (struct) The simulation settings structure.
 % Author: Yazan Safadi
 % Date Created: 2023-02-08
 function [] = PlotMotionPicture_3DMotion(SES,SimInfo,ObjAircraft,TFC,Settings)

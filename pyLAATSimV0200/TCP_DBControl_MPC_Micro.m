@@ -1,4 +1,25 @@
 function [TFC,ObjAircraft,SimInfo] = TCP_DBControl_MPC_Micro(SimInfo,ObjAircraft,Settings,TFC,t)
+%TCP_DBControl_MPC_Micro Implements the Model Predictive Controller for Departure and Boundary Control.
+%   This function serves as the high-level interface for the MPC strategy.
+%   At each control step, it gathers the current state of the airspace
+%   (accumulations, queue lengths) and passes it to the MPC solver.
+%
+%   The process is as follows:
+%   1. Call `TCP_DBControl_MPC_Macro` which formulates and solves the
+%      optimal control problem over a prediction horizon. The solver
+%      returns an optimal sequence of control inputs (departure and
+%      boundary ratios).
+%   2. The first control action from the optimal sequence is taken.
+%   3. The function then calls helper functions (`ApplyBoundaryControlUp` and
+%      `ApplyDepartControl`) to translate these macroscopic control ratios
+%      into microscopic actions (creating queues, delaying departures).
+%
+% Inputs:
+%   SimInfo     - (struct) Current simulation information.
+%   ObjAircraft - (struct) Array of aircraft objects.
+%   Settings    - (struct) Simulation settings.
+%   TFC         - (struct) Current Traffic Flow Characteristics data.
+%   t           - (numeric) The current simulation time.
 t = SimInfo.t;
 dtC = SimInfo.dtC;
 dtS = SimInfo.dtS;

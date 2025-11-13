@@ -1,19 +1,20 @@
-%{
-    Function: SettingAircraft
-    Description: Configures the aircraft settings based on the provided
-                 maximum velocity and turn radius.
-
-    Inputs:
-        - Vmax: Maximum velocity of the aircraft (numeric).
-        - Rs: Turn radius of the aircraft (numeric).
-
-    Outputs:
-        - Aircraft: A structure containing the configured aircraft settings.
-
-    Usage:
-        [Aircraft] = SettingAircraft(Vmax, Rs);
-
-%}
+%SettingAircraft Configures the global aircraft parameters for the simulation.
+%   This function defines the physical and operational characteristics that
+%   will be used to initialize the individual aircraft objects. It sets the
+%   allowable ranges for key parameters.
+%
+%   The function sets:
+%   - `rs_range`: The range of possible safety radii for aircraft [m].
+%   - `vm_range`: The range of possible maximum speeds for aircraft [m/s].
+%   - `Gainfactor_*`: Multipliers for the safety and avoidance radii.
+%   - `Bat_*`: Parameters for the battery/energy model.
+%
+% Inputs:
+%   Vmax - (vector) A 2-element vector specifying the [min, max] range for maximum velocity [m/s].
+%   Rs   - (vector) A 2-element vector specifying the [min, max] range for safety radius [m].
+%
+% Outputs:
+%   Aircraft - (struct) A structure containing the global aircraft settings.
 % Author: Yazan Safadi
 % Date Created: 2023-02-08
 function [Aircraft] = SettingAircraft(Vmax,Rs)

@@ -1,4 +1,28 @@
 function [TFC,ObjAircraft,SimInfo] = TCP_DBControl_GC_Micro(SimInfo,ObjAircraft,Settings,TFC,t)
+%TCP_DBControl_GC_Micro Implements the Greedy Controller for Departure and Boundary Control.
+%   This function applies a simple, reactive, threshold-based control logic
+%   for managing traffic flow. It is known as a "Greedy Controller" (GC)
+%   because it makes decisions based only on the current state without
+%   predicting future evolution.
+%
+%   The control logic is as follows:
+%   1. Departure Control: For each region, if the current accumulation `n_i`
+%      is greater than or equal to the critical accumulation `n_ci`, the
+%      departure rate for that region is set to zero. Otherwise, it is
+%      set to the maximum.
+%   2. Boundary Control: For each pair of regions (i, j), if the destination
+%      region `j` is congested (`n_j >= n_cj`), the transfer of aircraft
+%      from `i` to `j` is halted.
+%
+%   This function calls helper functions to determine the control inputs and
+%   then applies them by either delaying departures or creating boundary queues.
+%
+% Inputs:
+%   SimInfo     - (struct) Current simulation information.
+%   ObjAircraft - (struct) Array of aircraft objects.
+%   Settings    - (struct) Simulation settings.
+%   TFC         - (struct) Current Traffic Flow Characteristics data.
+%   t           - (numeric) The current simulation time.
 t = SimInfo.t;
 dtC = SimInfo.dtC;
 dtS = SimInfo.dtS;
@@ -117,11 +141,11 @@ for aa = 1:length(SimInfo.Mact)
     if ObjAircraft(aircraft_id).status == 1 % Is flying
         current_ri = ObjAircraft(aircraft_id).rit;
         next_ri = ObjAircraft(aircraft_id).nextrit;
-        
+
         if current_ri > 0 && next_ri > 0 && current_ri ~= next_ri
             idx_i = find(ri_indices == current_ri, 1);
             idx_j = find(ri_indices == next_ri, 1);
-            
+
             if ~isempty(idx_i) && ~isempty(idx_j) && ubijdt(idx_i, idx_j) == 0
                 % Aircraft is approaching a congested boundary, so increment the count to hold it.
                 NbqijIn(idx_i, idx_j) = NbqijIn(idx_i, idx_j) + 1;

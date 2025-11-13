@@ -171,11 +171,11 @@ for k = 1:Np
     obj = obj+(st-P(((n_states+n_controls)*k-(n_controls-1)):((n_states+n_controls)*k+(-(n_controls-1)+(n_states-1)))))'*Q*(st-P(((n_states+n_controls)*k-(n_controls-1)):((n_states+n_controls)*k+(-(n_controls-1)+(n_states-1))))) + ...
         (con-P(((n_states+n_controls)*k+(n_states-n_controls+1)):((n_states+n_controls)*k+((n_states-n_controls+1)+(n_controls-1)))))'*R*(con-P(((n_states+n_controls)*k+(n_states-n_controls+1)):((n_states+n_controls)*k+((n_states-n_controls+1)+(n_controls-1))))) ; % calculate obj
     st_next = X(:,k+1);
-    k1 = f(st, con);   % new 
+    k1 = f(st, con);   % new
     k2 = f(st + h/2*k1, con); % new
     k3 = f(st + h/2*k2, con); % new
     k4 = f(st + h*k3, con); % new
-    st_next_RK4=st +h/6*(k1 +2*k2 +2*k3 +k4); % new 
+    st_next_RK4=st +h/6*(k1 +2*k2 +2*k3 +k4); % new
     g = [g;st_next-st_next_RK4]; % compute constraints % new
 end
 %%
@@ -353,7 +353,7 @@ ubijdt = ub_opt(1,:); % [ub12I,ub21I,ub12O,ub21O] % mean(ub_opt,1);
 NbqijIndt(1,2) = Smooth((1-ub_opt(1))*bij(nijt(2),nit(1))*G1(nit(1))*dT);
 NbqijIndt(2,1) = Smooth((1-ub_opt(2))*bij(nijt(3),nit(2))*G2(nit(2))*dT);
 % disp('(NbqijIndt)=')
-% disp(NbqijIndt)    
+% disp(NbqijIndt)
 % NbqijOutdt(1,2) = Smooth((ub_opt(3))*bij(nijt(2),nit(1))*(S1BQ)*dT);
 NbqijOutdt(1,2) = Smooth((ub_opt(3))*bij(nijt(2),nit(1))*(G1(nbqiht(1)))*dT);
 % NbqijOutdt(2,1) = Smooth((ub_opt(4))*bij(nijt(3),nit(2))*(S2BQ)*dT);

@@ -1,8 +1,20 @@
 function [TFC] = LoadMFDSettings(TFC, Settings, public_dir, regionIndices, numLayers)
-%LoadMFDSettings Loads the Macroscopic Fundamental Diagram (MFD) settings.
-%   This function dynamically loads MFD data for the entire network and for
-%   each individual region based on the specified number of regions.
-
+%LoadMFDSettings Loads pre-calibrated MFD and eLMFD model parameters.
+%   This function loads functional forms and critical parameters for the
+%   Macroscopic Fundamental Diagram (MFD) and Energy MFD (eLMFD) from
+%   pre-saved .mat files. These parameters are essential for the model-based
+%   controllers (e.g., MPC) to predict airspace dynamics.
+%
+%   The function loads:
+%   1. Network-wide MFD: Loads the `G(n)` (Outflow-Accumulation) function and
+%      critical points (`nc`, `njam`, `Gm`) for the entire airspace.
+%   2. Region-specific MFDs: For each defined region type, it loads the
+%      corresponding `G(n)` and `V(n)` (Speed-Accumulation) functions.
+%   3. Energy Models (eLMFD): Loads the `E(V)` (Energy-Speed) function and
+%      its critical points (`vECstar`).
+%
+%   These functions and parameters are stored in the `TFC` structure for use
+%   by the traffic control modules.
 numRegions = numel(regionIndices);
 
 disp(['[INFO] LoadMFDSettings: Loading MFD data for ', num2str(numLayers), ' layer(s) and ', num2str(numRegions), ' unique region(s) per layer with indices: [', num2str(regionIndices), '].']);

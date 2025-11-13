@@ -1,21 +1,3 @@
-%{
-    CalEC_AG - Calculate Emission Coefficients for Aircraft Group
-
-    This function calculates the emission coefficients (EC) for a given
-    aircraft group based on simulation information and updates the
-    aircraft object accordingly.
-
-    Inputs:
-        EC - A structure or array containing emission coefficient data.
-        SimInfo - A structure containing simulation information and parameters.
-        ObjAircraft - An object or structure representing the aircraft group.
-
-    Outputs:
-        EC - Updated emission coefficient data.
-        ObjAircraft - Updated aircraft object with calculated emission coefficients.
-
-        /C:/DEV/app/pyLAATSimV0200/CalEC_AG.m
-%}
 %CalEC_AG Calculates the Energy Consumption (EC) for active and queued aircraft.
 %   This function calculates the energy consumed by each aircraft during the
 %   current simulation time step (`dtS`). It uses a simplified energy
@@ -66,7 +48,6 @@ for aai=1:size(ActiveAircraft,2)
     Vertical_Speed(isnan(Vertical_Speed)) = 0;
     Horizontal_Speed = norm([Speed_Vector(1),Speed_Vector(2)]);
     Horizontal_Speed(isnan(Horizontal_Speed)) = 0;
-    Operational_Speed = min(20,max(1,Horizontal_Speed)); %Speed control boundaries, preventing small values
     Operational_Speed = min(20,max(1,Horizontal_Speed)); % Speed control boundaries, preventing small values
     %% Classify Movement
     if Horizontal_Speed == 0 && Vertical_Speed == 0 %Stop
@@ -95,7 +76,6 @@ for aai=1:size(ActiveAircraft,2)
     EC.ECdt(round(t/(dtS))+1,ActiveAircraft(aai)) = Energy_Consumption; % size M*tf
 end
 %%
-QueuedAircraft=SimInfo.Mque;
 QueuedAircraft=SimInfo.Mque; % Get list of queued aircraft
 %% Queued Aircraft Energy Consuption.
 for aai=1:size(QueuedAircraft,2)
@@ -104,7 +84,6 @@ for aai=1:size(QueuedAircraft,2)
     Time_Traveled = dtS/3600; %[hr]
     Hovering_Cons = 0;
     %% Classify Movement
-    P_Horizontal = 0; [~, P_Vertical, E_max, ~] = Cal_EC_Model_AG(1); %Hovering
     P_Horizontal = 0; [~, P_Vertical, E_max, ~] = Cal_EC_Model_AG(1); % Assume queued aircraft are hovering
     Hovering_Cons = Hovering_Cons + (P_Vertical)*Time_Traveled;
     Energy_Consumption = (P_Vertical + P_Horizontal)*Time_Traveled; %Energy consumed for the specific given segment of trip [Wh]

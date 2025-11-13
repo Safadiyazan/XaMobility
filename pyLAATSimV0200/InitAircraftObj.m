@@ -1,14 +1,24 @@
-%{
-InitAircraftObj - Initializes the aircraft object and updates simulation information.
-
-Inputs:
-    SimInfo  - A structure containing simulation information and parameters.
-    Settings - A structure containing configuration settings for the aircraft.
-
-Outputs:
-    SimInfo     - Updated simulation information structure.
-    ObjAircraft - Initialized aircraft object.
-%}
+%InitAircraftObj Initializes all aircraft objects for the simulation.
+%   This function creates and parameterizes the array of aircraft objects
+%   (`ObjAircraft`) that will be used in the simulation. It iterates through
+%   the total number of aircraft (`Sim.M`) and assigns properties to each one.
+%
+%   For each aircraft, the function sets:
+%   - Dynamic Properties: Max speed, control gains, safety/avoidance radii.
+%   - Route Information: Origin, destination, and waypoints, determined by
+%     helper functions based on the airspace configuration (e.g., VTOL,
+%     vertiports, fixed paths).
+%   - Timing: Planned departure time based on the simulation's inflow profile.
+%   - State Variables: Initial status, position, velocity, and region index.
+%   - Control & Energy Properties: Initializes fields for boundary control and energy consumption.
+%
+% Inputs:
+%   SimInfo  - (struct) Simulation information, used for aircraft indexing.
+%   Settings - (struct) Simulation settings, containing airspace, aircraft, and sim parameters.
+%
+% Outputs:
+%   SimInfo     - (struct) Updated simulation info with the initial list of inactive aircraft.
+%   ObjAircraft - (struct) The fully initialized array of aircraft objects.
 % Author: Yazan Safadi
 % Date Created: 2023-02-08
 function [SimInfo,ObjAircraft] = InitAircraftObj(SimInfo,Settings)
@@ -17,7 +27,7 @@ Airspace = Settings.Airspace;
 Aircraft = Settings.Aircraft;
 Sim = Settings.Sim;
 Mina = SimInfo.Mina;
-%% Create Set Vector with Perc.
+%% Create Set Vector with Percentage for different aircraft models
 ModelsTypes = [0,0,1,0];%[1/4,1/4,1/4,1/4]; %EPAV-1 EUAV-2 PAV-3 UAV-4
 ModelsVec = [1.*ones(ceil(Sim.M.*ModelsTypes(1)),1);2.*ones(ceil(Sim.M.*ModelsTypes(2)),1);3.*ones(ceil(Sim.M.*ModelsTypes(3)),1);4.*ones(ceil(Sim.M.*ModelsTypes(4)),1)]';
 %%
@@ -25,7 +35,7 @@ for aa = 1:Sim.M
     %% Aircraft Model UAV/PAV/EAV
     ObjAircraft(aa).AMI = ModelsVec(randi(size(ModelsVec,2)));
     %%
-    ObjAircraft(aa).id = aa; % index
+    ObjAircraft(aa).id = aa; % Unique aircraft ID
     ObjAircraft(aa).status = 0; % status % 0 - Want to depart % 1 - Flying % 2 - Landed % 100 - Priority want to depart % 101 - Priority % 102 - Priority landed % 12 - Obstacle % 10 - Queue
     %% Velocity and Speed
     StepVm = 5;
@@ -38,12 +48,13 @@ for aa = 1:Sim.M
     ObjAircraft(aa).gain = (eye(length((gain))).*(gain)); % gain
     ObjAircraft(aa).lgain = (eye(length((gain)))./(gain)); % l-gain
     %% Radius
-    ObjAircraft(aa).rs = funcRS(Aircraft.rs_range, ObjAircraft(aa).AMI); % safety radius function
+    ObjAircraft(aa).rs = funcRS(Aircraft.rs_range, ObjAircraft(aa).AMI); % safety radius [m]
     ObjAircraft(aa).ra = 1.5*ObjAircraft(aa).rs; % avoidance radius
     ObjAircraft(aa).rv = ObjAircraft(aa).vm*norm(ObjAircraft(aa).lgain); % rv
     ObjAircraft(aa).rd = ObjAircraft(aa).ra + ObjAircraft(aa).rs + 2*ObjAircraft(aa).rv; % detetion radius
-    %% Origin, Destiation, Waypoints, positions
+    %% Origin, Destination, Waypoints, and Positions
     if Airspace.FixedWaypoints
+        % Load predefined paths from vertiport to vertiport
         ObjAircraft(aa).VTOL = 1; % idetify the aircraft as VTOL
         [ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).wp]  = AircraftFixedPath(Airspace,ObjAircraft(aa).rs); % waypoints
     elseif (Airspace.VTOL)&&(~Airspace.Vertiports)
@@ -51,12 +62,14 @@ for aa = 1:Sim.M
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODGround2R(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground Two Regions Uniformly
         ObjAircraft(aa).wp  = AircraftRouteTL(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs); % waypoints
     elseif (Airspace.VTOL)&&(Airspace.Vertiports)
+        % Generate routes between vertiports with vertical takeoff/landing segments
         ObjAircraft(aa).VTOL = 1; % idetify the aircraft as VTOL
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODVertiports(Airspace,ObjAircraft(aa).rs,ObjAircraft(aa).rd); % origin and desitation from ground Two Regions Uniformly
         % ObjAircraft(aa).wp  = AircraftRouteTL(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs); % waypoints
         ObjAircraft(aa).wp  = AircraftRouteTL_MultiLayer(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d,ObjAircraft(aa).rs,ObjAircraft(aa).AMI); % waypoints
         
     elseif(Airspace.SubsetNetwork)
+        % Generate routes for aircraft entering/exiting at airspace boundaries
         ObjAircraft(aa).VTOL = 0; % idetify the aircraft as VTOL
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftODBoundary(Airspace,ObjAircraft(aa).rd); % origin and desitation at the boundaries
         ObjAircraft(aa).wp  = AircraftRoute(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d); % waypoints
@@ -65,7 +78,7 @@ for aa = 1:Sim.M
         [ObjAircraft(aa).o, ObjAircraft(aa).d] = AircraftOD(Airspace,ObjAircraft(aa).rd); % origin and desitation
         ObjAircraft(aa).wp  = AircraftRoute(Airspace,ObjAircraft(aa).o, ObjAircraft(aa).d); % waypoints
     end
-    ObjAircraft(aa).wpSet = ObjAircraft(aa).wp; % waypoints set
+    ObjAircraft(aa).wpSet = ObjAircraft(aa).wp; % Original waypoints set (can be modified by routing)
     ObjAircraft(aa).wpChange = 0; % idetify if the waypoints are changed
     ObjAircraft(aa).wpRouting = 0; % idetify if the waypoints are changed for routin strategy
     ObjAircraft(aa).wpta  = [0;]; % waypoints time arrival
@@ -78,7 +91,7 @@ for aa = 1:Sim.M
     ObjAircraft(aa).rid = RegionIndexXYZ(Airspace,ObjAircraft(aa).d); % des. region
     ObjAircraft(aa).rit = RegionIndexXYZ(Airspace,ObjAircraft(aa).pt); % current region
     %% Times and Distances
-    ObjAircraft(aa).tt = [inf]; % travel time
+    ObjAircraft(aa).tt = [inf]; % actual travel time
     ObjAircraft(aa).tte = [inf];%ObjAircraft(aa).tle/ObjAircraft(aa).vm; % expected travel time
     ObjAircraft(aa).tdp = AircraftDepartTime(aa,Sim); % planned departure time
     ObjAircraft(aa).tda = ObjAircraft(aa).tdp; % actual departure time
@@ -86,8 +99,8 @@ for aa = 1:Sim.M
     ObjAircraft(aa).taa = [inf]; % actual arrival time
     ObjAircraft(aa).ctd = 1; % clear to depart
     ObjAircraft(aa).dd = [];
-    ObjAircraft(aa).Curdd = [];
-    ObjAircraft(aa).Safdd = 0;%[];
+    ObjAircraft(aa).Curdd = []; % Current departure delay
+    ObjAircraft(aa).Safdd = 0;% Safety departure delay
     ObjAircraft(aa).tle = norm(ObjAircraft(aa).o-ObjAircraft(aa).d); % expected trip length;
     ObjAircraft(aa).tla = [inf]; % actual trip length;
     ObjAircraft(aa).td = [inf]; % travel distance
@@ -103,7 +116,7 @@ for aa = 1:Sim.M
     ObjAircraft(aa).ResumeTime = []; % resume timestamp from the boundary to exit
     ObjAircraft(aa).HoveringTime = []; % total hovering time at the boundary
     ObjAircraft(aa).CurHoveringTime = [];
-    %% Energy and Battery
+    %% Energy and Battery Parameters
     ObjAircraft(aa).ECtdt = 0;
     ObjAircraft(aa).ECqdt = 0;
     ObjAircraft(aa).csECtdt = 0;
@@ -118,7 +131,7 @@ end
 SimInfo.Mina = Mina; % Update SimInfo Object
 end
 %%
-function [rs] = funcRS(range,AMI)
+function [rs] = funcRS(range,AMI) % Assigns safety radius based on aircraft model index
 switch AMI
     case 1 % EPAV
         if ((range(2)-range(1))>0)

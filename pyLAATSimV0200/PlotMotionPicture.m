@@ -1,23 +1,23 @@
-% PlotMotionPicture - Generates a motion picture plot for the simulation.
+%PlotMotionPicture Generates a video animation of the aircraft trajectories.
+%   This function creates a 3D visualization of the simulation, showing the
+%   movement of all aircraft over time. It iterates through simulation
+%   snapshots and plots the position of each aircraft, its historical path,
+%   and its safety/detection radii.
 %
-% Syntax:
-%   PlotMotionPicture(SES, SimInfo, ObjAircraft, TFC, Settings)
+%   The function performs the following steps:
+%   1. Sets up the video writer and figure properties.
+%   2. Loops through time, taking a snapshot of the simulation state at
+%      specified intervals.
+%   3. For each snapshot, it plots the airspace boundaries and the current
+%      position and trajectory of every active, queued, or boundary-queued
+%   4. Compiles the frames into an AVI video file and saves it to the output directory.
 %
 % Inputs:
-%   SES         - A structure containing the simulation execution settings.
-%   SimInfo     - A structure containing simulation information and metadata.
-%   ObjAircraft - An object or structure representing the aircraft data.
-%   TFC         - Traffic control or related data for the simulation.
-%   Settings    - A structure containing additional settings for the plot.
-%
-% Outputs:
-%   None. This function generates a plot as a side effect.
-%
-% Description:
-%   This function creates a motion picture plot based on the provided
-%   simulation data, aircraft information, and settings. It is used to
-%   visualize the motion of aircraft or other objects in the simulation.
-%
+%   SES         - (numeric) Snapshots Every Second, determining the frame rate of the video.
+%   SimInfo     - (struct) Simulation information containing trajectories and status history.
+%   ObjAircraft - (struct) Array of aircraft objects.
+%   TFC         - (struct) The final Traffic Flow Characteristics data structure.
+%   Settings    - (struct) The simulation settings structure.
 % Author: Yazan Safadi
 % Date Created: 2023-02-08
 function [] = PlotMotionPicture(SES,SimInfo,ObjAircraft,TFC,Settings)

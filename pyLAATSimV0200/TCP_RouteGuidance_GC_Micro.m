@@ -1,13 +1,31 @@
 function [TFC,ObjAircraft,SimInfo] = TCP_RouteGuidance_GC_Micro(SimInfo,ObjAircraft,Settings,TFC,k)
+%TCP_RouteGuidance_GC_Micro Implements a Greedy Controller for dynamic routing.
+%   This function implements a reactive routing strategy. For each aircraft
+%   about to depart, it calculates the "best" path through the network of
+%   airspace regions based on the current traffic conditions.
+%
+%   The logic is as follows:
+%   1. For each departing aircraft, construct a graph where nodes are airspace
+%      regions.
+%   2. The weight of each edge in the graph is the estimated travel time
+%      between the centers of two adjacent regions. This travel time is
+%      calculated using the current average speed in the origin region.
+%   3. Use Dijkstra's algorithm to find the shortest path (in terms of
+%      travel time) from the aircraft's origin region to its destination region.
+%   4. If the shortest path involves intermediate regions, the centers of
+%      these regions are inserted into the aircraft's waypoint list.
+%
+%   This is a "greedy" controller because it chooses the best path based only
+%   on current conditions, without predicting how traffic will evolve.
 dtC = SimInfo.dtC;
 dtS = SimInfo.dtS;
 t = SimInfo.t;
 disp('[DEBUG] TCP_RouteGuidance: TODO: Load MFD Ri.')
 disp('[DEBUG] TCP_RouteGuidance: TODO: Add Route Sets and MFD-MPC Optimization.')
 if (k~=0)&&(mod(t,dtC)==0)&&(~isempty(TFC))
-k = SimInfo.t/dtC;
-%% Calculate the shortest path for each vehicle
-[TFC,ObjAircraft,SimInfo] = ApplyRoutingControl(TFC,t,dtC,SimInfo,ObjAircraft,Settings);
+    k = SimInfo.t/dtC;
+    %% Calculate the shortest path for each vehicle
+    [TFC,ObjAircraft,SimInfo] = ApplyRoutingControl(TFC,t,dtC,SimInfo,ObjAircraft,Settings);
 end % End Routing Active Timing
 end % End Function
 
@@ -33,31 +51,31 @@ end
 end
 
 function [TFC,ObjAircraft,SimInfo] = CheckOptimalPath(TFC,t,dtC,SimInfo,ObjAircraft,Settings,aai)
-    startNode = mod(ObjAircraft(aai).rio,Settings.Airspace.Regions.dzri);%ObjAircraft(aai).rio;
-    endNode = mod(ObjAircraft(aai).rid,Settings.Airspace.Regions.dzri);%ObjAircraft(aai).rid;
-    o_xyz = ObjAircraft(aai).o;
-    d_xyz = ObjAircraft(aai).d;
-    edgeWeights = CalculateedgeWeights(t/dtC,TFC,Settings,startNode,endNode,o_xyz,d_xyz);
-    [dist,path] = dijkstraalgo(edgeWeights,startNode,endNode);
-    if(size(path,2)>2)
-%         ObjAircraft(aai).wpCR
-%         ObjAircraft(aai).wp(ObjAircraft(aai).wpCR+1,:)
-        if (ObjAircraft(aai).wpTR>2)
-            startNodewpCR = 2;
-        else
-            startNodewpCR = 1;
-        end
-        for wpi=2:size(path,2)-1
-            extranode = path(wpi);
-            extranodeid = extranode + Settings.Airspace.Regions.dzri;
-            NewWaypoint = Settings.Airspace.Regions.B(cat(1,Settings.Airspace.Regions.B.ri)==extranodeid).center;
-            ObjAircraft(aai).wp = [ObjAircraft(aai).wp(1:startNodewpCR,:);NewWaypoint;ObjAircraft(aai).wp(startNodewpCR+1:end,:)];
-            ObjAircraft(aai).wpTR = ObjAircraft(aai).wpTR + 1;
-            startNodewpCR = startNodewpCR + 1;
-            ObjAircraft(aai).wpChange = 1;
-            ObjAircraft(aai).wpRouting = 1;
-        end
+startNode = mod(ObjAircraft(aai).rio,Settings.Airspace.Regions.dzri);%ObjAircraft(aai).rio;
+endNode = mod(ObjAircraft(aai).rid,Settings.Airspace.Regions.dzri);%ObjAircraft(aai).rid;
+o_xyz = ObjAircraft(aai).o;
+d_xyz = ObjAircraft(aai).d;
+edgeWeights = CalculateedgeWeights(t/dtC,TFC,Settings,startNode,endNode,o_xyz,d_xyz);
+[dist,path] = dijkstraalgo(edgeWeights,startNode,endNode);
+if(size(path,2)>2)
+    %         ObjAircraft(aai).wpCR
+    %         ObjAircraft(aai).wp(ObjAircraft(aai).wpCR+1,:)
+    if (ObjAircraft(aai).wpTR>2)
+        startNodewpCR = 2;
+    else
+        startNodewpCR = 1;
     end
+    for wpi=2:size(path,2)-1
+        extranode = path(wpi);
+        extranodeid = extranode + Settings.Airspace.Regions.dzri;
+        NewWaypoint = Settings.Airspace.Regions.B(cat(1,Settings.Airspace.Regions.B.ri)==extranodeid).center;
+        ObjAircraft(aai).wp = [ObjAircraft(aai).wp(1:startNodewpCR,:);NewWaypoint;ObjAircraft(aai).wp(startNodewpCR+1:end,:)];
+        ObjAircraft(aai).wpTR = ObjAircraft(aai).wpTR + 1;
+        startNodewpCR = startNodewpCR + 1;
+        ObjAircraft(aai).wpChange = 1;
+        ObjAircraft(aai).wpRouting = 1;
+    end
+end
 end
 
 function [edgeWeights] = CalculateedgeWeights(k,TFC,Settings,startNode,endNode,o_xyz,d_xyz)
@@ -71,13 +89,13 @@ for i=1:numNodes
     for j=1:numNodes
         if ((Settings.Airspace.Regions.B(i).layer==Li)&&(Settings.Airspace.Regions.B(j).layer==Li))
             if i==startNode
-%                 i_xyz = [o_xyz(1:2), Settings.Airspace.Regions.B(i).center(3)];
+                %                 i_xyz = [o_xyz(1:2), Settings.Airspace.Regions.B(i).center(3)];
                 i_xyz = o_xyz;
             else
                 i_xyz = Settings.Airspace.Regions.B(i).center;
             end
             if j==endNode
-%                 j_xyz = [d_xyz(1:2), Settings.Airspace.Regions.B(j).center(3)];
+                %                 j_xyz = [d_xyz(1:2), Settings.Airspace.Regions.B(j).center(3)];
                 j_xyz = d_xyz;
             else
                 j_xyz = Settings.Airspace.Regions.B(j).center;
@@ -96,7 +114,7 @@ nodeSpeeds = RiVdt;
 edgeWeights = zeros(numNodes);
 for i = 1:numNodes
     for j = 1:numNodes
-            edgeWeights(i,j) = adjMatrix(i,j)/mean([nodeSpeeds(i),nodeSpeeds(j)]);
+        edgeWeights(i,j) = adjMatrix(i,j)/mean([nodeSpeeds(i),nodeSpeeds(j)]);
     end
 end
 

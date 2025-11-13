@@ -1,3 +1,25 @@
+%PlotMotionPicture_MFD_SpeedControl Generates a dashboard animation for speed control scenarios.
+%   This function is a specialized version of `PlotMotionPicture_MFD`
+%   designed to visualize simulations where speed control is the active
+%   traffic management policy.
+%
+%   In addition to the standard 3D trajectory view and MFD plots, this
+%   function includes panels specifically for:
+%   - The eLMFD (Energy vs. Speed) relationship, showing how the network's
+%     energy consumption changes with average speed.
+%   - The Speed-Accumulation MFD (Speed vs. Accumulation).
+%   - A time-series plot of the speed control inputs (`w_i`) for each region.
+%
+%   This visualization is essential for understanding how the speed control
+%   policy affects traffic flow, congestion, and energy efficiency throughout
+%   the simulation.
+%
+% Inputs:
+%   SES         - (numeric) Snapshots Every Second, determining the frame rate of the video.
+%   SimInfo     - (struct) Simulation information containing trajectories and status history.
+%   ObjAircraft - (struct) Array of aircraft objects.
+%   TFC         - (struct) The final Traffic Flow Characteristics data structure.
+%   Settings    - (struct) The simulation settings structure.
 function [] = PlotMotionPicture_MFD_SpeedControl(SES,SimInfo,ObjAircraft,TFC,Settings)
 close all;
 AirspaceS = Settings.Airspace;
@@ -100,7 +122,7 @@ for dt=1:dstt:(1+SimS.tf/SimS.dtsim)
         subplot(numofsubplotH,numofsubplotV,4); cla;
         for ri=1:size(TFC.Ri,2)
             if(Settings.TFC.TCmode==1)
-                            ttMPC = ((dt-1)*SimS.dtsim) + Settings.TFC.NMPC;
+                ttMPC = ((dt-1)*SimS.dtsim) + Settings.TFC.NMPC;
                 PlotCriticalAccH(Settings.Sim.tf,Settings.TFC.nci(ri),limNimax,[',' num2str(TFC.Ri(ri).ri)],GiNiColor(ri,:),FigFontSize)
             end
             if(k==0)
@@ -391,9 +413,9 @@ function [titletextGndt] = PlotTFCTS_ndt(Xdata,Ydata,istr,titlePreStr,Color,FigF
 plot(Xdata,Ydata,['--' Marker ''],'color',Color,'LineWidth',LW,'MarkerSize',MS)
 hold on;
 if(CurMarker~="")
-plot(Xdata(end),Ydata(end),['--' CurMarker ''],'color',Color,'LineWidth',LW,'MarkerSize',MS)
-textGndt = {['$' istr '(' sprintf('%0.0f',Xdata(end)) ',' sprintf('%0.0f',Ydata(end)) ')$'];'$\downarrow$'};
-text(Xdata(end),Ydata(end),textGndt,'color',[Color, 0.5],'HorizontalAlignment','center','VerticalAlignment','bottom', 'Interpreter', 'latex','FontSize',0.7*FigFontSize,'FontName','Times')
+    plot(Xdata(end),Ydata(end),['--' CurMarker ''],'color',Color,'LineWidth',LW,'MarkerSize',MS)
+    textGndt = {['$' istr '(' sprintf('%0.0f',Xdata(end)) ',' sprintf('%0.0f',Ydata(end)) ')$'];'$\downarrow$'};
+    text(Xdata(end),Ydata(end),textGndt,'color',[Color, 0.5],'HorizontalAlignment','center','VerticalAlignment','bottom', 'Interpreter', 'latex','FontSize',0.7*FigFontSize,'FontName','Times')
 end
 titletextGndt = ['$\quad' titlePreStr '=(' sprintf('%0.0f',Xdata(end)) ',' sprintf('%0.0f',Ydata(end)) ')$'];
 end
@@ -401,9 +423,9 @@ function [titletextGndt] = PlotTFCTS_udt(Xdata,Ydata,istr,titlePreStr,Color,FigF
 stairs([Xdata 2*Xdata(end)-Xdata(end-1)],[Ydata Ydata(end)],['--' Marker ''],'color',Color,'LineWidth',LW,'MarkerSize',MS)
 hold on;
 if(CurMarker~="")
-plot(Xdata(end),Ydata(end),['--' CurMarker ''],'color',Color,'LineWidth',LW,'MarkerSize',MS)
-textGndt = {['$' istr '(' sprintf('%0.0f',Xdata(end)) ',' sprintf('%0.1f',Ydata(end)) ')$'];'$\downarrow$'};
-text(Xdata(end),Ydata(end),textGndt,'color',[Color, 0.5],'HorizontalAlignment','center','VerticalAlignment','bottom', 'Interpreter', 'latex','FontSize',0.7*FigFontSize,'FontName','Times')
+    plot(Xdata(end),Ydata(end),['--' CurMarker ''],'color',Color,'LineWidth',LW,'MarkerSize',MS)
+    textGndt = {['$' istr '(' sprintf('%0.0f',Xdata(end)) ',' sprintf('%0.1f',Ydata(end)) ')$'];'$\downarrow$'};
+    text(Xdata(end),Ydata(end),textGndt,'color',[Color, 0.5],'HorizontalAlignment','center','VerticalAlignment','bottom', 'Interpreter', 'latex','FontSize',0.7*FigFontSize,'FontName','Times')
 end
 titletextGndt = ['$\quad' titlePreStr '=(' sprintf('%0.0f',Xdata(end)) ',' sprintf('%0.1f',Ydata(end)) ')$'];
 end

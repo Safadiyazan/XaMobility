@@ -1,23 +1,25 @@
-% ExportJSON - Exports simulation data to a JSON file.
+%ExportJSON Exports essential simulation data to a JSON file.
+%   This function is responsible for packaging the key results of a simulation
+%   run into a structured format and saving it as a JSON file. This is
+%   particularly useful for web-based user interfaces that need to fetch and
+%   visualize the simulation output.
 %
-% Syntax:
-%   [scenarioName] = ExportJSON(SceStr, SimInfo, ObjAircraft, TFC, Settings)
+%   The function extracts and organizes:
+%   1. Per-aircraft data: Trajectories (x, y, z), flight status over time,
+%      departure/arrival times, and key parameters (safety radius).
+%   2. Macroscopic data: The entire Traffic Flow Characteristics (TFC) structure.
+%   3. Simulation and Airspace Settings: Key parameters like simulation duration,
+%      time steps, and airspace dimensions.
 %
 % Inputs:
-%   SceStr      - Structure containing scenario data.
-%   SimInfo     - Structure containing simulation information.
-%   ObjAircraft - Object or structure representing aircraft data.
-%   TFC         - Traffic data or related structure.
-%   Settings    - Structure containing export settings and configurations.
+%   SceStr      - (string) The base name for the output scenario file.
+%   SimInfo     - (struct) Simulation information containing trajectories and status history.
+%   ObjAircraft - (struct) Array of aircraft objects containing their properties.
+%   TFC         - (struct) The final Traffic Flow Characteristics data structure.
+%   Settings    - (struct) The simulation settings structure.
 %
 % Outputs:
-%   scenarioName - Name of the exported scenario file.
-%
-% Description:
-%   This function takes simulation data, including scenario details,
-%   simulation information, aircraft objects, traffic data, and settings,
-%   and exports it to a JSON file. The function returns the name of the
-%   exported scenario file.
+%   scenarioName - (string) The full name of the generated scenario file (without extension).
 %
 % Author: Yazan Safadi
 % Date Created: 2023-02-08
@@ -25,6 +27,7 @@ function [scenarioName] = ExportJSON(SceStr,SimInfo,ObjAircraft,TFC,Settings)
 M = SimInfo.M(end); % number of aircraft
 full_pdt = full(SimInfo.pdt)'; % tranform position matrix
 full_stat = full(SimInfo.statusdt)'; % transform status matrix
+% Prepare per-aircraft data
 ObjAircraftData = cell(1, M);
 for i = 1:M
     x = double(full_pdt(3*i-2, :)); % x position [m]
@@ -43,6 +46,7 @@ for i = 1:M
         'z', z...
         );
 end
+% Prepare summary data
 Data.TFC = TFC;
 Data.SimInfo.tf = SimInfo.tf; % simulation final time [s]
 Data.SimInfo.dtS = SimInfo.dtS; % simulation time step [s]
@@ -55,7 +59,7 @@ Data.Settings.Airspace = Settings.Airspace; % Airspace x-axis size [m]
 
 Data.ObjAircraft = ObjAircraftData;
 
-
+% Encode and write to JSON file
 json_str = jsonencode(Data);
 TimestampNow = now;
 scenarioName = [SceStr '_'  datestr(TimestampNow,'yyyy-mm-dd HH:MM')];

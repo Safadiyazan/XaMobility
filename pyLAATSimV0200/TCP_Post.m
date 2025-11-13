@@ -1,3 +1,20 @@
+%TCP_Post Dispatches the active Traffic Control Policy (TCP) logic.
+%   This function acts as a router or dispatcher for the various traffic
+%   control modules. At each control step, it checks which control policy
+%   is active (based on flags set in `Settings.TFC`) and calls the
+%   corresponding function to compute and apply the control actions.
+%
+%   It can dispatch to different controllers, such as:
+%   - `TCP_CoupledController_*`: For integrated control strategies.
+%   - `TCP_RouteGuidance_*`: For dynamic routing strategies.
+%   - `TCP_SpeedControl_*`: For speed regulation strategies.
+%
+% Inputs:
+%   SimInfo     - (struct) Current simulation information.
+%   ObjAircraft - (struct) Array of aircraft objects.
+%   Settings    - (struct) Simulation settings, including TCP flags.
+%   TFC         - (struct) Current Traffic Flow Characteristics data.
+%   t           - (numeric) The current simulation time.
 function [TFC,ObjAircraft,SimInfo] = TCP_Post(SimInfo,ObjAircraft,Settings,TFC,t)
 if Settings.TFC.TCP_DBController_GC
     disp(['[INFO] t=', num2str(t), 's - Activating TCP_DBControl_GC_Micro']);

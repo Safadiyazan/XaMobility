@@ -1,30 +1,26 @@
-%{
-    UpdateSimInfo - Updates the simulation information structure with data
-    from the given aircraft object.
-
-    Syntax:
-        [SimInfo] = UpdateSimInfo(SimInfo, ObjAircraft)
-
-    Inputs:
-        SimInfo - A structure containing the current simulation information.
-        ObjAircraft - An object representing the aircraft, containing
-                      relevant data to update the simulation information.
-
-    Outputs:
-        SimInfo - The updated simulation information structure.
-
-    Description:
-        This function takes the current simulation information structure
-        and updates it using the data provided in the aircraft object.
-        The updated structure is then returned.
-
-    Example:
-        SimInfo = UpdateSimInfo(SimInfo, ObjAircraft);
-
-    Note:
-        Ensure that ObjAircraft contains all necessary fields required
-        for updating SimInfo.
-%}
+%UpdateSimInfo Logs the state of all aircraft at the current time step.
+%   This function is a utility for recording the history of the simulation.
+%   At each microscopic time step (`dtS`), it takes a snapshot of the key
+%   state variables for every aircraft and stores them in large matrices
+%   within the `SimInfo` structure.
+%
+%   The logged variables include:
+%   - `pdt`: Position (x, y, z) of all aircraft.
+%   - `vdt`: Velocity (vx, vy, vz) of all aircraft.
+%   - `statusdt`: Flight status (inactive, active, queued, etc.) of all aircraft.
+%   - `ridt`: Region index of all aircraft.
+%   - `vmdt`: Current maximum speed of all aircraft.
+%
+%   This historical data is essential for post-processing, including the
+%   calculation of macroscopic variables (TFC) and the generation of plots
+%   and videos.
+%
+% Inputs:
+%   SimInfo     - (struct) The main simulation information structure.
+%   ObjAircraft - (struct) The array of all aircraft objects.
+%
+% Outputs:
+%   SimInfo - (struct) The updated SimInfo structure with new data logged for the current time step.
 % Author: Yazan Safadi
 % Date Created: 2023-02-08
 function [SimInfo] = UpdateSimInfo(SimInfo,ObjAircraft)
