@@ -50,7 +50,7 @@ switch InflowSetting
 end
 Sim.tf = Sim.switchtime(end)*60; %[s]
 Sim.Qin_avg = sum(Sim.switchvalue.*diff(Sim.switchtime))./Sim.switchtime(end);
-disp(['Average inflow rate = ' num2str(Sim.Qin_avg) '[aircraft/s]'])
+disp(['[INFO] SettingSimulation: Average inflow rate = ', num2str(Sim.Qin_avg), ' [aircraft/s]']);
 %% inflow_settings
 Sim.AircraftNum = diff(Sim.switchtime*60).*Sim.switchvalue;
 Sim.AircraftCumNum = cumsum(Sim.AircraftNum);

@@ -36,4 +36,6 @@ SimInfo.vdt(round(t/(dtS))+1,:) = cat(1,[ObjAircraft.vt]);
 SimInfo.statusdt(round(t/(dtS))+1,:) = cat(1,[ObjAircraft.status]);
 %% Regions index
 SimInfo.ridt(round(t/(dtS))+1,:) = cat(1,[ObjAircraft.rit]);
+%% Max Speed Change
+SimInfo.vmdt(round(t/(dtS))+1,:) = cat(1,[ObjAircraft.vm]);
 end

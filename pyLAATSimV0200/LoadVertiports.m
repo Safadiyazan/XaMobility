@@ -40,8 +40,9 @@ switch asStr
     case 'LI'
         jsonFilePath = [public_dir '/Vertiports/FixedVertiportsSettings_V4_LI.json'];
         minDz1 = 40;
-    otherwise
-        error('error in loading vertiport json')
+    otherwise 
+        disp(['[ERROR] LoadVertiports: Invalid asStr ''', asStr, '''. Error loading vertiport JSON.']);
+        error(['Invalid asStr ''', asStr, '''.']);
 end
 jsonText = fileread(jsonFilePath);
 vertiportData = jsondecode(jsonText);

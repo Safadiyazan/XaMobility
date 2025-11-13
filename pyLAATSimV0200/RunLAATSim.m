@@ -29,11 +29,11 @@ function [] = RunLAATSim(InflowRate,SceStr,asStr)
 clc; close all; dbstop if error;
 close all force; close all hidden;
 fwaitbar = waitbar(0,'Starting Simulation');
-UIRun = 0;
+UIRun = 0; % 0 for script run, 1 for UI run
 SimInfo.RT.TCP_PostRunningTime = [];
 SimInfo.RT.TFCRunningTime = [];
 SimInfo.RT.SimStartTime = datetime;
-disp(['Simuation started: Time=' datestr(SimInfo.RT.SimStartTime,'yyyy-mm-dd HH:MM:SS.FFF')])
+disp(['[INFO] Simulation started at: ', datestr(SimInfo.RT.SimStartTime,'yyyy-mm-dd HH:MM:SS.FFF')]);
 SimFilename = [SceStr];
 SimInfo.SimOutputDirStr = ['.\Outputs\SimOutput_' datestr(now,'yyyymmdd_hhMMss') '_' SimFilename '\'];
 if ~exist(SimInfo.SimOutputDirStr, 'dir')
@@ -42,14 +42,16 @@ end
 %% Settings
 waitbar(0,fwaitbar,'Determining Setting');
 [Settings.Airspace] = SettingAirspace(1500,1500,90,asStr,UIRun); % 20*60*30/3.6,20*60*30/3.6
+Settings.Airspace.as = 1;
 [Settings.Aircraft] = SettingAircraft([20,20],[10,10]);
 [Settings.Sim] = SettingSimulation(InflowRate,10);
+[Settings.TFC] = SettingTrafficControl(Settings,UIRun);
 %% Init Objects
 SimInfo.Mina = []; SimInfo.Mque = []; SimInfo.Mact = []; SimInfo.Marr = []; SimInfo.MactBQ = [];
 SimInfo.M = 1:1:Settings.Sim.M; SimInfo.cc = 0;
-dtS = Settings.Sim.dtsim; dtM = Settings.Sim.dtMFD; tf = Settings.Sim.tf;
-SimInfo.dtS = dtS; SimInfo.dtM = dtM; SimInfo.tf = tf;
-SimInfo.pdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,3*size(SimInfo.M,2))); SimInfo.vdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,3*size(SimInfo.M,2))); SimInfo.statusdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2))); SimInfo.ridt = (zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2)));
+dtS = Settings.Sim.dtsim; dtM = Settings.Sim.dtMFD; dtC = Settings.TFC.dtC; tf = Settings.Sim.tf;
+SimInfo.dtS = dtS; SimInfo.dtM = dtM; SimInfo.dtC = dtC; SimInfo.tf = tf;
+SimInfo.pdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,3*size(SimInfo.M,2))); SimInfo.vdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,3*size(SimInfo.M,2))); SimInfo.statusdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2))); SimInfo.ridt = (zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2))); SimInfo.vmdt = (zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2)));
 TFC = []; TFC.CS = []; TFC.EC = [];
 TFC.EC.ECdt = zeros((SimInfo.tf/SimInfo.dtS)+1,size(SimInfo.M,2)); TFC.EC.sumECtdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.sumECqdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.avgECtdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.avgECqdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1); TFC.EC.sumECdt = zeros((SimInfo.tf/SimInfo.dtS)+1,1);
 %% Aircraft Creation
@@ -57,6 +59,7 @@ waitbar(0,fwaitbar,'Initalizing Aircraft');
 [SimInfo,ObjAircraft] = InitAircraftObj(SimInfo,Settings);
 %% Export Settings
 close(fwaitbar)
+save([SimInfo.SimOutputDirStr 'Settings' SimFilename],'-v7.3');
 fwaitbar = waitbar(0,'Initalizing Aircraft');
 %% Simulation
 % Start Simulation
@@ -84,15 +87,23 @@ for t=0:dtS:tf
         SimInfo.RT.TFCEndTime = datetime;
         SimInfo.RT.TFCRunningTime(end+1) = seconds(SimInfo.RT.TFCEndTime-SimInfo.RT.TFCStartTime);
     end
+    if (Settings.TFC.TCmode==1)%(t~=0)&&(mod(t,dtC)==0)&&(~isempty(TFC))
+        SimInfo.RT.TCP_PostStartTime = datetime;
+        [TFC,ObjAircraft,SimInfo] = TCP_Post(SimInfo,ObjAircraft,Settings,TFC,t);
+        SimInfo.RT.TCP_PostEndTime = datetime;
+        SimInfo.RT.TCP_PostRunningTime(end+1) = seconds(SimInfo.RT.TCP_PostEndTime-SimInfo.RT.TCP_PostStartTime);
+        % TODO: Make Plotting during for the current k
+        % PlotMotionPictureMFD(0,t,SimInfo,ObjAircraft,TFC,Settings)
+    end
 end
 waitbar(1,fwaitbar,'Finishing Simulation');
 clear t dtS dtM dtC tf
 SimInfo.RT.SimEndTime = datetime;
 SimInfo.RT.SimRunningTime = seconds(SimInfo.RT.SimEndTime-SimInfo.RT.SimStartTime);
-SimInfo.RT.SimRunningTimeStr = datestr(SimInfo.RT.SimEndTime-SimInfo.RT.SimStartTime,'HH:MM:SS.FFF');%seconds(datetime(SimInfo.SimEndTime)-datetime(SimInfo.SimStartTime));
-disp(['Simuation Ended: Time=' datestr(SimInfo.RT.SimEndTime,'yyyy-mm-dd HH:MM:SS.FFF')])
-disp(['TFC RunningTime: Time=' num2str(sum(SimInfo.RT.TFCRunningTime)) ' [seconds]'])
-disp(['TCP_Post RunningTime: Time=' num2str(sum(SimInfo.RT.TCP_PostRunningTime)) ' [seconds]'])
+SimInfo.RT.SimRunningTimeStr = datestr(SimInfo.RT.SimEndTime-SimInfo.RT.SimStartTime,'HH:MM:SS.FFF');
+disp(['[INFO] Simulation ended at: ', datestr(SimInfo.RT.SimEndTime,'yyyy-mm-dd HH:MM:SS.FFF')]);
+disp(['[INFO] Total TFC Running Time: ', num2str(sum(SimInfo.RT.TFCRunningTime)), ' seconds.']);
+disp(['[INFO] Total TCP_Post Running Time: ', num2str(sum(SimInfo.RT.TCP_PostRunningTime)), ' seconds.']);
 waitbar(1,fwaitbar,'Exporting Data');
 %% Exporting and Plotting
 % Export Workspace

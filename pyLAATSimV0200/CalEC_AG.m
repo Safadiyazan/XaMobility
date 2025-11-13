@@ -16,6 +16,31 @@
 
         /C:/DEV/app/pyLAATSimV0200/CalEC_AG.m
 %}
+%CalEC_AG Calculates the Energy Consumption (EC) for active and queued aircraft.
+%   This function calculates the energy consumed by each aircraft during the
+%   current simulation time step (`dtS`). It uses a simplified energy
+%   consumption model that distinguishes between different flight phases based
+%   on the aircraft's horizontal and vertical speed.
+%
+%   The function iterates through two groups of aircraft:
+%   1. Active Aircraft (`Mact`): Calculates energy based on whether the
+%      aircraft is hovering, in vertical flight (takeoff/landing), cruising
+%      (horizontal flight), or in a 3D angular movement.
+%   2. Queued Aircraft (`Mque`): Assumes these aircraft are hovering and
+%      calculates energy consumption accordingly.
+%
+%   The calculated energy for the time step is then used to update the
+%   aircraft's individual energy consumption properties and the aggregate
+%   energy consumption metrics in the `TFC` structure.
+%
+% Inputs:
+%   EC          - (struct) A structure containing aggregate energy consumption data.
+%   SimInfo     - (struct) Simulation information, including aircraft lists and state data.
+%   ObjAircraft - (struct) Array of aircraft objects.
+%
+% Outputs:
+%   EC          - (struct) Updated energy consumption data structure.
+%   ObjAircraft - (struct) Updated aircraft objects with new energy consumption values.
 % Author: Assaf Granot
 % Date Created: 2023-05-01
 function [EC,ObjAircraft] = CalEC_AG(EC,SimInfo,ObjAircraft)
@@ -25,6 +50,7 @@ dtS=SimInfo.dtS;
 dtM=SimInfo.dtM;
 ActiveAircraft=SimInfo.Mact;
 %%
+% Calculate energy for active (flying) aircraft
 for aai=1:size(ActiveAircraft,2)
     Speed_Vector = SimInfo.vdt((t/dtS),[3*ActiveAircraft(aai)-2,3*ActiveAircraft(aai)-1,3*ActiveAircraft(aai)]);
     %%
@@ -41,6 +67,7 @@ for aai=1:size(ActiveAircraft,2)
     Horizontal_Speed = norm([Speed_Vector(1),Speed_Vector(2)]);
     Horizontal_Speed(isnan(Horizontal_Speed)) = 0;
     Operational_Speed = min(20,max(1,Horizontal_Speed)); %Speed control boundaries, preventing small values
+    Operational_Speed = min(20,max(1,Horizontal_Speed)); % Speed control boundaries, preventing small values
     %% Classify Movement
     if Horizontal_Speed == 0 && Vertical_Speed == 0 %Stop
         P_Horizontal = 0; P_Vertical = 0; [~, ~, E_max, ~] = Cal_EC_Model_AG(1);
@@ -69,6 +96,7 @@ for aai=1:size(ActiveAircraft,2)
 end
 %%
 QueuedAircraft=SimInfo.Mque;
+QueuedAircraft=SimInfo.Mque; % Get list of queued aircraft
 %% Queued Aircraft Energy Consuption.
 for aai=1:size(QueuedAircraft,2)
     %%
@@ -77,6 +105,7 @@ for aai=1:size(QueuedAircraft,2)
     Hovering_Cons = 0;
     %% Classify Movement
     P_Horizontal = 0; [~, P_Vertical, E_max, ~] = Cal_EC_Model_AG(1); %Hovering
+    P_Horizontal = 0; [~, P_Vertical, E_max, ~] = Cal_EC_Model_AG(1); % Assume queued aircraft are hovering
     Hovering_Cons = Hovering_Cons + (P_Vertical)*Time_Traveled;
     Energy_Consumption = (P_Vertical + P_Horizontal)*Time_Traveled; %Energy consumed for the specific given segment of trip [Wh]
     %%
@@ -87,6 +116,7 @@ for aai=1:size(QueuedAircraft,2)
     EC.ECdt(round(t/(dtS))+1,QueuedAircraft(aai)) = Energy_Consumption; % size M*tf
 end
 %% Total Value
+% Update aggregate energy consumption metrics
 EC.sumECtdt(round(t/(dtS))+1,1) = sum(cat(1,ObjAircraft(ActiveAircraft).ECtdt));
 EC.sumECqdt(round(t/(dtS))+1,1) = sum(cat(1,ObjAircraft(QueuedAircraft).ECqdt));
 EC.avgECtdt(round(t/(dtS))+1,1) = sum(cat(1,ObjAircraft(ActiveAircraft).ECtdt))/(size(ActiveAircraft,2));
@@ -94,6 +124,7 @@ EC.avgECqdt(round(t/(dtS))+1,1) = sum(cat(1,ObjAircraft(QueuedAircraft).ECqdt))/
 EC.sumECdt(round(t/(dtS))+1,1) = EC.sumECtdt(round(t/(dtS))+1,1)+EC.sumECqdt(round(t/(dtS))+1,1);
 end
 
+% Simplified energy consumption model for a multi-rotor UAV.
 function [P_Horizontal, P_Vertical, E_max, E_limit] = Cal_EC_Model_AG(v)
 %Model Coefficients
 C_D = 0.025 ; C_L = 0.45; %Drag and Lift coefficients

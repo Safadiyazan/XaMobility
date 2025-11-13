@@ -64,10 +64,8 @@ fid = fopen(file_name, 'w');
 if fid > 0
     fwrite(fid, json_str, 'char');
     fclose(fid);
-    disp(['Data saved to ' file_name]);
+    disp(['[INFO] ExportJSON: Data saved to ', file_name]);
 else
-    disp('Error opening the file for writing.');
+    disp('[ERROR] ExportJSON: Error opening file for writing.');
 end
 end
-
-

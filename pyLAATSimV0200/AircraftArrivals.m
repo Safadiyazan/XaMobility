@@ -68,12 +68,10 @@ while aa<=LMact
             aa = aa + 1;
         end
     else
-        error('index error')
+        error('AircraftArrivals: Aircraft in Mact list has unexpected status: %d', ObjAircraft(Mact(aa)).status);
     end
 end
 %%
 SimInfo.Mact = Mact;
 SimInfo.Marr = Marr;
 end
-
-

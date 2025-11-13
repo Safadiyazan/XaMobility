@@ -24,8 +24,8 @@
 % Author: Yazan Safadi
 % Date Created: 2023-02-08
 function [Airspace] = SettingAirspace(dx,dy,dz,asStr,UIRun)
-Airspace.asStr = asStr;
-disp(UIRun)
+Airspace.asStr = asStr; 
+disp(['[INFO] SettingAirspace: UI Run Flag = ', num2str(UIRun)]);
 if (UIRun==1)
     public_dir = './public';
 else
@@ -36,11 +36,17 @@ Airspace.public_dir = public_dir;
 if ismember(asStr, {'Subset'})
     Airspace.Vertiports = 0;
     Airspace.FixedWaypoints = 0;
+elseif ismember(asStr, {'Vertiports'})
+    Airspace.Vertiports = 1;
+    Airspace.FixedWaypoints = 0;
 elseif ismember(asStr, {'LI'})
     Airspace.Vertiports = 1;
     Airspace.FixedWaypoints = 1;
+elseif ismember(asStr, {'VTOL'})
+    Airspace.Vertiports = 0;
+    Airspace.FixedWaypoints = 0;
 else
-    Airspace.Vertiports = 1;
+    Airspace.Vertiports = 0;
     Airspace.FixedWaypoints = 0;
 end
 
@@ -255,7 +261,7 @@ end
 function [Ri,Li] = SettingAirspaceRegionsVTOL2R(Airspace)
 Ri.xn = 3;
 Ri.yn = 3;
-Ri.zn = 2;
+Ri.zn = 3;
 Ri.Dx = Airspace.dx/Ri.xn;
 Ri.Dy = Airspace.dy/Ri.yn;
 Ri.Dz = (Airspace.dz)/(Ri.zn-1);
