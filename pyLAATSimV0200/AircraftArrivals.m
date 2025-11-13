@@ -64,6 +64,7 @@ while aa<=LMact
             aa = aa + 1;
         end
     elseif(ObjAircraft(Mact(aa)).status==11) % Boundary queue aircraft
+        % Check if aircraft in boundary queue has reached its holding waypoint
         if (norm(ObjAircraft(Mact(aa)).pt-ObjAircraft(Mact(aa)).wp(ObjAircraft(Mact(aa)).wpCR+1,:))<= epsilon_BoundaryControl)
             % If resume time is reached, change status back to active
             if((ObjAircraft(Mact(aa)).ResumeTime(end))<=t)
